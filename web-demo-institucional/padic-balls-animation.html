@@ -11,49 +11,36 @@
   --red:#ef4444;--red-bg:#fef2f2;--red-border:#fca5a5;--red-dark:#b91c1c;
   --blue:#3b82f6;--blue-bg:#eff6ff;--blue-border:#bfdbfe;--blue-dark:#1d4ed8;
   --gray:#94a3b8;--gray-bg:#f8fafc;--gray-border:#cbd5e1;--gray-dark:#475569;
-  --green:#16a34a;--border:#e2e8f0;--bg:#f8f7f4;--white:#fff;
+  --green:#16a34a;--teal:#0f766e;--border:#e2e8f0;--bg:#f8f7f4;--white:#fff;
   --text:#1a1a1a;--muted:#64748b;--lighter:#94a3b8;
   --mono:'SF Mono','Fira Mono','Cascadia Code',monospace;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
-
-/* ── Header ── */
 .site-header{background:var(--navy);color:#fff;padding:1.4rem 2rem 1.2rem;border-bottom:3px solid #2d3f6b}
 .site-header h1{font-size:1.2rem;font-weight:500;letter-spacing:.01em;margin-bottom:.2rem}
 .site-header .subtitle{font-size:.82rem;color:#94a3b8;font-style:italic}
 .site-header .authors{font-size:.72rem;color:#64748b;margin-top:.35rem}
-
-/* ── Main layout ── */
 .main{max-width:1200px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start}
 @media(max-width:900px){.main{grid-template-columns:1fr}}
-
-/* ── Panel ── */
 .panel{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem}
 .panel-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.9rem;padding-bottom:.45rem;border-bottom:1px solid #f1f5f9}
-
-/* ── Controls ── */
 label{display:block;font-size:.78rem;color:#4b5563;margin-bottom:.25rem;margin-top:.75rem}
 label:first-of-type{margin-top:0}
 select,input[type=text]{width:100%;padding:.38rem .6rem;border:1px solid #d1d5db;border-radius:6px;font-size:.8rem;font-family:inherit;background:var(--white);color:var(--text)}
 select:focus,input:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:transparent}
-
 .btn-row{display:flex;gap:.4rem;margin-top:.75rem;flex-wrap:wrap}
 button{padding:.36rem .75rem;border:1px solid #d1d5db;border-radius:6px;font-size:.78rem;cursor:pointer;background:var(--white);color:#374151;font-family:inherit;transition:background .12s}
 button:hover{background:#f3f4f6}
 button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
 button.primary:hover{background:var(--navy2)}
-button.accent{background:#0f766e;color:#fff;border-color:#0f766e}
+button.accent{background:var(--teal);color:#fff;border-color:var(--teal)}
 button.accent:hover{background:#0d9488}
 button:disabled{opacity:.45;cursor:not-allowed}
-
-/* ── Level slider ── */
 .level-ctrl{margin-top:1rem}
 .level-label{font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
 .level-slider-wrap{display:flex;align-items:center;gap:.6rem}
 input[type=range]{flex:1;accent-color:var(--navy)}
 .level-num{font-size:1.1rem;font-weight:700;color:var(--navy);min-width:2.5rem;text-align:center;font-variant-numeric:tabular-nums}
-
-/* ── Score cards ── */
 .scores-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:.9rem}
 .sc{border-radius:7px;padding:.65rem .6rem;text-align:center}
 .sc.E{background:var(--red-bg);border:1px solid var(--red-border)}
@@ -64,76 +51,147 @@ input[type=range]{flex:1;accent-color:var(--navy)}
 .sc-val{font-size:1.3rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .sc-val.E{color:var(--red)}.sc-val.A{color:var(--blue)}.sc-val.I{color:var(--gray)}
 .sc-sub{font-size:.62rem;color:var(--lighter);margin-top:.15rem}
-
-/* ── Invariant display ── */
 .invariant{background:#f1f5f9;border-radius:6px;padding:.5rem .75rem;font-size:.74rem;margin-top:.75rem;font-family:var(--mono);color:#334155;word-break:break-all}
-
-/* ── Legend ── */
 .legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem;font-size:.76rem;color:var(--muted)}
 .legend-item{display:flex;align-items:center;gap:.3rem}
 .legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
-
-/* ── Viz area ── */
 .viz-area{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem;min-height:520px}
 .viz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
 .viz-title{font-size:.9rem;font-weight:600;color:var(--navy)}
 .viz-subtitle{font-size:.76rem;color:var(--muted);margin-top:.15rem}
-
-#svgContainer{width:100%;overflow-x:auto}
-svg{display:block;font-family:inherit}
-
-/* ── Histogram ── */
-.hist-wrap{width:100%;overflow-x:auto;padding:.5rem 0}
-canvas{display:block;width:100%;max-width:700px;margin:0 auto}
-
-/* ── Status ── */
 .status-bar{font-size:.74rem;color:var(--muted);margin-top:.5rem;min-height:1.2em}
 .status-bar.running{color:var(--blue);font-weight:500}
 .status-bar.done{color:var(--green);font-weight:500}
 .status-bar.error{color:var(--red);font-weight:500}
-
-/* ── Info box ── */
 .info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.7rem .85rem;font-size:.78rem;color:#1e3a5f;line-height:1.6;margin-top:.85rem}
-
-/* ── Footer ── */
+/* Search */
+.search-panel{margin-top:1rem;border-top:1px solid #f1f5f9;padding-top:.9rem}
+.search-panel-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.6rem}
+.search-progress{background:#f1f5f9;border-radius:6px;padding:.5rem .75rem;margin-top:.5rem;font-size:.72rem;color:#334155;display:none}
+.search-progress .prog-bar-wrap{background:#e2e8f0;border-radius:3px;height:5px;margin:.3rem 0}
+.search-progress .prog-bar{height:5px;border-radius:3px;background:var(--teal);transition:width .3s}
+.optima-list{margin-top:.6rem;display:none}
+.optima-list-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem}
+.optima-item{display:flex;align-items:center;justify-content:space-between;gap:.35rem;padding:.32rem .55rem;border:1px solid var(--border);border-radius:5px;margin-bottom:.22rem;font-size:.74rem;cursor:pointer;transition:background .12s,border-color .12s}
+.optima-item:hover{background:#f0fdf4;border-color:#86efac}
+.optima-item.active-opt{background:#f0fdf4;border-color:var(--green);box-shadow:0 0 0 2px rgba(22,163,74,.12)}
+.optima-item .opt-perm{font-family:var(--mono);font-size:.7rem;color:#475569;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.optima-item .opt-score{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--red);white-space:nowrap}
+.optima-item .opt-use{font-size:.67rem;padding:.14rem .4rem;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;white-space:nowrap}
+.ga-log{font-family:var(--mono);font-size:.69rem;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:.4rem .65rem;max-height:100px;overflow-y:auto;margin-top:.4rem;display:none}
+/* CSV upload */
+.upload-zone{border:2px dashed #d1d5db;border-radius:7px;padding:.55rem .6rem;text-align:center;cursor:pointer;color:var(--muted);font-size:.76rem;transition:border-color .2s;margin:.3rem 0}
+.upload-zone:hover{border-color:#6b7280}
+.upload-zone input{display:none}
+/* Search modal */
+#searchModal{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:9999;display:none;align-items:center;justify-content:center}
+#searchModalBox{background:#fff;border-radius:11px;padding:1.4rem 1.6rem;max-width:370px;width:92%;box-shadow:0 8px 36px rgba(0,0,0,.26)}
+#searchModalBox h3{margin:0 0 .7rem;font-size:.92rem;color:#1a2744;font-weight:700}
+.smodal-row{background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:.7rem .85rem;margin:.4rem 0}
+.smodal-row .sr-title{font-size:.75rem;font-weight:700;color:#1a2744;margin-bottom:.25rem}
+.smodal-row .sr-body{font-size:.72rem;color:#475569;line-height:1.55}
+.smodal-row .sr-time{font-size:.78rem;font-weight:700;color:var(--teal);margin-top:.2rem}
+.smodal-row.sr-warn .sr-time{color:#b45309}
+.smodal-row.sr-danger .sr-time{color:var(--red)}
+.smodal-btn{width:100%;margin-top:.38rem;padding:.48rem .7rem;border:none;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;transition:opacity .12s}
+.smodal-btn:disabled{opacity:.4;cursor:default}
+.smodal-btn-ex{background:#1a2744;color:#fff}
+.smodal-btn-ga{background:var(--teal);color:#fff}
+.smodal-btn-cancel{background:#f1f5f9;color:#64748b;margin-top:.6rem}
+/* Tooltip */
+.ball-tooltip{position:fixed;background:rgba(15,23,42,.93);color:#e2e8f0;border-radius:7px;padding:.5rem .75rem;font-size:.72rem;font-family:var(--mono);pointer-events:none;opacity:0;transition:opacity .1s;z-index:200;line-height:1.65;box-shadow:0 4px 16px rgba(0,0,0,.35);max-width:260px;border:1px solid rgba(255,255,255,.1)}
+.ball-tooltip.visible{opacity:1}
+.tt-type-E{color:#fca5a5;font-weight:700}
+.tt-type-A{color:#93c5fd;font-weight:700}
+.tt-type-I{color:#cbd5e1;font-weight:700}
+/* Dynamics panel */
+.dynamics-area{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin-top:1.2rem}
+.dyn-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.5rem}
+.dyn-title{font-size:.9rem;font-weight:600;color:var(--navy)}
+.dyn-tabs{display:flex;gap:.35rem;flex-wrap:wrap}
+.dyn-tab{padding:.26rem .65rem;border-radius:5px;font-size:.74rem;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:none;font-family:inherit;transition:all .1s}
+.dyn-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dyn-tab:hover:not(.active){background:#f1f5f9}
+.dyn-panel{display:none}
+.dyn-panel.active{display:block}
+/* Cycles panel */
+.cycle-card{background:#f8fafc;border:1px solid var(--border);border-radius:7px;padding:.65rem .85rem;margin-bottom:.6rem;font-size:.76rem}
+.cycle-card-hdr{font-weight:700;color:var(--navy);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.cycle-type-badge{font-size:.62rem;padding:.1rem .38rem;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge-fp{background:#dcfce7;color:#15803d}
+.badge-cy{background:#fef9c3;color:#a16207}
+.cycle-elem{display:inline-block;background:var(--white);border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;margin:.1rem .15rem .1rem 0;font-family:var(--mono);font-size:.68rem;cursor:help}
+.cycle-ball-tag{display:inline-block;padding:.08rem .3rem;border-radius:3px;font-size:.63rem;font-family:var(--mono);font-weight:600;margin-left:.2rem}
+.cycle-ball-tag.E{background:var(--red-bg);color:var(--red-dark)}
+.cycle-ball-tag.A{background:var(--blue-bg);color:var(--blue-dark)}
+.cycle-ball-tag.I{background:var(--gray-bg);color:var(--gray-dark)}
+/* Ball graph */
+.ballgraph-ctrl{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap}
+.ballgraph-ctrl label{margin:0;font-size:.78rem}
+.ballgraph-ctrl select{width:auto;padding:.3rem .55rem}
+.ballgraph-svg-wrap{overflow-x:auto;background:#f8fafc;border-radius:8px;border:1px solid var(--border);padding:.5rem}
+/* Howto panel */
+.howto-section{margin-bottom:1.1rem}
+.howto-section h4{font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:.45rem;padding-bottom:.3rem;border-bottom:1px solid #f1f5f9}
+.howto-section p,.howto-section li{font-size:.78rem;color:#374151;line-height:1.65;margin-bottom:.35rem}
+.howto-section ul{padding-left:1.1rem}
+.howto-code{display:inline-block;font-family:var(--mono);font-size:.72rem;background:#f1f5f9;border-radius:3px;padding:.05rem .3rem;color:#1e3a5f}
+/* Polynomial panel */
+.poly-table{width:100%;border-collapse:collapse;font-size:.74rem;margin-top:.5rem}
+.poly-table th{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:.35rem .5rem;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.poly-table td{padding:.36rem .5rem;border-bottom:1px solid #f1f5f9;vertical-align:top}
+.poly-table tr:last-child td{border-bottom:none}
+.poly-table tr:hover td{background:#f8fafc}
+.poly-expr{font-family:var(--mono);font-size:.67rem;color:#1e3a5f;line-height:1.6;word-break:break-all}
+.poly-badge{display:inline-block;font-size:.61rem;background:#f1f5f9;border-radius:3px;padding:.03rem .28rem;color:#475569;margin:.1rem .1rem 0 0;font-family:var(--mono)}
+.poly-id{color:#15803d;font-weight:700}
+.poly-sym{color:#7c3aed;font-weight:700}
+.poly-or{color:#0f766e;font-weight:700}
+.poly-dep-wrap{overflow-x:auto;background:#f8fafc;border-radius:8px;border:1px solid var(--border);padding:.5rem;margin-top:.75rem}
 footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);border-top:1px solid var(--border);margin-top:1.5rem}
 </style>
 </head>
 <body>
 
 <header class="site-header">
-  <h1>p-adic Ball Structure of Z<sub>p</sub> — GRN Animation</h1>
+  <h1>p-adic Ball Structure of ℤ<sub>p</sub> — GRN Animation</h1>
   <div class="subtitle">Visualizing how a GRN's transition function classifies p-adic balls as Expanding / Attracting / Indifferent</div>
-  <div class="authors">Pérez-Buendía · Nopal-Coello · Cortés-Poza — IIMAS / CIMAT / UAEH, 2026</div>
+  <div class="authors">Cortés-Poza · Pérez Buendía · Nopal-Coello — IIMAS / CIMAT / UAEH, 2026</div>
 </header>
 
 <div class="main">
-
-<!-- ── LEFT: Controls ── -->
 <div>
   <div class="panel">
     <div class="panel-title">Network</div>
-
     <label>Organism</label>
     <select id="netSelect" onchange="onNetChange()">
       <option value="celegans">C. elegans — N=8, p=2</option>
       <option value="droso">Drosophila — N=6, p=2</option>
-      <option value="athaliana">A. thaliana — N=13, p=2 (precomputed)</option>
+      <option value="athaliana">A. thaliana — N=13, p=2</option>
+      <option value="custom">Red personalizada (CSV)…</option>
     </select>
-
+    <div id="customArea" style="display:none;margin-top:.5rem">
+      <label>CSV (columnas: config_from, config_to)</label>
+      <div class="upload-zone" onclick="document.getElementById('csvFileInput').click()">
+        <input type="file" id="csvFileInput" accept=".csv,.txt" onchange="onCsvLoad(event)">
+        <span id="csvLabel">📂 Clic para seleccionar CSV</span>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.3rem">
+        <div style="flex:1"><label>N (genes)</label><input type="number" id="customN" value="4" min="2" max="20"></div>
+        <div style="flex:1"><label>p (base)</label><input type="number" id="customP" value="2" min="2" max="4"></div>
+      </div>
+    </div>
     <label>Ordering A (permutation of 0…N−1)</label>
     <input type="text" id="orderingInput" value="1 0 2 3 6 5 4 7">
-
     <div class="btn-row">
       <button onclick="setOptimal()" class="accent">Optimal π*</button>
       <button onclick="setIdentity()">Identity</button>
+      <button onclick="setRandom()">Random</button>
     </div>
-
     <div class="btn-row" style="margin-top:.85rem">
       <button class="primary" id="computeBtn" onclick="runCompute()" style="flex:1">Compute</button>
     </div>
     <div class="status-bar" id="statusBar">Select network and press Compute.</div>
-
     <div class="level-ctrl">
       <div class="level-label">Level: <span id="levelDisplay">1</span> / <span id="maxLevelDisplay">—</span></div>
       <div class="level-slider-wrap">
@@ -146,25 +204,66 @@ footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);bo
         <button id="nextBtn" onclick="nextLevel()" disabled>Next ▶</button>
       </div>
     </div>
-
     <div class="scores-row" id="scoresRow" style="display:none">
       <div class="sc E"><div class="sc-lbl E">E(n)</div><div class="sc-val E" id="scE">—</div><div class="sc-sub" id="scEsub"></div></div>
       <div class="sc A"><div class="sc-lbl A">A(n)</div><div class="sc-val A" id="scA">—</div><div class="sc-sub" id="scAsub"></div></div>
       <div class="sc I"><div class="sc-lbl I">I(n)</div><div class="sc-val I" id="scI">—</div><div class="sc-sub" id="scIsub"></div></div>
     </div>
-
     <div class="invariant" id="invariantLine" style="display:none"></div>
-
     <div class="info-box" style="margin-top:.85rem">
       <strong>Color code:</strong> each circle = one p-adic ball at level n.<br>
-      <span style="color:var(--red-dark);font-weight:600">Red (E)</span> — ball <em>expands</em> under f: images spread to a larger ball.<br>
+      <span style="color:var(--red-dark);font-weight:600">Red (E)</span> — ball <em>expands</em>: images spread to a larger ball.<br>
       <span style="color:var(--blue-dark);font-weight:600">Blue (A)</span> — ball <em>attracts</em>: images contract to a smaller ball.<br>
-      <span style="color:var(--gray-dark);font-weight:600">Gray (I)</span> — ball is <em>indifferent</em>: images stay at same scale.
+      <span style="color:var(--gray-dark);font-weight:600">Gray (I)</span> — ball is <em>indifferent</em>: images stay at same scale.<br>
+      <strong>Hover</strong> over any ball to see its center and type.
+    </div>
+    <div class="search-panel">
+      <div class="search-panel-title">Find optimal orderings</div>
+      <div style="font-size:.74rem;color:var(--muted);margin-bottom:.5rem" id="searchHint"></div>
+      <div class="btn-row" style="margin-top:0">
+        <button id="searchBtn" onclick="startSearch()" style="flex:1">🔍 Search optima</button>
+        <button id="stopSearchBtn" onclick="stopSearch()" style="display:none">⏹ Stop</button>
+      </div>
+      <div class="search-progress" id="searchProgress">
+        <div id="searchProgressText">Searching…</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" id="searchProgBar" style="width:0%"></div></div>
+        <div id="searchProgressSub" style="color:var(--muted)"></div>
+      </div>
+      <div class="ga-log" id="gaLog"></div>
+      <div class="optima-list" id="optimaList">
+        <div class="optima-list-title" id="optimaListTitle"></div>
+        <div id="optimaItems"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ── RIGHT: Visualization ── -->
+<!-- Modal de selección de método de búsqueda -->
+<div id="searchModal">
+  <div id="searchModalBox">
+    <h3 id="modalTitle">Seleccionar método de búsqueda</h3>
+    <div id="modalExRow" class="smodal-row">
+      <div class="sr-title">🔎 Exhaustiva (garantizada)</div>
+      <div class="sr-body">Evalúa <span id="modalExTotal"></span> ordenamientos. Encuentra <b>todos</b> los óptimos globales con certeza.</div>
+      <div class="sr-time" id="modalExTime"></div>
+      <button class="smodal-btn smodal-btn-ex" id="modalBtnEx" onclick="proceedSearch('exhaustive')">Iniciar búsqueda exhaustiva</button>
+    </div>
+    <div id="modalBnbRow" class="smodal-row">
+      <div class="sr-title">🌲 Branch &amp; Bound (garantizado)</div>
+      <div class="sr-body">Backtracking con poda por cota μ_E parcial. Garantiza <b>todos los óptimos globales</b> con menos evaluaciones que exhaustiva cuando la poda es efectiva.</div>
+      <div class="sr-time" id="modalBnbTime"></div>
+      <button class="smodal-btn" id="modalBtnBnb" style="background:#7c3aed;color:#fff" onclick="proceedSearch('bnb')">Iniciar B&amp;B</button>
+    </div>
+    <div id="modalGaRow" class="smodal-row">
+      <div class="sr-title">🧬 Algoritmo genético (heurístico)</div>
+      <div class="sr-body">pop=300, gen=800, OX1+swap. Devuelve un <b>pseudo-óptimo</b>; para redes pequeñas puede coincidir con el óptimo global.</div>
+      <div class="sr-time" id="modalGaTime"></div>
+      <button class="smodal-btn smodal-btn-ga" onclick="proceedSearch('ga')">Iniciar AG</button>
+    </div>
+    <button class="smodal-btn smodal-btn-cancel" onclick="closeSearchModal()">Cancelar</button>
+  </div>
+</div>
+
 <div>
   <div class="viz-area">
     <div class="viz-header">
@@ -184,20 +283,46 @@ footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);bo
       </div>
     </div>
   </div>
+
+  <div class="dynamics-area" id="dynamicsArea" style="display:none">
+    <div class="dyn-header">
+      <div class="dyn-title">Dynamics</div>
+      <div class="dyn-tabs">
+        <button class="dyn-tab active" onclick="switchDynTab('cycles',this)">Fixed points &amp; cycles</button>
+        <button class="dyn-tab" onclick="switchDynTab('transgraph',this)">Transition graph</button>
+        <button class="dyn-tab" onclick="switchDynTab('polystruct',this)">Polynomial structure</button>
+        <button class="dyn-tab" onclick="switchDynTab('ballgraph',this)">Ball graph at level n</button>
+        <button class="dyn-tab" onclick="switchDynTab('howto',this)">¿How to use?</button>
+      </div>
+    </div>
+    <div id="dynCyclesPanel" class="dyn-panel active"></div>
+    <div id="dynTransgraphPanel" class="dyn-panel"></div>
+    <div id="dynPolystructPanel" class="dyn-panel"></div>
+    <div id="dynBallgraphPanel" class="dyn-panel">
+      <div class="ballgraph-ctrl">
+        <label>Level n:</label>
+        <select id="graphLevelSel" onchange="renderBallGraph()"></select>
+        <span style="font-size:.74rem;color:var(--muted)" id="graphLevelInfo"></span>
+      </div>
+      <div class="ballgraph-svg-wrap" id="ballgraphSvgWrap">
+        <div style="color:var(--lighter);font-size:.8rem;padding:2rem;text-align:center">Switch to this tab after computing to see the ball graph.</div>
+      </div>
+    </div>
+    <div id="dynHowtoPanel" class="dyn-panel"></div>
+  </div>
+</div>
 </div>
 
-</div><!-- main -->
+<div id="ballTooltip" class="ball-tooltip"></div>
 
-<footer>
-  Pérez-Buendía et al. (2026) &middot; CIMAT Mérida &middot; IIMAS UNAM &middot; UAEH
-</footer>
+<footer>Pérez-Buendía et al. (2026) &middot; CIMAT Mérida &middot; IIMAS UNAM &middot; UAEH</footer>
 
 <script>
 // ═══════════════════════════════════════════════════════════
 // TRANSITION TABLE DATA
 // ═══════════════════════════════════════════════════════════
 
-// Fuente: Huang et al. (2013) Biomed Eng Online 12(S1):S1. DOI:10.1186/1475-925X-12-S1-S1
+// C. elegans — Huang et al. (2013) DOI:10.1186/1475-925X-12-S1-S1
 const TT_CELEGANS = [
   0,5,19,23,8,4,24,21,24,20,26,23,24,28,24,28,
   80,21,83,23,88,20,88,21,88,20,90,23,88,28,88,28,
@@ -217,420 +342,1667 @@ const TT_CELEGANS = [
   224,228,226,231,232,228,232,228,232,228,234,230,232,236,232,236
 ];
 
-const TT_DROSO = [0,3,0,7,0,1,0,5,0,3,0,3,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,56,59,56,63,32,33,32,37,40,43,40,43,32,33,32,33,48,49,48,49,32,33,32,33,32,33,32,33,32,33,32,33];
+// Drosophila — Albert & Othmer (2003), gap gene network
+const TT_DROSO=[0,3,0,7,0,1,0,5,0,3,0,3,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,56,59,56,63,32,33,32,37,40,43,40,43,32,33,32,33,48,49,48,49,32,33,32,33,32,33,32,33,32,33,32,33];
 
-// A. thaliana: precomputed E/A/I per level (golden values)
-const ATH_PRECOMPUTED = {
-  N: 13, p: 2,
-  muE: 26776, muA: 53880, muI: 17648,
-  E: {1:0,2:4,3:4,4:4,5:8,6:16,7:48,8:46,9:88,10:243,11:112,12:0},
-  A: {1:0,2:0,3:4,4:12,5:24,6:40,7:70,8:210,9:297,10:781,11:496,12:4096},
-  I: {1:2,2:0,3:0,4:0,5:0,6:8,7:10,8:0,9:127,10:0,11:1440,12:0},
-  // Ball types per level needed for coloring
-  // For A. thaliana we only store aggregate counts — balls shown as histogram
-};
+// A. thaliana — N=13, p=2, 8192 states (tabla completa, verificada con gold standard)
+const TT_ATHALIANA=[191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1206,1206,1206,1206,1077,1077,1077,1077,1076,1076,1076,1076,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1078,1078,1078,1078,1077,1077,1077,1077,1076,1076,1076,1076,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1174,1174,1174,1174,1028,1028,1028,1028,1028,1028,1028,1028,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1046,1046,1046,1046,1028,1028,1028,1028,1028,1028,1028,1028,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1206,1206,1206,1206,1077,1077,1077,1077,1076,1076,1076,1076,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1078,1078,1078,1078,1077,1077,1077,1077,1076,1076,1076,1076,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1174,1174,1174,1174,1028,1028,1028,1028,1028,1028,1028,1028,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1046,1046,1046,1046,1028,1028,1028,1028,1028,1028,1028,1028,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1206,1206,1206,1206,1077,1077,1077,1077,1076,1076,1076,1076,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1078,1078,1078,1078,1077,1077,1077,1077,1076,1076,1076,1076,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1174,1174,1174,1174,1028,1028,1028,1028,1028,1028,1028,1028,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1046,1046,1046,1046,1028,1028,1028,1028,1028,1028,1028,1028,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1206,1206,1206,1206,1077,1077,1077,1077,1076,1076,1076,1076,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1078,1078,1078,1078,1077,1077,1077,1077,1076,1076,1076,1076,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1174,1174,1174,1174,1028,1028,1028,1028,1028,1028,1028,1028,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1046,1046,1046,1046,1028,1028,1028,1028,1028,1028,1028,1028,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1718,1718,1718,1718,1589,1589,1589,1589,1588,1588,1588,1588,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1590,1590,1590,1590,1589,1589,1589,1589,1588,1588,1588,1588,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1686,1686,1686,1686,1540,1540,1540,1540,1540,1540,1540,1540,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1558,1558,1558,1558,1540,1540,1540,1540,1540,1540,1540,1540,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1718,1718,1718,1718,1589,1589,1589,1589,1588,1588,1588,1588,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1590,1590,1590,1590,1589,1589,1589,1589,1588,1588,1588,1588,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1686,1686,1682,1682,1686,1686,1536,1536,1540,1540,1536,1536,1540,1540,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1686,1686,1554,1554,1558,1558,1536,1536,1540,1540,1536,1536,1540,1540,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1750,1750,1746,1746,1750,1750,1600,1600,1604,1604,1600,1600,1604,1604,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1750,1750,1746,1746,1750,1750,1600,1600,1604,1604,1600,1600,1604,1604,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1718,1718,1718,1718,1589,1589,1589,1589,1588,1588,1588,1588,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1590,1590,1590,1590,1589,1589,1589,1589,1588,1588,1588,1588,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1686,1686,1686,1686,1540,1540,1540,1540,1540,1540,1540,1540,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1558,1558,1558,1558,1540,1540,1540,1540,1540,1540,1540,1540,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,191,191,191,191,2750,2750,2750,2750,317,317,317,317,2620,2620,2620,2620,1719,1719,1719,1719,3766,3766,3766,3766,1589,1589,1589,1589,3636,3636,3636,3636,63,63,63,63,2622,2622,2622,2622,317,317,317,317,2620,2620,2620,2620,1719,1719,1719,1719,3638,3638,3638,3638,1589,1589,1589,1589,3636,3636,3636,3636,255,255,255,255,2814,2814,2814,2814,381,381,381,381,2684,2684,2684,2684,1783,1783,1783,1783,3830,3830,3830,3830,1653,1653,1653,1653,3700,3700,3700,3700,127,127,127,127,2686,2686,2686,2686,381,381,381,381,2684,2684,2684,2684,1783,1783,1783,1783,3830,3830,3830,3830,1653,1653,1653,1653,3700,3700,3700,3700,2747,2747,2747,2747,2746,2746,2746,2746,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,2619,2619,2619,2619,2618,2618,2618,2618,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,2747,2747,2747,2747,2746,2746,2746,2746,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,2619,2619,2619,2619,2618,2618,2618,2618,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,26,26,26,26,2586,2586,2586,2586,264,264,264,264,2568,2568,2568,2568,1682,1682,1686,1686,3730,3730,3734,3734,1536,1536,1540,1540,3584,3584,3588,3588,26,26,26,26,2586,2586,2586,2586,264,264,264,264,2568,2568,2568,2568,1682,1682,1686,1686,3602,3602,3606,3606,1536,1536,1540,1540,3584,3584,3588,3588,90,90,90,90,2650,2650,2650,2650,328,328,328,328,2632,2632,2632,2632,1746,1746,1750,1750,3794,3794,3798,3798,1600,1600,1604,1604,3648,3648,3652,3652,90,90,90,90,2650,2650,2650,2650,328,328,328,328,2632,2632,2632,2632,1746,1746,1750,1750,3794,3794,3798,3798,1600,1600,1604,1604,3648,3648,3652,3652,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3730,3730,3730,3730,3584,3584,3584,3584,3584,3584,3584,3584,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3602,3602,3602,3602,3584,3584,3584,3584,3584,3584,3584,3584,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3730,3730,3730,3730,3584,3584,3584,3584,3584,3584,3584,3584,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3730,3730,3730,3730,3584,3584,3584,3584,3584,3584,3584,3584,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7350,7350,7350,7350,7221,7221,7221,7221,7220,7220,7220,7220,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7222,7222,7222,7222,7221,7221,7221,7221,7220,7220,7220,7220,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7318,7318,7318,7318,7172,7172,7172,7172,7172,7172,7172,7172,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7190,7190,7190,7190,7172,7172,7172,7172,7172,7172,7172,7172,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7350,7350,7350,7350,7221,7221,7221,7221,7220,7220,7220,7220,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7222,7222,7222,7222,7221,7221,7221,7221,7220,7220,7220,7220,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7318,7318,7318,7318,7172,7172,7172,7172,7172,7172,7172,7172,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7190,7190,7190,7190,7172,7172,7172,7172,7172,7172,7172,7172,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7350,7350,7350,7350,7221,7221,7221,7221,7220,7220,7220,7220,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7222,7222,7222,7222,7221,7221,7221,7221,7220,7220,7220,7220,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7318,7318,7318,7318,7172,7172,7172,7172,7172,7172,7172,7172,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7190,7190,7190,7190,7172,7172,7172,7172,7172,7172,7172,7172,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7350,7350,7350,7350,7221,7221,7221,7221,7220,7220,7220,7220,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7222,7222,7222,7222,7221,7221,7221,7221,7220,7220,7220,7220,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7318,7318,7318,7318,7172,7172,7172,7172,7172,7172,7172,7172,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7190,7190,7190,7190,7172,7172,7172,7172,7172,7172,7172,7172,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7830,7830,7830,7830,7684,7684,7684,7684,7684,7684,7684,7684,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7702,7702,7702,7702,7684,7684,7684,7684,7684,7684,7684,7684,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7830,7830,7826,7826,7830,7830,7680,7680,7684,7684,7680,7680,7684,7684,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7830,7830,7698,7698,7702,7702,7680,7680,7684,7684,7680,7680,7684,7684,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7830,7830,7830,7830,7684,7684,7684,7684,7684,7684,7684,7684,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7702,7702,7702,7702,7684,7684,7684,7684,7684,7684,7684,7684,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4287,4287,4287,4287,6846,6846,6846,6846,4413,4413,4413,4413,6716,6716,6716,6716,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,6718,6718,6718,6718,4413,4413,4413,4413,6716,6716,6716,6716,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,6910,6910,6910,6910,4477,4477,4477,4477,6780,6780,6780,6780,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,6782,6782,6782,6782,4477,4477,4477,4477,6780,6780,6780,6780,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,6843,6843,6843,6843,6842,6842,6842,6842,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6715,6715,6715,6715,6714,6714,6714,6714,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6843,6843,6843,6843,6842,6842,6842,6842,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6715,6715,6715,6715,6714,6714,6714,6714,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4122,4122,4122,4122,6682,6682,6682,6682,4360,4360,4360,4360,6664,6664,6664,6664,7826,7826,7830,7830,7826,7826,7830,7830,7680,7680,7684,7684,7680,7680,7684,7684,4122,4122,4122,4122,6682,6682,6682,6682,4360,4360,4360,4360,6664,6664,6664,6664,7826,7826,7830,7830,7698,7698,7702,7702,7680,7680,7684,7684,7680,7680,7684,7684,4186,4186,4186,4186,6746,6746,6746,6746,4424,4424,4424,4424,6728,6728,6728,6728,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,4186,4186,4186,4186,6746,6746,6746,6746,4424,4424,4424,4424,6728,6728,6728,6728,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680];
 
 const NETWORKS = {
-  celegans: {name:'C. elegans (cell fate)', N:8, p:2, optimal:[1,0,2,3,6,5,4,7], tt:TT_CELEGANS, precomputed:false},
-  droso:    {name:'Drosophila melanogaster', N:6, p:2, optimal:[0,5,3,4,2,1], tt:TT_DROSO, precomputed:false},
-  athaliana:{name:'A. thaliana (flowering)', N:13, p:2, optimal:[12,3,4,8,5,1,7,2,10,11,9,6,0], tt:null, precomputed:true},
+  celegans:{name:'C. elegans (cell fate)', N:8, p:2,
+    optimal:[1,0,2,3,6,5,4,7], tt:TT_CELEGANS,
+    genes:['cdk-2','cdc-25.1','cul-1','lin-35','cdk-1','fzr-1','cdc-14','cki-1']},
+  droso:{name:'Drosophila melanogaster', N:6, p:2,
+    optimal:[0,5,3,4,2,1], tt:TT_DROSO,
+    genes:['Bcd','Hb','Kr','Kni','Gt','Cad']},
+  athaliana:{name:'A. thaliana (flowering)', N:13, p:2,
+    optimal:[12,3,4,8,5,1,7,2,10,11,9,6,0], tt:TT_ATHALIANA,
+    genes:['FUL','FT','AP1','EMF1','LFY','AP2','WUS','AG','TFL1','PI','SEP','AP3','UFO']},
 };
 
 // ═══════════════════════════════════════════════════════════
-// ALGORITHM
+// ALGORITHM  (little-endian, v[0]=LSB — igual que compute_mu.py)
 // ═══════════════════════════════════════════════════════════
-
-// CORRECTO: little-endian, v[0]=LSB — igual que compute_mu.py
 function configToVector(config, N, p) {
-  const v = new Array(N);
-  let t = config;
-  for (let i = 0; i < N; i++) { v[i] = t % p; t = Math.floor(t / p); }
-  return v;  // v[0] = LSB
+  const v = new Array(N); let t = config;
+  for (let i=0;i<N;i++){v[i]=t%p;t=Math.floor(t/p);}
+  return v;
 }
 function vectorToConfig(v, N, p) {
-  let c = 0;
-  for (let i = 0; i < N; i++) c += v[i] * Math.pow(p, i);
-  return c;
+  let c=0; for(let i=0;i<N;i++) c+=v[i]*Math.pow(p,i); return c;
 }
 
 function classifyBall(n, ballIndex, N, p, A, tt) {
-  // Bola B_{n,ballIndex}: puntos y con y[0..n-1] fijos (little-endian de ballIndex),
-  // y[n..N-1] libres. Luego x[A[j]] = y[j]; imagen en coordenadas A.
-  const sz = Math.pow(p, N - n);
-  const imgs = [];
-  for (let k = 0; k < sz; k++) {
-    const y = new Array(N);
-    let e = ballIndex;
-    for (let j = 0; j < n; j++) { y[j] = e % p; e = Math.floor(e / p); }
-    e = k;
-    for (let j = n; j < N; j++) { y[j] = e % p; e = Math.floor(e / p); }
-    // x tal que x[A[j]] = y[j]
-    const x = new Array(N).fill(0);
-    for (let j = 0; j < N; j++) x[A[j]] = y[j];
-    const cfg = vectorToConfig(x, N, p);
-    const imgCfg = tt[cfg];
-    if (imgCfg === undefined || imgCfg === null) continue;
-    const imgX = configToVector(imgCfg, N, p);
-    // imagen en coordenadas A: y_img[j] = imgX[A[j]]
-    imgs.push(A.map(aj => imgX[aj]));
+  const sz = Math.pow(p,N-n); const imgs=[];
+  for(let k=0;k<sz;k++){
+    const y=new Array(N); let e=ballIndex;
+    for(let j=0;j<n;j++){y[j]=e%p;e=Math.floor(e/p);}
+    e=k; for(let j=n;j<N;j++){y[j]=e%p;e=Math.floor(e/p);}
+    const x=new Array(N).fill(0);
+    for(let j=0;j<N;j++) x[A[j]]=y[j];
+    const cfg=vectorToConfig(x,N,p); const imgCfg=tt[cfg];
+    if(imgCfg==null||imgCfg===undefined) continue;
+    const imgX=configToVector(imgCfg,N,p);
+    imgs.push(A.map(aj=>imgX[aj]));
   }
-  if (!imgs.length) return 'A';
-  let M = N;
-  for (let j = 0; j < N; j++) {
-    const d0 = imgs[0][j];
-    if (imgs.some(v => v[j] !== d0)) { M = j; break; }
+  if(!imgs.length) return 'A';
+  let M=N;
+  for(let j=0;j<N;j++){
+    if(imgs.some(v=>v[j]!==imgs[0][j])){M=j;break;}
   }
-  if (M < n) return 'E';
-  if (M === n) return 'I';
-  return 'A';
+  if(M<n) return 'E'; if(M===n) return 'I'; return 'A';
 }
 
 function computeAllLevels(N, p, A, tt) {
-  // Returns: levelData[n] = array of 'E'/'A'/'I' for each ball at level n
-  const levelData = {};
-  for (let n = 1; n < N; n++) {
-    const nb = Math.pow(p, n);
-    const types = [];
-    for (let m = 0; m < nb; m++) types.push(classifyBall(n, m, N, p, A, tt));
-    levelData[n] = types;
+  const ld={};
+  for(let n=1;n<N;n++){
+    const nb=Math.pow(p,n); const types=[];
+    for(let m=0;m<nb;m++) types.push(classifyBall(n,m,N,p,A,tt));
+    ld[n]=types;
   }
-  return levelData;
+  return ld;
+}
+
+// ─── Center of ball B_{n,ballIdx} under ordering A ───
+// First n A-coordinates = digits of ballIdx in base p; rest = 0
+function ballCenter(n, ballIdx, N, p, A) {
+  const y=new Array(N).fill(0);
+  let e=ballIdx;
+  for(let j=0;j<n;j++){y[j]=e%p;e=Math.floor(e/p);}
+  const x=new Array(N).fill(0);
+  for(let j=0;j<N;j++) x[A[j]]=y[j];
+  return vectorToConfig(x,N,p);
+}
+
+// Which ball at level n contains configuration cfg?
+function getBallAt(cfg, n, N, p, A) {
+  const v=configToVector(cfg,N,p);
+  let b=0;
+  for(let j=0;j<n;j++) b+=v[A[j]]*Math.pow(p,j);
+  return b;
+}
+
+// ─── Fixed points and cycles ───
+function findCycles(tt) {
+  const n=tt.length;
+  const color=new Uint8Array(n);  // 0=unvisited 1=in-stack 2=done
+  const cycles=[];
+  for(let start=0;start<n;start++){
+    if(color[start]) continue;
+    const path=[], pos=new Map();
+    let x=start;
+    while(!color[x]){
+      color[x]=1; pos.set(x,path.length); path.push(x); x=tt[x];
+    }
+    if(color[x]===1 && pos.has(x)){
+      cycles.push(path.slice(pos.get(x)));
+    }
+    for(const node of path) color[node]=2;
+  }
+  return cycles;
+}
+
+// ─── Ball graph at level n ───
+function computeBallGraph(tt, N, p, A, n) {
+  const nb=Math.pow(p,n);
+  const edges=Array.from({length:nb},()=>new Set());
+  const cnt=Array.from({length:nb},()=>new Array(nb).fill(0));
+  for(let x=0;x<tt.length;x++){
+    const src=getBallAt(x,n,N,p,A);
+    const dst=getBallAt(tt[x],n,N,p,A);
+    edges[src].add(dst); cnt[src][dst]++;
+  }
+  return {edges,cnt};
 }
 
 // ═══════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════
-
 let state = {
-  net: null,
-  A: null,
-  levelData: null,  // {n: ['E','A','I',...]}
-  currentLevel: 1,
-  playing: false,
-  playTimer: null,
-  isPrecomputed: false,
-  preData: null,  // for A. thaliana
+  net:null, A:null, levelData:null, currentLevel:1,
+  playing:false, playTimer:null, cycles:null,
 };
+let _renderedBalls=[];  // [{cx,cy,R,depth,ballIdx}] for hover
 
 // ═══════════════════════════════════════════════════════════
 // EVENT HANDLERS
 // ═══════════════════════════════════════════════════════════
+// ── CSV / red personalizada ──
+let _customNet=null;
+function getCurrentNet(){
+  const key=document.getElementById('netSelect').value;
+  return key==='custom'?_customNet:NETWORKS[key];
+}
+function onCsvLoad(event){
+  const file=event.target.files[0]; if(!file) return;
+  const N=parseInt(document.getElementById('customN').value);
+  const p=parseInt(document.getElementById('customP').value);
+  const sz=Math.pow(p,N);
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const lines=e.target.result.trim().split('\n');
+    const tt=new Array(sz).fill(-1);
+    let ok=0;
+    // Detect format from first non-empty data row:
+    // Format A: 2 columns — decimal integers (config_from, config_to)
+    // Format B: 2*N columns — bit vectors little-endian (x0…x_{N-1}, f0…f_{N-1})
+    //           config = Σ xj * p^j  (j=0 is LSB, first column)
+    let fmt='A'; // default
+    for(const line of lines){
+      const parts=line.trim().split(/[,;\t]+/);
+      if(parts.length<2) continue;
+      // Skip header (non-numeric first cell)
+      if(isNaN(Number(parts[0]))) continue;
+      if(parts.length===2*N) fmt='B';
+      break;
+    }
+    for(const line of lines){
+      const parts=line.trim().split(/[,;\t]+/);
+      if(parts.length<2) continue;
+      if(isNaN(Number(parts[0]))) continue; // skip header
+      let from,to;
+      if(fmt==='B' && parts.length>=2*N){
+        // Bit-vector format: first N cols = from bits, next N cols = to bits (little-endian)
+        from=0; to=0;
+        for(let j=0;j<N;j++){
+          const bf=parseInt(parts[j]), bt=parseInt(parts[N+j]);
+          if(isNaN(bf)||isNaN(bt)||bf<0||bf>=p||bt<0||bt>=p){from=-1;break;}
+          from+=bf*Math.pow(p,j);
+          to  +=bt*Math.pow(p,j);
+        }
+      } else {
+        from=parseInt(parts[0]); to=parseInt(parts[1]);
+      }
+      if(isNaN(from)||isNaN(to)) continue;
+      if(from<0||from>=sz||to<0||to>=sz) continue;
+      tt[from]=to; ok++;
+    }
+    if(ok<sz){
+      setStatus(`CSV: ${ok} de ${sz} filas — verifica N y p.`,'error');
+      _customNet=null;
+      document.getElementById('csvLabel').textContent='⚠️ CSV incompleto';
+      return;
+    }
+    const fmtLabel=fmt==='B'?`vectores de bits (${2*N} cols)`:'enteros decimales (2 cols)';
+    _customNet={name:`Personalizada (N=${N}, p=${p})`,N,p,tt,
+                optimal:Array.from({length:N},(_,i)=>i),genes:null};
+    document.getElementById('csvLabel').textContent=`✓ ${file.name}`;
+    document.getElementById('orderingInput').value=_customNet.optimal.join(' ');
+    setStatus(`Red cargada: N=${N}, p=${p}, ${sz} estados. Formato: ${fmtLabel}.`,'done');
+    resetViz(); updateSearchHint();
+  };
+  reader.readAsText(file);
+}
 
-function onNetChange() {
-  const key = document.getElementById('netSelect').value;
-  const net = NETWORKS[key];
-  document.getElementById('orderingInput').value = net.optimal.join(' ');
+function onNetChange(){
+  const key=document.getElementById('netSelect').value;
+  document.getElementById('customArea').style.display=key==='custom'?'block':'none';
+  const net=key==='custom'?_customNet:NETWORKS[key];
+  if(net) document.getElementById('orderingInput').value=net.optimal.join(' ');
   resetViz();
+  _searchStop=true;
+  document.getElementById('searchProgress').style.display='none';
+  document.getElementById('optimaList').style.display='none';
+  document.getElementById('gaLog').style.display='none';
+  document.getElementById('searchBtn').disabled=false;
+  document.getElementById('stopSearchBtn').style.display='none';
+  updateSearchHint();
 }
 
-function setOptimal() {
-  const key = document.getElementById('netSelect').value;
-  document.getElementById('orderingInput').value = NETWORKS[key].optimal.join(' ');
+function setOptimal(){
+  const net=getCurrentNet(); if(!net) return;
+  document.getElementById('orderingInput').value=net.optimal.join(' ');
 }
-function setIdentity() {
-  const key = document.getElementById('netSelect').value;
-  const N = NETWORKS[key].N;
-  document.getElementById('orderingInput').value = Array.from({length:N},(_,i)=>i).join(' ');
+function setIdentity(){
+  const net=getCurrentNet(); if(!net) return;
+  document.getElementById('orderingInput').value=Array.from({length:net.N},(_,i)=>i).join(' ');
 }
-
-function parseOrdering() {
-  const key = document.getElementById('netSelect').value;
-  const N = NETWORKS[key].N;
-  const parts = document.getElementById('orderingInput').value.trim().split(/[\s,;]+/).map(Number);
-  if (parts.length !== N || parts.some(isNaN)) return null;
-  const s = new Set(parts);
-  if (s.size !== N || Math.min(...parts) !== 0 || Math.max(...parts) !== N-1) return null;
+function setRandom(){
+  const net=getCurrentNet(); if(!net) return;
+  const a=Array.from({length:net.N},(_,i)=>i);
+  for(let i=net.N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  document.getElementById('orderingInput').value=a.join(' ');
+}
+function parseOrdering(){
+  const net=getCurrentNet(); if(!net) return null; const N=net.N;
+  const parts=document.getElementById('orderingInput').value.trim().split(/[\s,;]+/).map(Number);
+  if(parts.length!==N||parts.some(isNaN)) return null;
+  const s=new Set(parts);
+  if(s.size!==N||Math.min(...parts)!==0||Math.max(...parts)!==N-1) return null;
   return parts;
 }
-
-function setStatus(msg, cls) {
-  const el = document.getElementById('statusBar');
-  el.textContent = msg; el.className = 'status-bar ' + (cls||'');
+function setStatus(msg,cls){
+  const el=document.getElementById('statusBar');
+  el.textContent=msg; el.className='status-bar '+(cls||'');
 }
 
-async function runCompute() {
-  const key = document.getElementById('netSelect').value;
-  const net = NETWORKS[key];
-  const A = parseOrdering();
-  if (!A) { setStatus('Invalid permutation', 'error'); return; }
-
-  document.getElementById('computeBtn').disabled = true;
-  setStatus('Computing…', 'running');
+async function runCompute(){
+  const net=getCurrentNet();
+  if(!net){setStatus('Carga primero una red.','error');return;}
+  const A=parseOrdering();
+  if(!A){setStatus('Invalid permutation','error');return;}
+  document.getElementById('computeBtn').disabled=true;
+  setStatus('Computing…','running');
   resetViz();
-  await new Promise(r => setTimeout(r, 20));
-
-  state.net = net;
-  state.A = A;
-  state.currentLevel = 1;
-
-  if (net.precomputed) {
-    // A. thaliana: use precomputed data
-    state.isPrecomputed = true;
-    state.preData = ATH_PRECOMPUTED;
-    state.levelData = null;
-    setStatus('Using precomputed data (N=13 too slow for browser).', 'done');
-  } else {
-    state.isPrecomputed = false;
-    state.preData = null;
-    const t0 = performance.now();
-    state.levelData = computeAllLevels(net.N, net.p, A, net.tt);
-    const elapsed = ((performance.now()-t0)/1000).toFixed(2);
-    setStatus(`Done in ${elapsed}s`, 'done');
-  }
-
-  document.getElementById('computeBtn').disabled = false;
-
-  // Enable controls
-  const maxN = net.N - 1;
-  const slider = document.getElementById('levelSlider');
-  slider.min = 1; slider.max = maxN; slider.value = 1; slider.disabled = false;
-  document.getElementById('maxLevelDisplay').textContent = maxN;
-  document.getElementById('prevBtn').disabled = false;
-  document.getElementById('nextBtn').disabled = false;
-  document.getElementById('playBtn').disabled = false;
-
+  await new Promise(r=>setTimeout(r,20));
+  state.net=net; state.A=A; state.currentLevel=1;
+  const t0=performance.now();
+  state.levelData=computeAllLevels(net.N,net.p,A,net.tt);
+  const elapsed=((performance.now()-t0)/1000).toFixed(2);
+  state.cycles=findCycles(net.tt);
+  setStatus(`Done in ${elapsed}s — ${state.cycles.length} cycle(s) found`,'done');
+  document.getElementById('computeBtn').disabled=false;
+  const maxN=net.N-1;
+  const slider=document.getElementById('levelSlider');
+  slider.min=1;slider.max=maxN;slider.value=1;slider.disabled=false;
+  document.getElementById('maxLevelDisplay').textContent=maxN;
+  document.getElementById('prevBtn').disabled=false;
+  document.getElementById('nextBtn').disabled=false;
+  document.getElementById('playBtn').disabled=false;
   renderLevel(1);
+  document.getElementById('dynamicsArea').style.display='';
+  renderCyclesPanel();
+  renderTransitionGraph();
+  renderPolynomialPanel();
+  populateGraphLevelSelect();
+  renderHowtoPanel();
 }
 
-function onSlider() {
-  const n = parseInt(document.getElementById('levelSlider').value);
-  renderLevel(n);
-}
+function onSlider(){renderLevel(parseInt(document.getElementById('levelSlider').value));}
+function prevLevel(){if(state.currentLevel>1) renderLevel(state.currentLevel-1);}
+function nextLevel(){if(state.currentLevel<state.net.N-1) renderLevel(state.currentLevel+1);}
 
-function prevLevel() {
-  if (state.currentLevel > 1) renderLevel(state.currentLevel - 1);
-}
-function nextLevel() {
-  const maxN = (state.net ? state.net.N - 1 : 1);
-  if (state.currentLevel < maxN) renderLevel(state.currentLevel + 1);
-}
-
-function togglePlay() {
-  if (state.playing) {
-    clearInterval(state.playTimer);
-    state.playing = false;
-    document.getElementById('playBtn').textContent = '▶ Play';
+function togglePlay(){
+  if(state.playing){
+    clearInterval(state.playTimer); state.playing=false;
+    document.getElementById('playBtn').textContent='▶ Play';
   } else {
-    state.playing = true;
-    document.getElementById('playBtn').textContent = '⏸ Pause';
-    state.playTimer = setInterval(() => {
-      const maxN = state.net.N - 1;
-      if (state.currentLevel < maxN) {
-        renderLevel(state.currentLevel + 1);
-      } else {
-        renderLevel(1);
+    state.playing=true;
+    document.getElementById('playBtn').textContent='⏸ Pause';
+    state.playTimer=setInterval(()=>{
+      const maxN=state.net.N-1;
+      renderLevel(state.currentLevel<maxN?state.currentLevel+1:1);
+    },1500);
+  }
+}
+
+function resetViz(){
+  if(state.playing){clearInterval(state.playTimer);state.playing=false;document.getElementById('playBtn').textContent='▶ Play';}
+  document.getElementById('levelSlider').disabled=true;
+  document.getElementById('prevBtn').disabled=true;
+  document.getElementById('nextBtn').disabled=true;
+  document.getElementById('playBtn').disabled=true;
+  document.getElementById('scoresRow').style.display='none';
+  document.getElementById('invariantLine').style.display='none';
+  document.getElementById('maxLevelDisplay').textContent='—';
+  document.getElementById('levelDisplay').textContent='1';
+  document.getElementById('levelNum').textContent='1';
+  document.getElementById('vizBody').innerHTML='<div style="color:var(--lighter);text-align:center;padding:4rem 1rem;font-size:.9rem">Press <strong style="color:var(--muted)">Compute</strong> to visualize.</div>';
+  document.getElementById('vizTitle').textContent='p-adic Ball Decomposition';
+  document.getElementById('vizSubtitle').textContent='Press Compute to begin';
+  document.getElementById('dynamicsArea').style.display='none';
+  _renderedBalls=[];
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER FRACTAL
+// ═══════════════════════════════════════════════════════════
+const COLOR={E:'#ef4444',A:'#3b82f6',I:'#94a3b8'};
+const COLOR_MID={E:'rgba(239,68,68,0.18)',A:'rgba(59,130,246,0.18)',I:'rgba(148,163,184,0.13)'};
+const COLOR_LIGHT={E:'#fef2f2',A:'#eff6ff',I:'#f8fafc'};
+const COLOR_STROKE={E:'#fca5a5',A:'#bfdbfe',I:'#cbd5e1'};
+const COLOR_TEXT={E:'#991b1b',A:'#1e3a8a',I:'#475569'};
+
+function packParams(p){
+  const s=Math.sin(Math.PI/p);
+  return{rRatio:s/(1+s),dRatio:1/(1+s)};
+}
+
+// Fractal recursion — also records rendered balls for tooltip
+// theta: fixed rotation per level (computed once from total levels, never changes with slider)
+function drawFractalNode(ctx,cx,cy,R,depth,maxDepth,ballIdx,p,levelData,pack,theta){
+  if(R<0.7) return;
+  if(depth>0){
+    const t=(levelData[depth]&&levelData[depth][ballIdx])?levelData[depth][ballIdx]:'I';
+    const isLeaf=(depth===maxDepth);
+    _renderedBalls.push({cx,cy,R,depth,ballIdx,type:t});
+    ctx.beginPath(); ctx.arc(cx,cy,R-0.5,0,2*Math.PI);
+    if(isLeaf){
+      ctx.fillStyle=COLOR[t]; ctx.fill();
+      ctx.strokeStyle=COLOR_STROKE[t]; ctx.lineWidth=Math.max(0.5,1.2-depth*0.08); ctx.stroke();
+      if(R>9){
+        ctx.font=`bold ${Math.min(R*0.55,14)}px sans-serif`;
+        ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(t,cx,cy);
       }
-    }, 1500);
-  }
-}
-
-function resetViz() {
-  if (state.playing) { clearInterval(state.playTimer); state.playing = false; document.getElementById('playBtn').textContent = '▶ Play'; }
-  document.getElementById('levelSlider').disabled = true;
-  document.getElementById('prevBtn').disabled = true;
-  document.getElementById('nextBtn').disabled = true;
-  document.getElementById('playBtn').disabled = true;
-  document.getElementById('scoresRow').style.display = 'none';
-  document.getElementById('invariantLine').style.display = 'none';
-  document.getElementById('maxLevelDisplay').textContent = '—';
-  document.getElementById('levelDisplay').textContent = '1';
-  document.getElementById('levelNum').textContent = '1';
-  document.getElementById('vizBody').innerHTML = '<div style="color:var(--lighter);text-align:center;padding:4rem 1rem;font-size:.9rem">Press <strong style="color:var(--muted)">Compute</strong> to visualize.</div>';
-  document.getElementById('vizTitle').textContent = 'p-adic Ball Decomposition';
-  document.getElementById('vizSubtitle').textContent = 'Press Compute to begin';
-}
-
-// ═══════════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════════
-
-const COLOR = {E:'#ef4444', A:'#3b82f6', I:'#94a3b8'};
-const COLOR_LIGHT = {E:'#fef2f2', A:'#eff6ff', I:'#f8fafc'};
-const COLOR_STROKE = {E:'#fca5a5', A:'#bfdbfe', I:'#cbd5e1'};
-const COLOR_TEXT = {E:'#991b1b', A:'#1e3a8a', I:'#475569'};
-
-function renderLevel(n) {
-  state.currentLevel = n;
-  document.getElementById('levelSlider').value = n;
-  document.getElementById('levelDisplay').textContent = n;
-  document.getElementById('levelNum').textContent = n;
-
-  const net = state.net;
-  const p = net.p;
-  const N = net.N;
-  const numBalls = Math.pow(p, n);
-  const weight = Math.pow(p, N-n);
-
-  // Get E/A/I counts for this level
-  let types = null;
-  let En = 0, An = 0, In = 0;
-
-  if (state.isPrecomputed) {
-    En = state.preData.E[n] || 0;
-    An = state.preData.A[n] || 0;
-    In = state.preData.I[n] || 0;
+    } else {
+      ctx.fillStyle=COLOR_MID[t]; ctx.fill();
+      ctx.strokeStyle=COLOR_STROKE[t]; ctx.lineWidth=Math.max(0.3,1.4-depth*0.1); ctx.stroke();
+    }
   } else {
-    types = state.levelData[n];
-    types.forEach(t => { if(t==='E') En++; else if(t==='A') An++; else In++; });
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI);
+    ctx.fillStyle='#eef2f7'; ctx.fill();
+    ctx.strokeStyle='#334155'; ctx.lineWidth=2; ctx.stroke();
+    const fs=Math.max(10,Math.min(15,R*0.1));
+    ctx.font=`italic ${fs}px serif`; ctx.fillStyle='#475569';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('ℤₚ',cx,cy-R+fs*1.1);
   }
-
-  // Update score cards
-  document.getElementById('scoresRow').style.display = '';
-  document.getElementById('scE').textContent = En;
-  document.getElementById('scA').textContent = An;
-  document.getElementById('scI').textContent = In;
-  document.getElementById('scEsub').textContent = `w×E = ${En*weight}`;
-  document.getElementById('scAsub').textContent = `w×A = ${An*weight}`;
-  document.getElementById('scIsub').textContent = `w×I = ${In*weight}`;
-
-  // Invariant
-  const inv = document.getElementById('invariantLine');
-  inv.style.display = '';
-  const total = (N-1)*Math.pow(p,N);
-  let muE, muA, muI;
-  if (state.isPrecomputed) {
-    muE = state.preData.muE; muA = state.preData.muA; muI = state.preData.muI;
-  } else {
-    muE = muA = muI = 0;
-    for (let k = 1; k < N; k++) {
-      const w = Math.pow(p, N-k);
-      const t2 = state.levelData[k];
-      t2.forEach(t => { if(t==='E') muE+=w; else if(t==='A') muA+=w; else muI+=w; });
+  if(depth<maxDepth){
+    const childR=R*pack.rRatio; const childD=R*pack.dRatio;
+    const pn=Math.pow(p,depth);
+    // depth===0: nivel 1 vertical (sin offset). depth>0: offset fijo theta (no acumula).
+    const levelOffset=(depth>0)?theta:0;
+    for(let k=0;k<p;k++){
+      const angle=(2*Math.PI*k/p)-Math.PI/2+levelOffset;
+      drawFractalNode(ctx,cx+childD*Math.cos(angle),cy+childD*Math.sin(angle),
+        childR,depth+1,maxDepth,ballIdx+k*pn,p,levelData,pack,theta);
     }
   }
-  inv.textContent = `μ_E+μ_A+μ_I = ${muE}+${muA}+${muI} = ${muE+muA+muI}  (invariant = ${total})`;
+}
 
-  // Subtitle
-  document.getElementById('vizTitle').textContent = `${net.name} — Level n = ${n}`;
-  document.getElementById('vizSubtitle').textContent = `${numBalls} balls, each containing ${weight} config${weight>1?'s':''}. Ball type = behavior of f on this ball.`;
-
-  // Render
-  if (numBalls > 32) {
-    renderHistogram(n, En, An, In, numBalls, types);
-  } else {
-    renderCircles(n, En, An, In, types, numBalls, p, N, weight);
+function renderFractal(maxDepth,p,N,levelData){
+  const container=document.getElementById('vizBody');
+  let canvas=container.querySelector('canvas.fractal-canvas');
+  if(!canvas){
+    container.innerHTML='<canvas class="fractal-canvas" style="display:block;width:100%;border-radius:8px"></canvas>';
+    canvas=container.querySelector('canvas.fractal-canvas');
+  }
+  const CW=Math.min(container.clientWidth||620,660);
+  const labelH=52; const CH=CW+labelH;
+  canvas.width=CW; canvas.height=CH;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,CW,CH);
+  ctx.fillStyle='#f8fafc'; ctx.fillRect(0,0,CW,CH);
+  const pack=packParams(p);
+  const margin=10; const R0=(CW/2)-margin;
+  const cx0=CW/2; const cy0=R0+margin;
+  _renderedBalls=[];
+  // theta fijo: 360°/totalNiveles, calculado una vez — no cambia al mover el slider
+  const totalLevels=Math.max(levelData.length-1,1);
+  const theta=(totalLevels>1)?(2*Math.PI/totalLevels):0;
+  drawFractalNode(ctx,cx0,cy0,R0,0,maxDepth,0,p,levelData,pack,theta);
+  // Mark balls that contain fixed points / cycles
+  if(state.cycles && state.cycles.length){
+    _renderedBalls.forEach(b=>{
+      if(b.depth!==maxDepth) return;
+      const hasFP=state.cycles.some(cyc=>cyc.some(cfg=>getBallAt(cfg,b.depth,N,p,state.A)===b.ballIdx && cyc.length===1));
+      const hasCyc=state.cycles.some(cyc=>cyc.some(cfg=>getBallAt(cfg,b.depth,N,p,state.A)===b.ballIdx && cyc.length>1));
+      if(hasFP){
+        ctx.beginPath(); ctx.arc(b.cx,b.cy,Math.min(b.R*0.4,7),0,2*Math.PI);
+        ctx.fillStyle='#fff'; ctx.fill();
+        ctx.beginPath(); ctx.arc(b.cx,b.cy,Math.min(b.R*0.28,5),0,2*Math.PI);
+        ctx.fillStyle='#15803d'; ctx.fill();
+      } else if(hasCyc){
+        ctx.beginPath(); ctx.arc(b.cx,b.cy,b.R-1,0,2*Math.PI);
+        ctx.strokeStyle='#a16207'; ctx.lineWidth=Math.min(b.R*0.18,3); ctx.stroke();
+      }
+    });
+  }
+  // Proportion bar
+  let En=0,An=0,In=0;
+  levelData[maxDepth].forEach(t=>{if(t==='E')En++;else if(t==='A')An++;else In++;});
+  const ttl=En+An+In; const barW=CW*0.8,barX=CW*0.1,barY=CW+margin*2+2;
+  if(ttl>0){
+    let x=barX;
+    [[En,COLOR.E],[An,COLOR.A],[In,COLOR.I]].forEach(([cnt,col])=>{
+      if(!cnt) return; const w=(cnt/ttl)*barW;
+      ctx.fillStyle=col; ctx.fillRect(x,barY,w,11); x+=w;
+    });
+    ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=1; ctx.strokeRect(barX,barY,barW,11);
+  }
+  ctx.fillStyle='#475569'; ctx.font='11.5px -apple-system,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillText(`n=${maxDepth}  ·  ${ttl} balls  ·  E=${En}  A=${An}  I=${In}`,CW/2,barY+15);
+  const rMin=R0*Math.pow(pack.rRatio,maxDepth);
+  ctx.fillStyle='#94a3b8'; ctx.font='10px -apple-system,sans-serif';
+  ctx.fillText(`Each ball at level ${maxDepth-1} contains exactly ${p} sub-balls.  Min radius ≈ ${rMin.toFixed(1)}px`,CW/2,barY+31);
+  // Attach hover handler once
+  if(!canvas._hoverAttached){
+    canvas._hoverAttached=true;
+    canvas.addEventListener('mousemove',onCanvasHover);
+    canvas.addEventListener('mouseleave',()=>hideTooltip());
   }
 }
 
-function renderCircles(n, En, An, In, types, numBalls, p, N, weight) {
-  const container = document.getElementById('vizBody');
+// ─── Aggregate view (for deep levels: n > FRACTAL_MAX_DEPTH) ───
+const FRACTAL_MAX_DEPTH=8;
 
-  // Layout: grid of circles
-  const W = container.clientWidth || 700;
-  const cols = Math.min(numBalls, Math.ceil(Math.sqrt(numBalls * 1.5)));
-  const rows = Math.ceil(numBalls / cols);
-  const pad = 12;
-  const cellW = Math.max(48, Math.floor((W - 2*pad) / cols));
-  const cellH = cellW;
-  const r = Math.floor(cellW * 0.38);
-  const svgW = cols * cellW + 2*pad;
-  const svgH = rows * cellH + 2*pad + 50;
-
-  let svg = `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto">`;
-
-  // Title row
-  svg += `<text x="${svgW/2}" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="#1a2744">Level n=${n}: ${numBalls} balls (weight ${weight} each)</text>`;
-
-  for (let m = 0; m < numBalls; m++) {
-    const col = m % cols;
-    const row = Math.floor(m / cols);
-    const cx = pad + col * cellW + cellW/2;
-    const cy = 40 + row * cellH + cellH/2;
-
-    const type = types ? types[m] : null;
-    const fill = type ? COLOR_LIGHT[type] : '#f8fafc';
-    const stroke = type ? COLOR[type] : '#cbd5e1';
-    const textFill = type ? COLOR_TEXT[type] : '#475569';
-
-    // Outer circle (ball)
-    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
-
-    // Type letter
-    if (type) {
-      svg += `<text x="${cx}" y="${cy-r*0.1}" text-anchor="middle" dominant-baseline="middle" font-size="${Math.max(10,r*0.65)}" font-weight="700" fill="${COLOR[type]}">${type}</text>`;
-    }
-
-    // Ball index
-    svg += `<text x="${cx}" y="${cy+r*0.55}" text-anchor="middle" font-size="${Math.max(8,r*0.38)}" fill="${textFill}" opacity="0.7">${m}</text>`;
-  }
-
-  // Count summary at bottom
-  const by = 40 + rows * cellH + 18;
-  svg += `<text x="${svgW/2}" y="${by}" text-anchor="middle" font-size="11.5" fill="#475569">`;
-  svg += `E(${n})=${En}  A(${n})=${An}  I(${n})=${In}  |  Contribution to μ: E·w=${En*weight}  A·w=${An*weight}  I·w=${In*weight}`;
-  svg += `</text>`;
-
-  svg += `</svg>`;
-  container.innerHTML = svg;
-}
-
-function renderHistogram(n, En, An, In, numBalls, types) {
-  const container = document.getElementById('vizBody');
-  const net = state.net;
-  const N = net.N;
-  const p = net.p;
-  const weight = Math.pow(p, N-n);
-
-  // Show bar chart: E/A/I counts
-  // Also show a "ball strip" - a compact 1-row color strip showing each ball
-  let html = '';
-
-  // Ball strip (max 256 cells)
-  const showStrip = numBalls <= 256;
-  if (showStrip && types) {
-    const stripCols = Math.min(numBalls, 128);
-    const cellPx = Math.max(3, Math.floor(680 / stripCols));
-    const stripH = Math.max(12, cellPx);
-    html += `<div style="margin-bottom:1rem">`;
-    html += `<div style="font-size:.74rem;color:var(--muted);margin-bottom:.4rem">${numBalls} balls (each cell = one ball, colored by type)</div>`;
-    html += `<div style="display:flex;flex-wrap:wrap;gap:1px;max-width:100%">`;
-    for (let m = 0; m < numBalls; m++) {
-      const t = types[m];
-      html += `<div title="Ball ${m}: ${t==='E'?'Expansion':t==='A'?'Attraction':'Indifferent'}" style="width:${cellPx}px;height:${stripH}px;background:${COLOR[t]};border-radius:1px;flex-shrink:0"></div>`;
-    }
-    html += `</div></div>`;
-  }
-
-  // Summary counts with big colored numbers
-  html += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem">`;
-  ['E','A','I'].forEach(t => {
-    const cnt = t==='E'?En:t==='A'?An:In;
-    const pct = (cnt/numBalls*100).toFixed(1);
-    html += `<div style="background:${COLOR_LIGHT[t]};border:1px solid ${COLOR_STROKE[t]};border-radius:8px;padding:.75rem;text-align:center">`;
-    html += `<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${COLOR_TEXT[t]};margin-bottom:.25rem">${t==='E'?'Expansion':t==='A'?'Attraction':'Indifferent'}</div>`;
-    html += `<div style="font-size:2rem;font-weight:700;color:${COLOR[t]};line-height:1">${cnt}</div>`;
-    html += `<div style="font-size:.68rem;color:var(--lighter);margin-top:.2rem">${pct}% of ${numBalls} balls</div>`;
-    html += `<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">weight ×${weight} = ${cnt*weight}</div>`;
-    html += `</div>`;
+function renderAggregateView(n){
+  const net=state.net; const N=net.N; const p=net.p;
+  const numBalls=Math.pow(p,n); const weight=Math.pow(p,N-n);
+  const ld=state.levelData;
+  let En=0,An=0,In=0;
+  ld[n].forEach(t=>{if(t==='E')En++;else if(t==='A')An++;else In++;});
+  const container=document.getElementById('vizBody');
+  let html=`<div style="font-size:.78rem;font-weight:600;color:#1a2744;margin-bottom:.8rem">
+    Nivel n=${n}: p<sup>${n}</sup>=${numBalls} balls — fractal too small to render (${numBalls} leaf circles &lt; 1px)
+  </div>`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:.85rem">`;
+  [{t:'E',cnt:En,lbl:'Expansion'},{t:'A',cnt:An,lbl:'Attraction'},{t:'I',cnt:In,lbl:'Indifferent'}].forEach(({t,cnt,lbl})=>{
+    const pct=numBalls>0?(cnt/numBalls*100).toFixed(1):'0.0';
+    html+=`<div style="background:${COLOR_LIGHT[t]};border:1px solid ${COLOR_STROKE[t]};border-radius:8px;padding:.7rem;text-align:center">
+      <div style="font-size:.63rem;font-weight:700;text-transform:uppercase;color:${COLOR_TEXT[t]};margin-bottom:.2rem">${lbl}</div>
+      <div style="font-size:1.8rem;font-weight:700;color:${COLOR[t]};line-height:1">${cnt}</div>
+      <div style="font-size:.63rem;color:#94a3b8;margin-top:.15rem">${pct}% of ${numBalls}</div>
+      <div style="font-size:.63rem;color:#64748b;margin-top:.1rem">×${weight} → ${cnt*weight}</div>
+    </div>`;
   });
-  html += `</div>`;
+  html+='</div>';
+  const ttl=En+An+In;
+  if(ttl>0){
+    html+=`<div style="font-size:.72rem;color:#64748b;margin-bottom:.3rem">Proportion at level n=${n}:</div>
+    <div style="display:flex;height:18px;border-radius:5px;overflow:hidden;border:1px solid #e2e8f0;margin-bottom:.85rem">`;
+    [[En,COLOR.E],[An,COLOR.A],[In,COLOR.I]].forEach(([cnt,col])=>{
+      if(!cnt) return; const pct=(cnt/ttl*100).toFixed(1);
+      html+=`<div style="width:${pct}%;background:${col};display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:rgba(255,255,255,0.95)">${parseFloat(pct)>6?pct+'%':''}</div>`;
+    });
+    html+='</div>';
+  }
+  // Full level profile table
+  html+=`<div style="font-size:.72rem;font-weight:600;color:#334155;margin-bottom:.4rem">Complete E/A/I profile by level:</div>`;
+  html+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.71rem;font-family:monospace">`;
+  html+=`<tr style="background:#f1f5f9"><th style="padding:.25rem .5rem;text-align:center">n</th><th style="color:${COLOR.E};padding:.25rem .5rem">E(n)</th><th style="color:${COLOR.A};padding:.25rem .5rem">A(n)</th><th style="color:${COLOR.I};padding:.25rem .5rem">I(n)</th><th style="padding:.25rem .5rem;color:#64748b">p^n</th></tr>`;
+  for(let k=1;k<N;k++){
+    const Ek=ld[k].filter(t=>t==='E').length;
+    const Ak=ld[k].filter(t=>t==='A').length;
+    const Ik=ld[k].filter(t=>t==='I').length;
+    const bg=k===n?'#dbeafe':(k%2===0?'#f8fafc':'#fff');
+    const fw=k===n?'700':'400';
+    html+=`<tr style="background:${bg};font-weight:${fw}">
+      <td style="text-align:center;padding:.2rem .5rem">${k}</td>
+      <td style="color:${COLOR.E};text-align:right;padding:.2rem .5rem">${Ek}</td>
+      <td style="color:${COLOR.A};text-align:right;padding:.2rem .5rem">${Ak}</td>
+      <td style="color:${COLOR.I};text-align:right;padding:.2rem .5rem">${Ik}</td>
+      <td style="color:#94a3b8;text-align:right;padding:.2rem .5rem">${Math.pow(p,k)}</td>
+    </tr>`;
+  }
+  html+='</table></div>';
+  container.innerHTML=html;
+}
 
-  // Proportional bar
-  const total3 = En + An + In;
-  if (total3 > 0) {
-    const pE = (En/total3*100).toFixed(1);
-    const pA = (An/total3*100).toFixed(1);
-    const pI = (In/total3*100).toFixed(1);
-    html += `<div style="margin-bottom:.5rem;font-size:.74rem;color:var(--muted)">Proportion at this level:</div>`;
-    html += `<div style="display:flex;height:24px;border-radius:6px;overflow:hidden;border:1px solid var(--border)">`;
-    if (En>0) html += `<div style="width:${pE}%;background:${COLOR.E};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff">${pE}%</div>`;
-    if (An>0) html += `<div style="width:${pA}%;background:${COLOR.A};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff">${pA}%</div>`;
-    if (In>0) html += `<div style="width:${pI}%;background:${COLOR.I};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#475569">${pI}%</div>`;
-    html += `</div>`;
+// ─── Main render dispatcher ───
+function renderLevel(n){
+  state.currentLevel=n;
+  document.getElementById('levelSlider').value=n;
+  document.getElementById('levelDisplay').textContent=n;
+  document.getElementById('levelNum').textContent=n;
+  const net=state.net; const p=net.p; const N=net.N;
+  const numBalls=Math.pow(p,n); const weight=Math.pow(p,N-n);
+  const ld=state.levelData;
+  let En=0,An=0,In=0;
+  ld[n].forEach(t=>{if(t==='E')En++;else if(t==='A')An++;else In++;});
+  document.getElementById('scoresRow').style.display='';
+  document.getElementById('scE').textContent=En;
+  document.getElementById('scA').textContent=An;
+  document.getElementById('scI').textContent=In;
+  document.getElementById('scEsub').textContent=`×${weight} = ${En*weight}`;
+  document.getElementById('scAsub').textContent=`×${weight} = ${An*weight}`;
+  document.getElementById('scIsub').textContent=`×${weight} = ${In*weight}`;
+  const inv=document.getElementById('invariantLine'); inv.style.display='';
+  let muE=0,muA=0,muI=0;
+  for(let k=1;k<N;k++){
+    const w=Math.pow(p,N-k);
+    ld[k].forEach(t=>{if(t==='E')muE+=w;else if(t==='A')muA+=w;else muI+=w;});
+  }
+  inv.textContent=`μ_E+μ_A+μ_I = ${muE}+${muA}+${muI} = ${muE+muA+muI}  (expected ${(N-1)*Math.pow(p,N)})`;
+  document.getElementById('vizTitle').textContent=`${net.name} — level n = ${n}`;
+  document.getElementById('vizSubtitle').textContent=
+    `${numBalls} ball${numBalls>1?'s':''} at level n, each contains ${weight} config${weight>1?'s':''}`;
+  if(n<=FRACTAL_MAX_DEPTH){
+    renderFractal(n,p,N,ld);
+  } else {
+    renderAggregateView(n);
+  }
+  // Update cycles panel ball membership whenever level changes
+  if(state.cycles) renderCyclesPanel();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HOVER TOOLTIP
+// ═══════════════════════════════════════════════════════════
+function onCanvasHover(e){
+  if(!state.levelData) return;
+  const canvas=e.currentTarget;
+  const rect=canvas.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(canvas.width/rect.width);
+  const my=(e.clientY-rect.top)*(canvas.height/rect.height);
+  // Find deepest (smallest R) ball containing cursor
+  let best=null;
+  for(const ball of _renderedBalls){
+    const dx=mx-ball.cx, dy=my-ball.cy;
+    if(dx*dx+dy*dy<=ball.R*ball.R){
+      if(!best||ball.R<best.R) best=ball;
+    }
+  }
+  if(!best){hideTooltip();return;}
+  const {depth,ballIdx,type}=best;
+  const net=state.net; const N=net.N; const p=net.p; const A=state.A;
+  const centerCfg=ballCenter(depth,ballIdx,N,p,A);
+  const geneVec=configToVector(centerCfg,N,p);
+  const typeClass={E:'tt-type-E',A:'tt-type-A',I:'tt-type-I'};
+  const typeLabel={E:'Expansive',A:'Attractive',I:'Indifferent'};
+  // Find cycles in this ball
+  const cyclesHere=state.cycles?state.cycles.filter(cyc=>cyc.some(cfg=>getBallAt(cfg,depth,N,p,A)===ballIdx)):[];
+  const gnames=net.genes||(Array.from({length:net.N},(_,i)=>`g${i}`));
+  let geneRows=geneVec.map((val,gi)=>`${gnames[gi]}=${val}`).join('  ');
+  let html=`<div style="color:#94a3b8;font-size:.65rem;margin-bottom:.2rem">Ball B<sub>${depth},${ballIdx}</sub></div>`;
+  html+=`<div><span class="${typeClass[type]}">${typeLabel[type]}</span></div>`;
+  html+=`<div style="margin-top:.35rem;color:#94a3b8;font-size:.65rem">Center (free coords=0):</div>`;
+  html+=`<div style="font-size:.7rem">${geneRows}</div>`;
+  html+=`<div style="margin-top:.2rem;color:#94a3b8;font-size:.65rem">cfg #${centerCfg} = [${geneVec.join('')}]</div>`;
+  if(cyclesHere.length){
+    html+=`<div style="margin-top:.35rem;border-top:1px solid rgba(255,255,255,.15);padding-top:.3rem;color:#94a3b8;font-size:.65rem">Contains:</div>`;
+    cyclesHere.forEach(cyc=>{
+      const label=cyc.length===1?'FP':'Cyc';
+      html+=`<div style="font-size:.68rem;color:${cyc.length===1?'#86efac':'#fde047'}">${label}: cfg ${cyc.join('→')}</div>`;
+    });
+  }
+  const tt_el=document.getElementById('ballTooltip');
+  tt_el.innerHTML=html;
+  tt_el.style.left=(e.clientX+16)+'px';
+  tt_el.style.top=(e.clientY-8)+'px';
+  tt_el.classList.add('visible');
+}
+function hideTooltip(){document.getElementById('ballTooltip').classList.remove('visible');}
+
+// ═══════════════════════════════════════════════════════════
+// DYNAMICS PANEL — Cycles
+// ═══════════════════════════════════════════════════════════
+function switchDynTab(tab, btn){
+  document.querySelectorAll('.dyn-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.dyn-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('dyn'+tab.charAt(0).toUpperCase()+tab.slice(1)+'Panel').classList.add('active');
+  if(tab==='ballgraph') renderBallGraph();
+  if(tab==='transgraph') renderTransitionGraph();
+  if(tab==='polystruct') renderPolynomialPanel();
+}
+
+function renderCyclesPanel(){
+  const el=document.getElementById('dynCyclesPanel');
+  if(!state.cycles){el.innerHTML='<div style="color:var(--muted);font-size:.8rem">Presiona Compute primero.</div>';return;}
+  const net=state.net; const N=net.N; const p=net.p; const A=state.A;
+  const n=state.currentLevel;
+  const fps=state.cycles.filter(c=>c.length===1);
+  const cycs=state.cycles.filter(c=>c.length>1);
+
+  // ─── Historia de tipos por nivel para una configuración ───
+  // Para cada nivel lv=1..N-1 devuelve {n:lv, ball, type}
+  function typeHistory(cfg){
+    return Array.from({length:N-1},(_,i)=>{
+      const lv=i+1;
+      const b=getBallAt(cfg,lv,N,p,A);
+      const t=state.levelData&&state.levelData[lv]?state.levelData[lv][b]:'?';
+      return{n:lv,ball:b,type:t};
+    });
   }
 
-  html += `<div style="font-size:.74rem;color:var(--muted);margin-top:.85rem;font-style:italic">Level n=${n} has 2<sup>${n}</sup> = ${numBalls} balls. Each ball contains 2<sup>${N}-${n}</sup> = ${weight} configurations. E(${n})×${weight} + A(${n})×${weight} + I(${n})×${weight} = ${(En+An+In)*weight} contributes to total μ.</div>`;
+  // ─── Renderiza la tira de historia E/A/I ───
+  const BGMAP={E:'#ef4444',A:'#3b82f6',I:'#94a3b8','?':'#e5e7eb'};
+  const LABEL={E:'Expansiva',A:'Atractiva',I:'Indiferente','?':'?'};
+  function histStrip(cfg){
+    const h=typeHistory(cfg);
+    const cells=h.map(({n:lv,ball,type})=>{
+      const cur=lv===n;
+      return `<span style="display:inline-flex;align-items:center;justify-content:center;`+
+        `width:19px;height:19px;border-radius:3px;background:${BGMAP[type]};`+
+        `color:rgba(255,255,255,.95);font-size:8.5px;font-weight:700;font-family:monospace;`+
+        `margin:1.5px;${cur?'outline:2.5px solid #1a2744;outline-offset:1px;':''}cursor:default"`+
+        ` title="n=${lv}: B(${lv},${ball}) = ${LABEL[type]}">${lv}</span>`;
+    }).join('');
+    return `<div style="display:flex;align-items:center;flex-wrap:wrap;margin:.32rem 0 .1rem">`+
+      `<span style="font-size:.6rem;color:#94a3b8;margin-right:.35rem;white-space:nowrap">n=1…${N-1}:</span>`+
+      cells+`</div>`;
+  }
 
-  container.innerHTML = html;
+  // ─── Tarjeta de una sola configuración ───
+  function cfgCard(cfg, arrow){
+    const v=configToVector(cfg,N,p);
+    const ballN=getBallAt(cfg,n,N,p,A);
+    const ballType=state.levelData&&state.levelData[n]?state.levelData[n][ballN]:'?';
+    const gn=net.genes||(Array.from({length:N},(_,i)=>`g${i}`));
+    const geneStr=v.map((val,gi)=>`<span style="white-space:nowrap">`+
+      `<span style="color:#94a3b8;font-size:.67rem">${gn[gi]}</span>=`+
+      `<strong style="font-size:.72rem">${val}</strong></span>`).join(' ');
+    return `<div style="margin-bottom:.5rem;padding:.42rem .55rem;background:#fff;border:1px solid var(--border);border-radius:5px">`+
+      `<div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">`+
+      (arrow?`<span style="color:var(--muted);font-size:.75rem;font-weight:700">→</span>`:'') +
+      `<span style="font-family:var(--mono);font-size:.75rem;font-weight:700">cfg ${cfg}</span>`+
+      `<span style="font-family:var(--mono);font-size:.7rem;color:#475569">[${v.join('')}]</span>`+
+      `<span class="cycle-ball-tag ${ballType}" style="font-size:.66rem">B(${n},${ballN}) = ${ballType}</span>`+
+      `</div>`+
+      `<div style="font-size:.7rem;margin:.22rem 0;display:flex;flex-wrap:wrap;gap:.28rem .45rem">${geneStr}</div>`+
+      histStrip(cfg)+
+      `</div>`;
+  }
+
+  // ─── Encabezado ───
+  let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.7rem">
+    <strong style="color:var(--navy)">${fps.length} punto${fps.length!==1?'s':''} fijo${fps.length!==1?'s':''}</strong>
+    y <strong style="color:var(--navy)">${cycs.length} ciclo${cycs.length!==1?'s':''}</strong> en ${net.name}.
+    La tira <span style="background:#ef4444;color:#fff;padding:0 .3rem;border-radius:2px;font-size:.67rem">E</span>
+    <span style="background:#3b82f6;color:#fff;padding:0 .3rem;border-radius:2px;font-size:.67rem">A</span>
+    <span style="background:#94a3b8;color:#fff;padding:0 .3rem;border-radius:2px;font-size:.67rem">I</span>
+    muestra el tipo de la bola contenedora en cada nivel p-ádico n=1…${N-1}.
+    El nivel actual (n=${n}) aparece <span style="outline:2px solid #1a2744;outline-offset:1px;display:inline-block;width:16px;height:16px;border-radius:2px;background:#3b82f6;vertical-align:middle"></span> bordeado.
+    <span style="color:#15803d">●</span>=pto. fijo en el fractal, <span style="color:#a16207">○</span>=elem. de ciclo.
+  </div>`;
+
+  // ─── Puntos fijos ───
+  if(fps.length){
+    html+=`<div class="cycle-card">`;
+    html+=`<div class="cycle-card-hdr"><span class="cycle-type-badge badge-fp">Puntos Fijos (${fps.length})</span></div>`;
+    fps.forEach(cyc=>{ html+=cfgCard(cyc[0],false); });
+    html+=`</div>`;
+  }
+
+  // ─── Ciclos no-triviales ───
+  if(cycs.length){
+    cycs.forEach((cyc,ci)=>{
+      html+=`<div class="cycle-card">`;
+      html+=`<div class="cycle-card-hdr"><span class="cycle-type-badge badge-cy">Ciclo ${ci+1} — longitud ${cyc.length}</span></div>`;
+      cyc.forEach((cfg,idx)=>{ html+=cfgCard(cfg, idx>0); });
+      html+=`</div>`;
+    });
+  }
+
+  if(!fps.length&&!cycs.length){
+    html+='<div style="color:var(--muted);font-size:.8rem;padding:.5rem">No se encontraron ciclos.</div>';
+  }
+
+  // ─── Nota de interpretación ───
+  html+=`<div style="font-size:.72rem;color:#334155;margin-top:.75rem;padding:.55rem .8rem;background:#f1f5f9;border-radius:6px;border:1px solid var(--border);line-height:1.65">
+    <strong>Cómo leer la tira de niveles:</strong>
+    Una secuencia <span style="background:#3b82f6;color:#fff;padding:0 .28rem;border-radius:2px">A</span>…<span style="background:#3b82f6;color:#fff;padding:0 .28rem;border-radius:2px">A</span>
+    indica que la configuración vive en bolas atractoras a <em>todas</em> las escalas: es un <strong>atractor p-ádico estable</strong>.
+    Celdas <span style="background:#ef4444;color:#fff;padding:0 .28rem;border-radius:2px">E</span> en niveles bajos indican <em>expansión global</em> antes de
+    concentrarse; celdas <span style="background:#94a3b8;color:#fff;padding:0 .28rem;border-radius:2px">I</span> corresponden a
+    bolas indiferentes (la dinámica no contrae ni expande a esa escala).
+    Mueve el slider de nivel para actualizar cuál celda queda resaltada.
+  </div>`;
+
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// DYNAMICS PANEL — Ball Graph
+// ═══════════════════════════════════════════════════════════
+function populateGraphLevelSelect(){
+  const sel=document.getElementById('graphLevelSel');
+  sel.innerHTML='';
+  const maxN=state.net.N-1;
+  for(let n=1;n<=Math.min(maxN,6);n++){
+    const opt=document.createElement('option');
+    opt.value=n; opt.textContent=`n=${n} (${Math.pow(state.net.p,n)} balls)`;
+    if(n===2) opt.selected=true;
+    sel.appendChild(opt);
+  }
+}
+
+function renderBallGraph(){
+  const el=document.getElementById('ballgraphSvgWrap');
+  const infoEl=document.getElementById('graphLevelInfo');
+  if(!state.levelData){el.innerHTML='<div style="color:var(--muted);font-size:.8rem;padding:2rem;text-align:center">Run Compute first.</div>';return;}
+  const n=parseInt(document.getElementById('graphLevelSel').value);
+  const net=state.net; const N=net.N; const p=net.p; const A=state.A; const tt=net.tt;
+  const nb=Math.pow(p,n);
+  if(nb>64){el.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:2rem;text-align:center">Level ${n} has ${nb} balls — too many to display as graph. Choose n ≤ 6.</div>`;return;}
+  const {edges,cnt}=computeBallGraph(tt,N,p,A,n);
+  const types=state.levelData[n];
+  // SVG dimensions
+  const W=580,H=Math.max(280,Math.min(520,nb*38));
+  const cx0=W/2, cy0=H/2;
+  const R_circle=Math.min((Math.min(W,H)/2)-40, 200);  // radius of node layout circle
+  const nodeR=Math.max(7, Math.min(18, R_circle*0.28/Math.max(nb/2,1)));
+  const nodePos=Array.from({length:nb},(_,i)=>{
+    if(nb===1) return {x:cx0,y:cy0};
+    if(nb===2) return i===0?{x:cx0-R_circle*0.7,y:cy0}:{x:cx0+R_circle*0.7,y:cy0};
+    const angle=(2*Math.PI*i/nb)-Math.PI/2;
+    return{x:cx0+R_circle*Math.cos(angle), y:cy0+R_circle*Math.sin(angle)};
+  });
+  const COLMAP={E:'#ef4444',A:'#3b82f6',I:'#94a3b8'};
+  const STROKEMAP={E:'#b91c1c',A:'#1d4ed8',I:'#475569'};
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block;margin:0 auto">`;
+  svg+=`<defs>
+    <marker id="arr-E" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ef4444"/></marker>
+    <marker id="arr-A" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#3b82f6"/></marker>
+    <marker id="arr-I" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#94a3b8"/></marker>
+  </defs>`;
+  // Draw edges
+  for(let src=0;src<nb;src++){
+    const t=types[src]; const col=COLMAP[t];
+    for(const dst of edges[src]){
+      const c=cnt[src][dst];
+      const lw=Math.max(1,Math.min(4,c/Math.pow(p,N-n)*4));
+      if(src===dst){
+        // Self-loop
+        const {x,y}=nodePos[src];
+        const angle=(nb>2)?(2*Math.PI*src/nb)-Math.PI/2:-Math.PI/2;
+        const lx=x+Math.cos(angle)*(nodeR+12), ly=y+Math.sin(angle)*(nodeR+12);
+        svg+=`<circle cx="${lx}" cy="${ly}" r="9" stroke="${col}" stroke-width="${lw}" fill="none" marker-end="url(#arr-${t})"/>`;
+        svg+=`<title>B${src}→B${src}: ${c} configs</title>`;
+      } else {
+        const {x:x1,y:y1}=nodePos[src]; const {x:x2,y:y2}=nodePos[dst];
+        const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
+        // Curved arc to avoid overlap
+        const mx=(x1+x2)/2, my=(y1+y2)/2;
+        const perp=[-dy/len,dx/len];
+        const curve=nb<=4?18:10;
+        const qx=mx+perp[0]*curve, qy=my+perp[1]*curve;
+        // Shorten at endpoints
+        const sx=x1+dx/len*nodeR, sy=y1+dy/len*nodeR;
+        const ex=x2-dx/len*nodeR, ey=y2-dy/len*nodeR;
+        svg+=`<path d="M${sx.toFixed(1)},${sy.toFixed(1)} Q${qx.toFixed(1)},${qy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}" stroke="${col}" stroke-width="${lw}" fill="none" marker-end="url(#arr-${t})" opacity="0.85">`;
+        svg+=`<title>B${src}→B${dst}: ${c} configs</title></path>`;
+        // Edge count label for thick edges
+        if(c>=Math.pow(p,N-n)*0.3){
+          const tx=qx, ty=qy;
+          svg+=`<text x="${tx.toFixed(1)}" y="${(ty-3).toFixed(1)}" font-size="9" fill="${STROKEMAP[t]}" text-anchor="middle">${c}</text>`;
+        }
+      }
+    }
+  }
+  // Draw nodes
+  for(let i=0;i<nb;i++){
+    const {x,y}=nodePos[i]; const t=types[i];
+    const hasFP=state.cycles&&state.cycles.some(c=>c.length===1&&getBallAt(c[0],n,N,p,A)===i);
+    const hasCyc=state.cycles&&state.cycles.some(c=>c.length>1&&c.some(cfg=>getBallAt(cfg,n,N,p,A)===i));
+    svg+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR}" fill="${COLMAP[t]}" stroke="${STROKEMAP[t]}" stroke-width="1.5">`;
+    svg+=`<title>B(${n},${i}) — ${t==='E'?'Expansive':t==='A'?'Attractive':'Indifferent'}</title></circle>`;
+    if(hasFP) svg+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR*0.42}" fill="white"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR*0.25}" fill="#15803d"/>`;
+    if(hasCyc&&!hasFP) svg+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR-2}" stroke="#a16207" stroke-width="2" fill="none"/>`;
+    // Ball label
+    svg+=`<text x="${x.toFixed(1)}" y="${(y+3.5).toFixed(1)}" font-size="${Math.max(7,nodeR*0.65)}" fill="white" text-anchor="middle" font-weight="bold">${i}</text>`;
+  }
+  svg+='</svg>';
+  el.innerHTML=svg;
+  const totalEdges=[...Array(nb).keys()].reduce((s,i)=>s+edges[i].size,0);
+  infoEl.textContent=`${nb} balls, ${totalEdges} distinct transitions. Arrow color = source ball type. Thickness ∝ # configs mapped.`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// DYNAMICS PANEL — Transition Graph
+// ═══════════════════════════════════════════════════════════
+function renderTransitionGraph(){
+  const el=document.getElementById('dynTransgraphPanel');
+  if(!state.net||!state.net.tt){
+    el.innerHTML='<div style="color:var(--muted);font-size:.8rem;padding:1rem">Presiona Compute primero.</div>';
+    return;
+  }
+  const net=state.net;
+  const sz=Math.pow(net.p,net.N);
+  if(sz>256){
+    el.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:1rem">La red tiene ${sz} estados — demasiados para visualizar (límite: 256). Usa redes con N·log₂(p) ≤ 8.</div>`;
+    return;
+  }
+  const tt=net.tt;
+
+  // ─── Detectar ciclos (grafo funcional ρ-shape) ───
+  const visited=new Uint8Array(sz);  // 0=no visitado, 1=en camino, 2=procesado
+  const cycleId=new Int32Array(sz).fill(-1);
+  const cycles=[];
+  const treeNodes=new Set();
+
+  for(let start=0;start<sz;start++){
+    if(visited[start]===2) continue;
+    const path=[];
+    const inPath=new Map();
+    let cur=start;
+    while(visited[cur]===0){
+      visited[cur]=1;
+      inPath.set(cur,path.length);
+      path.push(cur);
+      cur=tt[cur];
+    }
+    if(visited[cur]===1&&inPath.has(cur)){
+      const cycleStart=inPath.get(cur);
+      const cycle=path.slice(cycleStart);
+      const cid=cycles.length;
+      cycles.push(cycle);
+      cycle.forEach(n=>{cycleId[n]=cid;});
+      for(let i=0;i<cycleStart;i++) treeNodes.add(path[i]);
+    } else {
+      path.forEach(n=>treeNodes.add(n));
+    }
+    path.forEach(n=>{visited[n]=2;});
+  }
+
+  // ─── Layout ───
+  const W=620,H=490;
+  const cx=W/2,cy=H/2;
+  const nodePos=new Array(sz);
+  const showLabels=sz<=64;
+  const nodeR=sz<=16?14:sz<=32?10:sz<=64?7:5;
+
+  // Nodos de ciclo en el anillo interior
+  const allCycleNodes=[];
+  cycles.forEach(cyc=>cyc.forEach(n=>allCycleNodes.push(n)));
+  const nCN=allCycleNodes.length;
+  const innerR=Math.min(W,H)*0.22;
+  allCycleNodes.forEach((node,i)=>{
+    const angle=(2*Math.PI*i/Math.max(nCN,1))-Math.PI/2;
+    nodePos[node]={x:cx+innerR*Math.cos(angle),y:cy+innerR*Math.sin(angle)};
+  });
+
+  // Grafo reverso para BFS desde nodos de ciclo
+  const revEdges=Array.from({length:sz},()=>[]);
+  for(let x=0;x<sz;x++) revEdges[tt[x]].push(x);
+  const dist=new Int32Array(sz).fill(-1);
+  const bfsQ=[];
+  allCycleNodes.forEach(n=>{dist[n]=0;bfsQ.push(n);});
+  let qi=0;
+  while(qi<bfsQ.length){
+    const u=bfsQ[qi++];
+    for(const v of revEdges[u]){
+      if(dist[v]===-1&&cycleId[v]===-1){dist[v]=dist[u]+1;bfsQ.push(v);}
+    }
+  }
+
+  function findCycleAnc(n){let c=n;while(cycleId[c]===-1)c=tt[c];return c;}
+  const maxDist=treeNodes.size>0?Math.max(...[...treeNodes].map(n=>dist[n])):1;
+  const radStep=Math.min(52,(Math.min(W,H)*0.36)/Math.max(maxDist,1));
+
+  // Agrupar transitories por (ancestro_ciclo, distancia)
+  const groups=new Map();
+  for(const n of treeNodes){
+    const anc=findCycleAnc(n);
+    const d=dist[n];
+    const key=`${anc}_${d}`;
+    if(!groups.has(key)) groups.set(key,{anc,d,nodes:[]});
+    groups.get(key).nodes.push(n);
+  }
+  for(const {anc,d,nodes} of groups.values()){
+    const ancPos=nodePos[anc];
+    const r=innerR+d*radStep;
+    const ancAngle=Math.atan2(ancPos.y-cy,ancPos.x-cx);
+    const spread=Math.min(Math.PI*0.45,Math.PI*0.18*nodes.length);
+    nodes.forEach((n,i)=>{
+      const angle=ancAngle+(nodes.length>1?(i/(nodes.length-1)-0.5)*spread:0);
+      nodePos[n]={x:cx+r*Math.cos(angle),y:cy+r*Math.sin(angle)};
+    });
+  }
+  // Fallback para nodos sin posición
+  for(let n=0;n<sz;n++){
+    if(!nodePos[n]){
+      const angle=(2*Math.PI*n/sz)-Math.PI/2;
+      nodePos[n]={x:cx+(innerR+radStep)*Math.cos(angle),y:cy+(innerR+radStep)*Math.sin(angle)};
+    }
+  }
+
+  // ─── Colores ───
+  const CCOLS=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#ef4444','#f97316'];
+  const nodeColor=n=>cycleId[n]>=0?CCOLS[cycleId[n]%CCOLS.length]:'#94a3b8';
+  const nodeBorder=n=>cycleId[n]>=0?CCOLS[cycleId[n]%CCOLS.length]:'#475569';
+
+  // ─── SVG ───
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block;margin:0 auto">`;
+  svg+=`<defs><marker id="tgarr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#475569"/></marker>`;
+  cycles.forEach((_,ci)=>{
+    svg+=`<marker id="tgarr${ci}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="${CCOLS[ci%CCOLS.length]}"/></marker>`;
+  });
+  svg+=`</defs>`;
+
+  // Aristas
+  for(let x=0;x<sz;x++){
+    const fx=tt[x];
+    const {x:x1,y:y1}=nodePos[x];
+    const {x:x2,y:y2}=nodePos[fx];
+    const col=nodeColor(x);
+    const mid=cycleId[x]>=0?`tgarr${cycleId[x]%CCOLS.length}`:'tgarr';
+    if(x===fx){
+      const angle=Math.atan2(y1-cy,x1-cx);
+      const lx=x1+Math.cos(angle)*(nodeR+12);
+      const ly=y1+Math.sin(angle)*(nodeR+12);
+      svg+=`<circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="8" stroke="${col}" stroke-width="1.5" fill="none" marker-end="url(#${mid})"><title>${x} → ${fx} (punto fijo)</title></circle>`;
+    } else {
+      const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+      if(len<0.5) continue;
+      const sx=x1+dx/len*nodeR,sy=y1+dy/len*nodeR;
+      const ex=x2-dx/len*(nodeR+4),ey=y2-dy/len*(nodeR+4);
+      svg+=`<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${col}" stroke-width="1.5" marker-end="url(#${mid})" opacity="0.72"><title>${x} → ${fx}</title></line>`;
+    }
+  }
+
+  // Nodos
+  for(let n=0;n<sz;n++){
+    const {x,y}=nodePos[n];
+    const col=nodeColor(n);
+    const brd=nodeBorder(n);
+    const isFP=cycleId[n]>=0&&cycles[cycleId[n]].length===1;
+    svg+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nodeR}" fill="${col}" stroke="${brd}" stroke-width="${isFP?2.5:1.5}"><title>${n}→${tt[n]}${cycleId[n]>=0?` | ciclo ${cycleId[n]+1}, long.${cycles[cycleId[n]].length}`:`| transitorio`}</title></circle>`;
+    if(showLabels){
+      const fs=Math.max(6,nodeR*0.72);
+      svg+=`<text x="${x.toFixed(1)}" y="${(y+fs*0.36).toFixed(1)}" font-size="${fs}" fill="white" text-anchor="middle" font-weight="bold" pointer-events="none">${n}</text>`;
+    }
+  }
+  svg+=`</svg>`;
+
+  // ─── Leyenda y resumen ───
+  let legend=`<div style="display:flex;flex-wrap:wrap;gap:.4rem .85rem;font-size:.73rem;margin-bottom:.6rem;align-items:center">`;
+  legend+=`<span style="display:flex;align-items:center;gap:.3rem"><span style="width:11px;height:11px;border-radius:50%;background:#94a3b8;display:inline-block"></span>Transitorio</span>`;
+  cycles.forEach((cyc,ci)=>{
+    const col=CCOLS[ci%CCOLS.length];
+    const lbl=cyc.length===1?`Pto. fijo (${ci+1})`:`Ciclo ${ci+1} (long.${cyc.length})`;
+    legend+=`<span style="display:flex;align-items:center;gap:.3rem"><span style="width:11px;height:11px;border-radius:50%;background:${col};display:inline-block"></span>${lbl}</span>`;
+  });
+  legend+=`</div>`;
+
+  const nFP=cycles.filter(c=>c.length===1).length;
+  const nCy=cycles.filter(c=>c.length>1).length;
+  const summary=`<div style="font-size:.71rem;color:#475569;margin-top:.5rem;padding:.4rem .65rem;background:#f1f5f9;border-radius:5px">${sz} estados · ${nFP} pto${nFP!==1?'s':''} fijo${nFP!==1?'s':''} · ${nCy} ciclo${nCy!==1?'s':''} · ${treeNodes.size} transitorio${treeNodes.size!==1?'s':''}. Nodo ${showLabels?'= índice decimal':'(etiqueta omitida, N grande)'}. Flecha: x → f(x). Cada ciclo tiene su propio color.</div>`;
+
+  el.innerHTML=legend+`<div class="ballgraph-svg-wrap">`+svg+`</div>`+summary;
+}
+
+// ═══════════════════════════════════════════════════════════
+// POLYNOMIAL STRUCTURE — ANF over F_p (Möbius transform)
+// ═══════════════════════════════════════════════════════════
+
+// Transformada de Möbius sobre F_2^N — O(N·2^N)
+function anfTransform(coord){
+  const sz=coord.length;
+  const n=Math.round(Math.log2(sz));
+  const a=coord.slice();
+  for(let i=0;i<n;i++)
+    for(let j=0;j<sz;j++)
+      if(j&(1<<i)) a[j]^=a[j^(1<<i)];
+  return a;
+}
+
+function anfPolynomial(tt,geneIdx,sz){
+  const coord=Array.from({length:sz},(_,c)=>(tt[c]>>geneIdx)&1);
+  const coeffs=anfTransform(coord);
+  return coeffs.map((c,S)=>({S,c})).filter(({c})=>c);
+}
+
+function monomialStr(S,genes,N){
+  if(S===0) return '1';
+  const parts=[];
+  for(let j=0;j<N;j++) if(S&(1<<j)) parts.push(genes[j]);
+  return parts.join('·');
+}
+
+function formatPolyANF(terms,genes,N,maxShow){
+  if(!terms.length) return '<span style="color:#94a3b8">0</span>';
+  const sorted=[...terms].sort((a,b)=>popcount(a.S)-popcount(b.S));
+  const show=sorted.slice(0,maxShow||sorted.length);
+  const rest=sorted.length-show.length;
+  let out=show.map(({S})=>`<span class="poly-badge">${monomialStr(S,genes,N)}</span>`).join(' ⊕ ');
+  if(rest>0) out+=` <span style="color:var(--muted);font-size:.65rem">… +${rest} más</span>`;
+  return out;
+}
+
+function popcount(x){let n=0;while(x){n+=x&1;x>>>=1;}return n;}
+
+function varsInPoly(terms,N){
+  const used=new Set();
+  for(const {S} of terms) for(let j=0;j<N;j++) if(S&(1<<j)) used.add(j);
+  return used;
+}
+
+function detectStructure(terms,genes,N){
+  // Detecta estructuras algebraicas especiales
+  if(!terms.length) return {label:'0',cls:'poly-badge'};
+  if(terms.length===1&&terms[0].S===0) return {label:'1 (const)',cls:'poly-badge'};
+  if(terms.length===1&&popcount(terms[0].S)===1){
+    const j=terms[0].S.toString(2).length-1;
+    return {label:`≡ ${genes[j]}`,cls:'poly-id'};
+  }
+  // OR booleano: a⊕b⊕ab
+  if(terms.length===3){
+    const ss=terms.map(t=>t.S);
+    const s1=ss.filter(s=>popcount(s)===1);
+    const s2=ss.filter(s=>popcount(s)===2);
+    if(s1.length===2&&s2.length===1&&(s1[0]|s1[1])===s2[0]){
+      const va=genes[s1[0].toString(2).length-1], vb=genes[s1[1].toString(2).length-1];
+      return {label:`${va} OR ${vb}`,cls:'poly-or'};
+    }
+  }
+  // Factorización: ¿todos los monomios comparten factor común?
+  let common=terms[0].S;
+  for(const {S} of terms) common&=S;
+  if(common&&popcount(common)>=1){
+    const fac=monomialStr(common,genes,N);
+    return {label:`${fac} · (…)`,cls:'poly-sym'};
+  }
+  return null;
+}
+
+function computeInfluenceScores(allTerms,N){
+  const sc=new Array(N).fill(0);
+  for(let i=0;i<N;i++){
+    const used=varsInPoly(allTerms[i],N);
+    for(const j of used) sc[j]++;
+  }
+  return sc;
+}
+
+function renderPolynomialPanel(){
+  const el=document.getElementById('dynPolystructPanel');
+  if(!state.net||!state.net.tt){
+    el.innerHTML='<div style="color:var(--muted);font-size:.8rem;padding:1rem">Presiona Compute primero.</div>';
+    return;
+  }
+  const net=state.net;
+  const N=net.N; const p=net.p; const sz=Math.pow(p,N);
+  const genes=net.genes||(Array.from({length:N},(_,i)=>`g${i}`));
+
+  if(p!==2){
+    el.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:1rem">El análisis ANF actualmente requiere p=2. Esta red usa p=${p}.</div>`;
+    return;
+  }
+  if(sz>1048576){
+    el.innerHTML=`<div style="color:var(--muted);font-size:.8rem;padding:1rem">Red demasiado grande (${sz} estados) para ANF en tiempo real.</div>`;
+    return;
+  }
+
+  // Computar todos los ANF
+  const allTerms=Array.from({length:N},(_,i)=>anfPolynomial(net.tt,i,sz));
+  const scores=computeInfluenceScores(allTerms,N);
+  const maxScore=Math.max(...scores,1);
+
+  // ─── Tabla de polinomios ───
+  let html=`<div style="font-size:.74rem;color:var(--muted);margin-bottom:.5rem">
+    Representación canónica sobre <strong>𝔽₂[x₀,…,x<sub>${N-1}</sub>]/(xᵢ²−xᵢ)</strong> vía transformada de Möbius.
+    Cada función es única; grado ≤ 1 en cada variable.
+  </div>`;
+
+  html+=`<table class="poly-table">
+    <thead><tr>
+      <th>Gen</th><th>T<sub>i</sub>(x) — ANF</th>
+      <th title="Número de monomios con coeficiente 1 en F_2">#mono</th>
+      <th title="Grado total máximo">grado</th>
+      <th title="Número de genes cuyo T_j contiene este gen (out-degree en G_poly)">I<sub>poly</sub></th>
+      <th>Nota</th>
+    </tr></thead><tbody>`;
+
+  for(let i=0;i<N;i++){
+    const terms=allTerms[i];
+    const maxDeg=terms.length?Math.max(...terms.map(({S})=>popcount(S))):0;
+    const note=detectStructure(terms,genes,N);
+    const maxShow=(sz<=64)?99:(sz<=256)?12:8;
+    const polyStr=formatPolyANF(terms,genes,N,maxShow);
+    const scoreBar=`<span style="display:inline-block;width:${Math.round(scores[i]/maxScore*52)}px;height:7px;background:${scores[i]===maxScore?'var(--teal)':'#93c5fd'};border-radius:2px;vertical-align:middle;margin-left:.3rem"></span>`;
+    html+=`<tr>
+      <td><strong style="font-family:var(--mono);color:var(--navy)">${genes[i]}</strong></td>
+      <td class="poly-expr">${polyStr}</td>
+      <td style="text-align:center;font-family:var(--mono)">${terms.length}</td>
+      <td style="text-align:center;font-family:var(--mono)">${maxDeg}</td>
+      <td style="white-space:nowrap">${scores[i]}${scoreBar}</td>
+      <td>${note?`<span class="${note.cls}" style="font-size:.69rem">${note.label}</span>`:''}</td>
+    </tr>`;
+  }
+  html+=`</tbody></table>`;
+
+  // ─── Grafo de dependencias ───
+  html+=`<div style="font-size:.78rem;font-weight:700;color:var(--navy);margin-top:1rem;margin-bottom:.35rem">
+    Grafo de dependencias G<sub>poly</sub>
+    <span style="font-size:.68rem;font-weight:400;color:var(--muted)">&nbsp;— arista x<sub>j</sub>→x<sub>i</sub> si x<sub>j</sub> aparece en T<sub>i</sub></span>
+  </div>`;
+  html+=`<div class="poly-dep-wrap">`;
+  html+=renderDependencyGraph(allTerms,genes,scores,N,maxScore);
+  html+=`</div>`;
+
+  // ─── Nota metodológica ───
+  html+=`<div style="font-size:.70rem;color:#475569;margin-top:.6rem;padding:.45rem .7rem;background:#f1f5f9;border-radius:5px;line-height:1.6">
+    <strong>I<sub>poly</sub>(x<sub>j</sub>)</strong> = nº de genes cuya función de actualización depende de x<sub>j</sub> (out-degree en G<sub>poly</sub>).
+    Genes con I<sub>poly</sub> alto son <em>reguladores maestros</em>: controlan directamente a más genes.
+    Compare con el ordering óptimo μ: la concordancia entre ambos rankings valida la jerarquía p-ádica desde la estructura algebraica local.
+    ${note_identities(allTerms,genes,N)}
+  </div>`;
+
+  el.innerHTML=html;
+}
+
+function note_identities(allTerms,genes,N){
+  const ids=[];
+  for(let i=0;i<N;i++){
+    const terms=allTerms[i];
+    if(terms.length===1&&popcount(terms[0].S)===1){
+      const j=terms[0].S.toString(2).length-1;
+      if(i!==j) ids.push(`T<sub>${i}</sub>[${genes[i]}] = ${genes[j]}`);
+    }
+  }
+  if(!ids.length) return '';
+  return `<br><strong>Identidades detectadas:</strong> ${ids.join('; ')} — estas coordenadas están sincronizadas; la dimensión efectiva de los atractores se reduce.`;
+}
+
+function renderDependencyGraph(allTerms,genes,scores,N,maxScore){
+  const W=Math.min(600,Math.max(320,N*55));
+  const H=Math.min(420,Math.max(240,N*40));
+  const cx=W/2, cy=H/2;
+  const R=Math.min(W,H)*0.36;
+  const nR=Math.max(8,Math.min(20,R*0.25/Math.max(N/4,1)));
+  // Posiciones en círculo
+  const pos=Array.from({length:N},(_,i)=>{
+    const a=(2*Math.PI*i/N)-Math.PI/2;
+    return {x:cx+R*Math.cos(a), y:cy+R*Math.sin(a)};
+  });
+  // Color por score: teal para máximo, azul para los demás
+  const colNode=j=>scores[j]===maxScore?'#0f766e':scores[j]>0?'#3b82f6':'#94a3b8';
+  // Build dependency edges: j→i if j appears in T_i
+  const edges=[];
+  for(let i=0;i<N;i++){
+    const used=varsInPoly(allTerms[i],N);
+    for(const j of used){
+      if(j!==i) edges.push({from:j,to:i});
+    }
+  }
+  // Self-loops (autoregulation)
+  const selfLoops=[];
+  for(let i=0;i<N;i++){
+    const used=varsInPoly(allTerms[i],N);
+    if(used.has(i)) selfLoops.push(i);
+  }
+
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block;margin:0 auto">`;
+  svg+=`<defs>
+    <marker id="dp-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="dp-arr-hi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#0f766e"/>
+    </marker>
+  </defs>`;
+
+  // Edges
+  for(const {from,to} of edges){
+    const {x:x1,y:y1}=pos[from]; const {x:x2,y:y2}=pos[to];
+    const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
+    if(len<0.5) continue;
+    const sx=x1+dx/len*nR, sy=y1+dy/len*nR;
+    const ex=x2-dx/len*(nR+4), ey=y2-dy/len*(nR+4);
+    // slight curve
+    const mx=(sx+ex)/2, my=(sy+ey)/2;
+    const perp=[-dy/len,dx/len];
+    const qx=mx+perp[0]*8, qy=my+perp[1]*8;
+    const hi=scores[from]===maxScore;
+    svg+=`<path d="M${sx.toFixed(1)},${sy.toFixed(1)} Q${qx.toFixed(1)},${qy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}" stroke="${hi?'#0f766e':'#94a3b8'}" stroke-width="${hi?1.8:1.2}" fill="none" marker-end="url(#dp-arr${hi?'-hi':''})" opacity="0.7"><title>${genes[from]} → ${genes[to]}</title></path>`;
+  }
+  // Self-loops
+  for(const i of selfLoops){
+    const {x,y}=pos[i];
+    const a=Math.atan2(y-cy,x-cx);
+    const lx=x+Math.cos(a)*(nR+12), ly=y+Math.sin(a)*(nR+12);
+    svg+=`<circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="7" stroke="${colNode(i)}" stroke-width="1.5" fill="none" marker-end="url(#dp-arr${scores[i]===maxScore?'-hi':''})"><title>${genes[i]} (autorregulación)</title></circle>`;
+  }
+  // Nodes
+  for(let i=0;i<N;i++){
+    const {x,y}=pos[i]; const col=colNode(i);
+    svg+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${nR}" fill="${col}" stroke="${col}" stroke-width="1.5" opacity="0.9"><title>${genes[i]}: I_poly=${scores[i]}</title></circle>`;
+    const fs=Math.max(7,Math.min(10,nR*0.72));
+    svg+=`<text x="${x.toFixed(1)}" y="${(y+fs*0.36).toFixed(1)}" font-size="${fs}" fill="white" text-anchor="middle" font-weight="bold" pointer-events="none">${genes[i].length<=4?genes[i]:genes[i].slice(0,3)+'…'}</text>`;
+  }
+  svg+=`</svg>`;
+  return svg;
+}
+
+// ═══════════════════════════════════════════════════════════
+// HOW-TO PANEL
+// ═══════════════════════════════════════════════════════════
+function renderHowtoPanel(){
+  const el=document.getElementById('dynHowtoPanel');
+  const net=state.net;
+  el.innerHTML=`
+  <div class="howto-section">
+    <h4>What is this visualization?</h4>
+    <p>The p-adic integers ℤₚ can be decomposed into nested balls (Cantor-like). For a Boolean/p-state gene regulatory network (GRN) with N genes, the <strong>${Math.pow(net.p,net.N)} possible configurations</strong> form ℤₚᴺ (or more precisely, ℤ/${net.p}ᴺ). By choosing a linear <em>ordering</em> A of the genes, each configuration is assigned an index, and the dynamics classifies each ball B<sub>n,i</sub> as:</p>
+    <ul>
+      <li><strong style="color:var(--red-dark)">Expansive (E)</strong>: the ball's images spread out — divergence at depth &lt; n.</li>
+      <li><strong style="color:var(--blue-dark)">Attractive (A)</strong>: the ball's images contract — all map inside a smaller ball.</li>
+      <li><strong style="color:var(--gray-dark)">Indifferent (I)</strong>: images stay at exactly the same scale.</li>
+    </ul>
+  </div>
+  <div class="howto-section">
+    <h4>Fractal circles — hover for details</h4>
+    <p>Each circle is one p-adic ball B<sub>n, i</sub> at depth n. The outer circle is ℤₚ (all configurations); each circle splits into ${net.p} child circles (one per residue class). <strong>Hover over any circle</strong> to see:</p>
+    <ul>
+      <li>Ball index and level</li>
+      <li><strong>Center</strong>: the "representative" configuration with genes A[0]…A[n−1] fixed to the ball's digits and all free genes = 0. This is the canonical p-adic center.</li>
+      <li>Gene values at the center: e.g. ${(net.genes||Array.from({length:net.N},(_,i)=>`g${i}`)).slice(0,3).map(g=>g+'=0').join(', ')}…</li>
+      <li>Whether a fixed point or cycle element lives in this ball.</li>
+    </ul>
+    <p><span style="color:#15803d">●</span> = fixed point inside the ball. <span style="color:#a16207">○</span> = cycle element inside the ball.</p>
+  </div>
+  <div class="howto-section">
+    <h4>Center of a p-adic ball</h4>
+    <p>Ball B<sub>n, i</sub> consists of all configurations whose first n genes (in ordering A) match the base-p digits of the index i. Its <em>center</em> is the configuration where those n genes are fixed to those digits and the remaining ${net.N-1}−n genes are set to 0. Formally: <span class="howto-code">center = Σⱼ₌₀ⁿ⁻¹ digit_j(i) · pʲ · e_{A[j]}</span> where e_k is the k-th standard basis vector.</p>
+  </div>
+  <div class="howto-section">
+    <h4>Fixed points &amp; cycles tab</h4>
+    <p>Shows all <strong>fixed points</strong> (f(x)=x) and <strong>periodic cycles</strong> of the network's transition function. For each element, it shows which ball it belongs to at the current fractal level. <em>Change the level slider</em> and re-open this tab to see the ball membership at a different depth — the same configuration belongs to different balls at different levels (p-adic hierarchical structure).</p>
+  </div>
+  <div class="howto-section">
+    <h4>Ball graph tab</h4>
+    <p>For a given level n, this shows a directed graph where each <strong>node = one p-adic ball B<sub>n,i</sub></strong>, colored by E/A/I. An <strong>arrow from ball A to ball B</strong> means: there exists at least one configuration x ∈ A such that f(x) ∈ B. Arrow thickness is proportional to the number of such configurations. <strong>Self-loops</strong> mean the ball maps into itself (compatible with being Attractive). <strong>Choose level n</strong> from the dropdown to see the macro-dynamics at that resolution.</p>
+    <p>The ball graph encodes the coarse-grained dynamics: ignoring which exact configuration you're in, only which ball. This is mathematically related to the p-adic measure μ_E, μ_A, μ_I: Expansive balls have outgoing edges to multiple balls at the same level, while Attractive balls have self-loops.</p>
+  </div>
+  <div class="howto-section">
+    <h4>Optimal ordering</h4>
+    <p>The ordering A affects both the classification and the fractal structure. The <em>optimal ordering π*</em> minimizes μ_E (total expansive mass). For <strong>${net.name}</strong>: π* = [${net.optimal.join(', ')}], giving μ_E = ${state.levelData?[...Array(net.N-1).keys()].reduce((s,k)=>{const n=k+1,w=Math.pow(net.p,net.N-n);return s+state.levelData[n].filter(t=>t==='E').length*w;},0):'—'}. Use <em>Search optima</em> to find all orderings achieving this minimum.</p>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SEARCH OPTIMA
+// ═══════════════════════════════════════════════════════════
+let _searchStop=false;
+let _pendingSearch=null;
+
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+
+function fmtTime(ms){
+  if(ms<800) return `~${ms.toFixed(0)} ms`;
+  if(ms<60000) return `~${(ms/1000).toFixed(1)} s`;
+  if(ms<3600000) return `~${(ms/60000).toFixed(1)} min`;
+  if(ms<86400000) return `~${(ms/3600000).toFixed(1)} h`;
+  return `~${(ms/86400000).toFixed(1)} días`;
+}
+
+function* allPerms(N){
+  const a=Array.from({length:N},(_,i)=>i); const c=new Array(N).fill(0);
+  yield a.slice(); let i=0;
+  while(i<N){
+    if(c[i]<i){const j=i%2===0?0:c[i];[a[j],a[i]]=[a[i],a[j]];c[i]++;i=0;yield a.slice();}
+    else{c[i]=0;i++;}
+  }
+}
+
+// ── computeMuFastBit: versión optimizada para p=2 ──
+// Precomputa tabla permutada (sin alocaciones dentro del loop).
+// Usa OR/AND sobre enteros para clasificar bolas sin arrays intermedios.
+function computeMuFastBit(tt,N,A){
+  const sz=1<<N;
+  // ptt[c] = imagen de c en coordenadas A-permutadas
+  const ptt=new Int32Array(sz).fill(-1);
+  for(let c=0;c<sz;c++){
+    let orig=0;
+    for(let j=0;j<N;j++) if((c>>j)&1) orig|=1<<A[j];
+    const img=tt[orig];
+    if(img==null||img<0) continue;
+    let pimg=0;
+    for(let j=0;j<N;j++) if((img>>A[j])&1) pimg|=1<<j;
+    ptt[c]=pimg;
+  }
+  let muE=0,muA=0,muI=0;
+  for(let n=1;n<N;n++){
+    const nb=1<<n, ballSz=1<<(N-n);
+    for(let bi=0;bi<nb;bi++){
+      let imgOR=0,imgAND=sz-1,hasImg=false;
+      for(let k=0;k<ballSz;k++){
+        const img=ptt[bi|(k<<n)];
+        if(img<0) continue;
+        imgOR|=img; imgAND&=img; hasImg=true;
+      }
+      if(!hasImg) continue;
+      const diffBits=imgOR^imgAND;
+      let M;
+      if(diffBits===0){M=N;}
+      else{const lsb=diffBits&(-diffBits);M=31-Math.clz32(lsb);}
+      const w=ballSz;
+      if(M<n) muE+=w; else if(M===n) muI+=w; else muA+=w;
+    }
+  }
+  return[muE,muA,muI];
+}
+
+// ── bnbLevelContrib: contribución incremental de UN nivel para B&B ──
+// Computa E_{n} * 2^{N-n} usando ordering[0..n-1] (n = depth).
+// Costo: n * 2^N ops. Se llama UNA vez por nodo, no repite niveles anteriores.
+function bnbLevelContrib(tt,N,ordering,depth){
+  if(depth<1) return 0;
+  const sz=1<<N, n=depth, nb=1<<n, w=1<<(N-n), mask=nb-1;
+  const OR=new Int32Array(nb), AND=new Int32Array(nb).fill(mask);
+  for(let c=0;c<sz;c++){
+    const img=tt[c]; if(img==null||img<0) continue;
+    let bi=0,imgLow=0;
+    for(let j=0;j<n;j++){
+      const pos=ordering[j];
+      if((c>>pos)&1) bi|=1<<j;
+      if((img>>pos)&1) imgLow|=1<<j;
+    }
+    OR[bi]|=imgLow; AND[bi]&=imgLow;
+  }
+  let E=0;
+  for(let bi=0;bi<nb;bi++) if((OR[bi]^AND[bi])!==0) E+=w;
+  return E;
+}
+
+// ── bnbSearch: backtracking con poda por cota inferior parcial ──
+// Exactamente el mismo algoritmo que branch_and_bound_search.py del proyecto.
+// Garantiza encontrar TODOS los óptimos con μ_E mínimo.
+async function bnbSearch(tt,N,p,onProgress,onDone){
+  let best=Infinity; const optima=[]; let nodes=0,prunes=0;
+  const ord=new Int32Array(N); const used=new Uint8Array(N);
+  let lastYield=performance.now();
+
+  async function bt(depth,partial){
+    if(_searchStop) return;
+    if(depth===N){
+      nodes++;
+      const[muE,muA,muI]=computeMuFastBit(tt,N,ord);
+      if(muE<best){best=muE;optima.length=0;optima.push({A:Array.from(ord),muE,muA,muI});}
+      else if(muE===best) optima.push({A:Array.from(ord),muE,muA,muI});
+      return;
+    }
+    // Cota: contribución acumulada del nuevo nivel (depth), usando ord[0..depth-1]
+    const lc=bnbLevelContrib(tt,N,ord,depth);
+    const lb=partial+lc;
+    if(lb>best){prunes++;return;} // PODA: lb es cota inferior estricta; lb==best puede aún tener óptimos iguales
+    for(let g=0;g<N;g++){
+      if(used[g]) continue;
+      ord[depth]=g; used[g]=1;
+      const now=performance.now();
+      if(now-lastYield>=20){
+        onProgress(nodes,prunes,best,optima.length);
+        await new Promise(r=>setTimeout(r,0));
+        lastYield=performance.now();
+        if(_searchStop){used[g]=0;return;}
+      }
+      await bt(depth+1,lb);
+      used[g]=0;
+      if(_searchStop) return;
+    }
+  }
+  await bt(0,0);
+  onDone(optima,best,nodes,prunes,_searchStop);
+}
+
+// Dispatcher: usa versión bit para p=2, general para otros p
+function computeMuFast(tt,N,p,A){
+  if(p===2) return computeMuFastBit(tt,N,A);
+  let muE=0,muA=0,muI=0;
+  for(let n=1;n<N;n++){
+    const nb=p**n,sz=p**(N-n);
+    for(let bi=0;bi<nb;bi++){
+      const imgs=[];
+      for(let k=0;k<sz;k++){
+        const y=new Array(N); let e=bi;
+        for(let j=0;j<n;j++){y[j]=e%p;e=Math.floor(e/p);}
+        e=k; for(let j=n;j<N;j++){y[j]=e%p;e=Math.floor(e/p);}
+        const x=new Array(N).fill(0); for(let j=0;j<N;j++) x[A[j]]=y[j];
+        let cfg=0; for(let j=0;j<N;j++) cfg+=x[j]*p**j;
+        const img=tt[cfg]; if(img==null) continue;
+        const iv=[]; let t=img;
+        for(let j=0;j<N;j++){iv.push(t%p);t=Math.floor(t/p);}
+        imgs.push(A.map(aj=>iv[aj]));
+      }
+      if(!imgs.length) continue;
+      let M=N;
+      for(let j=0;j<N;j++){if(imgs.some(v=>v[j]!==imgs[0][j])){M=j;break;}}
+      const w=sz;
+      if(M<n) muE+=w; else if(M===n) muI+=w; else muA+=w;
+    }
+  }
+  return[muE,muA,muI];
+}
+
+// ── Benchmark: mide ms promedio por llamada a computeMuFast ──
+function benchmarkMu(tt,N,p,nRuns){
+  const A=Array.from({length:N},(_,i)=>i);
+  const t0=performance.now();
+  for(let r=0;r<nRuns;r++){
+    for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[A[i],A[j]]=[A[j],A[i]];}
+    computeMuFast(tt,N,p,A);
+  }
+  return(performance.now()-t0)/nRuns;
+}
+
+async function exhaustiveSearch(tt,N,p,onProgress,onDone){
+  const total=factorial(N); const gen=allPerms(N);
+  let best=Infinity,optima=[],count=0;
+  const CHUNK=500;
+  function step(){
+    if(_searchStop){onDone(optima,best,count,true);return;}
+    for(let i=0;i<CHUNK;i++){
+      const{value:A,done}=gen.next();
+      if(done){onDone(optima,best,count,false);return;}
+      count++;
+      const[muE,muA,muI]=computeMuFast(tt,N,p,A);
+      if(muE<best){best=muE;optima=[{A:A.slice(),muE,muA,muI}];}
+      else if(muE===best) optima.push({A:A.slice(),muE,muA,muI});
+    }
+    onProgress(count,total,best,optima.length);
+    setTimeout(step,0);
+  }
+  step();
+}
+
+async function geneticSearch(tt,N,p,onProgress,onDone){
+  const POP=300,GENS=800,MUT=0.20,ELITE=10,CHUNK_GENS=3;
+  function randPerm(){const a=Array.from({length:N},(_,i)=>i);for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function ox1(p1,p2){const n=p1.length;const a=Math.floor(Math.random()*n),b=a+Math.floor(Math.random()*(n-a))+1;const seg=p1.slice(a,b),rest=p2.filter(x=>!seg.includes(x));return[...rest.slice(0,a),...seg,...rest.slice(a)];}
+  function mutate(perm){const c=perm.slice();const i=Math.floor(Math.random()*N),j=Math.floor(Math.random()*N);[c[i],c[j]]=[c[j],c[i]];return c;}
+  let pop=Array.from({length:POP},randPerm);
+  let fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
+  let bestEver=Math.min(...fits),bestPerm=pop[fits.indexOf(bestEver)].slice();
+  let gen=0;
+  function step(){
+    if(_searchStop){onDone([{A:bestPerm,muE:bestEver}],bestEver,gen,true);return;}
+    for(let g=0;g<CHUNK_GENS&&gen<GENS;g++,gen++){
+      const ranked=fits.map((f,i)=>({f,i})).sort((a,b)=>a.f-b.f);
+      const elite=ranked.slice(0,ELITE).map(r=>pop[r.i].slice());
+      const newPop=[...elite];
+      while(newPop.length<POP){
+        const pick=()=>{const i1=Math.floor(Math.random()*POP),i2=Math.floor(Math.random()*POP);return pop[fits[i1]<fits[i2]?i1:i2];};
+        let child=ox1(pick(),pick());
+        if(Math.random()<MUT) child=mutate(child);
+        newPop.push(child);
+      }
+      pop=newPop; fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
+      const curBest=Math.min(...fits);
+      if(curBest<bestEver){bestEver=curBest;bestPerm=pop[fits.indexOf(curBest)].slice();}
+    }
+    onProgress(gen,GENS,bestEver,bestPerm);
+    if(gen<GENS) setTimeout(step,0);
+    else onDone([{A:bestPerm,muE:bestEver}],bestEver,gen,false);
+  }
+  step();
+}
+
+// ── Modal de selección ──
+function closeSearchModal(){
+  document.getElementById('searchModal').style.display='none';
+  _pendingSearch=null;
+  document.getElementById('searchBtn').disabled=false;
+}
+
+function proceedSearch(mode){
+  document.getElementById('searchModal').style.display='none';
+  if(_pendingSearch) _doSearch(Object.assign(_pendingSearch,{mode}));
+  _pendingSearch=null;
+}
+
+async function startSearch(){
+  const net=getCurrentNet();
+  if(!net||net.tt==null){setStatus('Carga primero una red.','error');return;}
+  const N=net.N,p=net.p,tt=net.tt;
+  _searchStop=false;
+  document.getElementById('searchBtn').disabled=true;
+
+  // Mostrar estado de benchmark
+  const prog=document.getElementById('searchProgress');
+  prog.style.display='block';
+  document.getElementById('searchProgressText').textContent='Midiendo velocidad…';
+  document.getElementById('searchProgBar').style.width='0%';
+  document.getElementById('searchProgressSub').textContent='';
+  await new Promise(r=>setTimeout(r,30)); // yield para que el DOM actualice
+
+  // Benchmark: 5 corridas
+  const msPerCall=benchmarkMu(tt,N,p,5);
+  prog.style.display='none';
+
+  // Estimar tiempos
+  const exTotal=factorial(N);
+  const exMs=exTotal*msPerCall;
+  const gaMs=300*800*msPerCall;
+  // B&B: cota conservadora (sin poda) = exhaustiva; optimista (90% poda) = 10% de exhaustiva
+  // Para redes biológicas reales la poda suele ser >90%, pero en el peor caso es exhaustiva.
+  const bnbWorst=exMs;
+  const bnbBest=exMs*0.01; // 99% poda (observado en A. thaliana en el servidor)
+
+  // Colorear filas según urgencia
+  const exRow=document.getElementById('modalExRow');
+  exRow.className='smodal-row';
+  if(exMs>86400000) exRow.classList.add('sr-danger');
+  else if(exMs>60000) exRow.classList.add('sr-warn');
+
+  const bnbRow=document.getElementById('modalBnbRow');
+  bnbRow.className='smodal-row';
+  if(bnbBest>86400000) bnbRow.classList.add('sr-danger');
+  else if(bnbBest>60000) bnbRow.classList.add('sr-warn');
+
+  document.getElementById('modalTitle').textContent=`Búsqueda de ordenamientos — N=${N}, p=${p}`;
+  document.getElementById('modalExTotal').textContent=exTotal.toLocaleString();
+  document.getElementById('modalExTime').textContent=`Tiempo estimado: ${fmtTime(exMs)}`;
+  document.getElementById('modalBnbTime').textContent=
+    `Tiempo estimado: ${fmtTime(bnbBest)} – ${fmtTime(bnbWorst)} (depende de la tasa de poda)`;
+  document.getElementById('modalGaTime').textContent=`Tiempo estimado: ${fmtTime(gaMs)}`;
+
+  // Deshabilitar botón exhaustivo si tardaría más de ~2 días
+  const btnEx=document.getElementById('modalBtnEx');
+  if(exMs>172800000){
+    btnEx.disabled=true;
+    document.getElementById('modalExTime').textContent+=` ⚠ No recomendado`;
+  } else {
+    btnEx.disabled=false;
+  }
+
+  _pendingSearch={tt,N,p};
+  document.getElementById('searchModal').style.display='flex';
+  document.getElementById('searchBtn').disabled=false;
+}
+
+function _doSearch({tt,N,p,mode}){
+  _searchStop=false;
+  document.getElementById('searchBtn').disabled=true;
+  document.getElementById('stopSearchBtn').style.display='block';
+  document.getElementById('searchProgress').style.display='block';
+  document.getElementById('searchProgressText').textContent=mode==='exhaustive'?'Búsqueda exhaustiva…':'AG en ejecución…';
+  document.getElementById('searchProgBar').style.width='0%';
+  document.getElementById('searchProgressSub').textContent='';
+  document.getElementById('optimaList').style.display='none';
+  document.getElementById('gaLog').style.display='none';
+  document.getElementById('gaLog').innerHTML='';
+
+  if(mode==='exhaustive'){
+    exhaustiveSearch(tt,N,p,
+      (count,tot,best,nOpt)=>{
+        const pct=(count/tot*100).toFixed(1);
+        document.getElementById('searchProgressText').textContent=`Exhaustiva: ${count.toLocaleString()} / ${tot.toLocaleString()} (${pct}%)`;
+        document.getElementById('searchProgBar').style.width=pct+'%';
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}  ·  ${nOpt} ordenamiento${nOpt>1?'s':''}`;
+      },
+      (optima,best,count,stopped)=>{
+        document.getElementById('searchBtn').disabled=false;
+        document.getElementById('stopSearchBtn').style.display='none';
+        document.getElementById('searchProgBar').style.width=stopped?'50%':'100%';
+        document.getElementById('searchProgressText').textContent=stopped?`Detenida en ${count.toLocaleString()} perms.`:`Completa — ${count.toLocaleString()} permutaciones evaluadas.`;
+        document.getElementById('searchProgressSub').textContent=`${optima.length} ordenamiento${optima.length>1?'s':''} óptimo${optima.length>1?'s':''} con μ_E = ${best}`;
+        showOptimaList(optima,best,stopped);
+      }
+    );
+  } else if(mode==='bnb'){
+    const log=document.getElementById('gaLog'); log.style.display='block';
+    log.innerHTML=`<div>Branch &amp; Bound — poda por cota μ_E parcial. Garantiza todos los óptimos.</div>`;
+    document.getElementById('searchProgressText').textContent='B&B en ejecución…';
+    bnbSearch(tt,N,p,
+      (nodes,prunes,best,nOpt)=>{
+        const pruneRate=nodes+prunes>0?(prunes/(nodes+prunes)*100).toFixed(1):'—';
+        document.getElementById('searchProgressText').textContent=
+          `B&B: ${nodes.toLocaleString()} hojas  ·  ${prunes.toLocaleString()} podas (${pruneRate}%)`;
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}  ·  ${nOpt} óptimo${nOpt>1?'s':''}`;
+        log.innerHTML=`<div>Hojas: ${nodes.toLocaleString()} | Podas: ${prunes.toLocaleString()} (${pruneRate}%) | Mejor μ_E: ${best}</div>`;
+      },
+      (optima,best,nodes,prunes,stopped)=>{
+        document.getElementById('searchBtn').disabled=false;
+        document.getElementById('stopSearchBtn').style.display='none';
+        document.getElementById('searchProgBar').style.width=stopped?'50%':'100%';
+        const pruneRate=nodes+prunes>0?(prunes/(nodes+prunes)*100).toFixed(1):'—';
+        document.getElementById('searchProgressText').textContent=
+          stopped?`B&B detenido. Hojas: ${nodes.toLocaleString()}, podas: ${prunes.toLocaleString()}`
+                 :`B&B completo — ${nodes.toLocaleString()} hojas, ${pruneRate}% podado.`;
+        document.getElementById('searchProgressSub').textContent=
+          `${optima.length} ordenamiento${optima.length>1?'s':''} óptimo${optima.length>1?'s':''} con μ_E = ${best}`+(stopped?' (resultado parcial)':'');
+        log.innerHTML+=`<div style="color:var(--teal);font-weight:600">── ${stopped?'Detenido':'Completo'}: μ_E=${best}, ${nodes.toLocaleString()} hojas, poda ${pruneRate}% ──</div>`;
+        log.scrollTop=log.scrollHeight;
+        showOptimaList(optima,best,stopped);
+      }
+    );
+  } else {
+    const log=document.getElementById('gaLog'); log.style.display='block';
+    log.innerHTML=`<div>N=${N}: AG (pop=300, gen=800, OX1+swap) — resultado heurístico</div>`;
+    document.getElementById('searchProgressText').textContent='AG en ejecución…';
+    geneticSearch(tt,N,p,
+      (gen,maxGen,best,bestPerm)=>{
+        const pct=(gen/maxGen*100).toFixed(1);
+        document.getElementById('searchProgressText').textContent=`Gen ${gen}/${maxGen}  (${pct}%)`;
+        document.getElementById('searchProgBar').style.width=pct+'%';
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}`;
+        log.innerHTML+=`<div>Gen ${gen}: μ_E=${best}  π=[${bestPerm.join(',')}]</div>`;
+        log.scrollTop=log.scrollHeight;
+      },
+      (optima,best,gen,stopped)=>{
+        document.getElementById('searchBtn').disabled=false;
+        document.getElementById('stopSearchBtn').style.display='none';
+        document.getElementById('searchProgBar').style.width=stopped?'50%':'100%';
+        document.getElementById('searchProgressText').textContent=stopped?`Detenido en gen ${gen}`:`Completo — ${gen} generaciones.`;
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}  (pseudo-óptimo)`;
+        log.innerHTML+=`<div style="color:var(--teal);font-weight:600">── Fin AG: μ_E=${best} ──</div>`;
+        log.scrollTop=log.scrollHeight;
+        showOptimaList(optima,best,stopped);
+      }
+    );
+  }
+}
+
+function updateSearchHint(){
+  const net=getCurrentNet();
+  if(!net){document.getElementById('searchHint').textContent='Carga un CSV para analizar.';return;}
+  const N=net.N;
+  document.getElementById('searchBtn').disabled=false;
+  document.getElementById('searchHint').textContent=
+    `N=${N}  ·  ${factorial(N).toLocaleString()} ordenamientos posibles`;
+}
+
+function stopSearch(){_searchStop=true;}
+
+function showOptimaList(optima,best,partial){
+  const list=document.getElementById('optimaList');
+  const items=document.getElementById('optimaItems');
+  const title=document.getElementById('optimaListTitle');
+  list.style.display='block';
+  title.textContent=partial?`Best found (incomplete): μ_E = ${best}`
+    :`${optima.length===1?'1 optimal ordering':optima.length+' optimal orderings'} with μ_E = ${best}`;
+  items.innerHTML='';
+  const MAX_SHOW=50;
+  optima.slice(0,MAX_SHOW).forEach(opt=>{
+    const div=document.createElement('div'); div.className='optima-item';
+    div.innerHTML=`<span class="opt-perm">[${opt.A.join(',')}]</span>
+      <span class="opt-score">μ_E=${opt.muE}</span>
+      <button class="opt-use" onclick="useOrdering([${opt.A.join(',')}],this)">Use ↑</button>`;
+    items.appendChild(div);
+  });
+  if(optima.length>MAX_SHOW){
+    const more=document.createElement('div');
+    more.style.cssText='font-size:.69rem;color:var(--muted);padding:.22rem .55rem;font-style:italic';
+    more.textContent=`… and ${optima.length-MAX_SHOW} more orderings with the same μ_E`;
+    items.appendChild(more);
+  }
+}
+
+function useOrdering(A,btn){
+  document.getElementById('orderingInput').value=A.join(' ');
+  document.querySelectorAll('.optima-item').forEach(el=>el.classList.remove('active-opt'));
+  btn.closest('.optima-item').classList.add('active-opt');
+  runCompute();
 }
 
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-
-(function init() {
-  onNetChange();
-})();
+(function init(){onNetChange();})();
 </script>
 </body>
 </html>

@@ -133,6 +133,37 @@ button:disabled{opacity:.5;cursor:not-allowed}
 /* ── Placeholder ── */
 .placeholder{color:var(--lighter);font-size:.84rem;padding:2.5rem 0;text-align:center;line-height:1.6}
 .placeholder strong{color:var(--muted)}
+
+/* ── Search optima ── */
+.search-panel{margin-top:1rem;border-top:1px solid #f3f4f6;padding-top:1rem}
+.search-panel-title{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.7rem}
+.search-progress{background:#f1f5f9;border-radius:6px;padding:.6rem .9rem;margin-top:.6rem;font-size:.74rem;color:#334155;display:none}
+.search-progress .prog-bar-wrap{background:#e2e8f0;border-radius:3px;height:6px;margin:.4rem 0}
+.search-progress .prog-bar{height:6px;border-radius:3px;background:var(--teal);transition:width .3s}
+.optima-list{margin-top:.75rem;display:none}
+.optima-list-title{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.5rem}
+.optima-item{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.4rem .65rem;border:1px solid #e5e3dc;border-radius:6px;margin-bottom:.3rem;font-size:.77rem;cursor:pointer;transition:background .12s,border-color .12s}
+.optima-item:hover{background:#f0fdf4;border-color:var(--green-border)}
+.optima-item.active-opt{background:#f0fdf4;border-color:var(--green);box-shadow:0 0 0 2px rgba(22,163,74,.15)}
+.optima-item .opt-perm{font-family:var(--mono);font-size:.72rem;color:#475569;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.optima-item .opt-score{font-family:var(--mono);font-size:.75rem;font-weight:600;color:var(--red);white-space:nowrap}
+.optima-item .opt-use{font-size:.7rem;padding:.18rem .48rem;background:var(--teal);color:#fff;border:none;border-radius:4px;cursor:pointer;white-space:nowrap}
+.ga-log{font-family:var(--mono);font-size:.72rem;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:.5rem .75rem;max-height:120px;overflow-y:auto;margin-top:.5rem;display:none}
+/* Search modal */
+#searchModal{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:9999;display:none;align-items:center;justify-content:center}
+#searchModalBox{background:#fff;border-radius:11px;padding:1.4rem 1.6rem;max-width:370px;width:92%;box-shadow:0 8px 36px rgba(0,0,0,.26)}
+#searchModalBox h3{margin:0 0 .7rem;font-size:.92rem;color:#1a2744;font-weight:700}
+.smodal-row{background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:.7rem .85rem;margin:.4rem 0}
+.smodal-row .sr-title{font-size:.75rem;font-weight:700;color:#1a2744;margin-bottom:.25rem}
+.smodal-row .sr-body{font-size:.72rem;color:#475569;line-height:1.55}
+.smodal-row .sr-time{font-size:.78rem;font-weight:700;color:var(--teal);margin-top:.2rem}
+.smodal-row.sr-warn .sr-time{color:#b45309}
+.smodal-row.sr-danger .sr-time{color:var(--red)}
+.smodal-btn{width:100%;margin-top:.38rem;padding:.48rem .7rem;border:none;border-radius:6px;font-size:.76rem;font-weight:600;cursor:pointer;transition:opacity .12s}
+.smodal-btn:disabled{opacity:.4;cursor:default}
+.smodal-btn-ex{background:#1a2744;color:#fff}
+.smodal-btn-ga{background:var(--teal);color:#fff}
+.smodal-btn-cancel{background:#f1f5f9;color:#64748b;margin-top:.6rem}
 </style>
 </head>
 <body>
@@ -140,7 +171,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <header class="site-header">
   <h1>p-adic Metrics for Gene Regulatory Networks</h1>
   <div class="subtitle">Interactive Explorer — Stability analysis via p-adic ultrametrics</div>
-  <div class="authors">Pérez-Buendía · Nopal-Coello · Cortés-Poza — IIMAS / CIMAT / UAEH, 2026</div>
+  <div class="authors">Cortés-Poza · Pérez Buendía · Nopal-Coello — IIMAS / CIMAT / UAEH, 2026</div>
 </header>
 
 <div class="tabs-bar">
@@ -199,6 +230,54 @@ button:disabled{opacity:.5;cursor:not-allowed}
       <button class="primary" id="computeBtn" onclick="compute()" style="flex:1">Compute μ_E, μ_A, μ_I</button>
     </div>
     <div id="status"></div>
+
+    <!-- ── Search optima ── -->
+    <div class="search-panel">
+      <div class="search-panel-title">Find optimal orderings</div>
+      <div style="font-size:.76rem;color:var(--muted);margin-bottom:.6rem" id="searchHint">
+        Find all orderings that minimize μ_E for this network.
+      </div>
+      <div class="btn-group" style="margin-top:0">
+        <button id="searchBtn" onclick="startSearch()" style="flex:1">🔍 Search optima</button>
+        <button id="stopSearchBtn" onclick="stopSearch()" style="display:none">⏹ Stop</button>
+      </div>
+      <div class="search-progress" id="searchProgress">
+        <div id="searchProgressText">Searching…</div>
+        <div class="prog-bar-wrap"><div class="prog-bar" id="searchProgBar" style="width:0%"></div></div>
+        <div id="searchProgressSub" style="color:var(--muted)"></div>
+      </div>
+      <div class="ga-log" id="gaLog"></div>
+      <div class="optima-list" id="optimaList">
+        <div class="optima-list-title" id="optimaListTitle"></div>
+        <div id="optimaItems"></div>
+      </div>
+    </div>
+
+<!-- Modal de selección de método de búsqueda -->
+<div id="searchModal">
+  <div id="searchModalBox">
+    <h3 id="modalTitle">Seleccionar método de búsqueda</h3>
+    <div id="modalExRow" class="smodal-row">
+      <div class="sr-title">🔎 Exhaustiva (garantizada)</div>
+      <div class="sr-body">Evalúa <span id="modalExTotal"></span> ordenamientos. Encuentra <b>todos</b> los óptimos globales con certeza.</div>
+      <div class="sr-time" id="modalExTime"></div>
+      <button class="smodal-btn smodal-btn-ex" id="modalBtnEx" onclick="proceedSearch('exhaustive')">Iniciar búsqueda exhaustiva</button>
+    </div>
+    <div id="modalBnbRow" class="smodal-row">
+      <div class="sr-title">🌲 Branch &amp; Bound (garantizado)</div>
+      <div class="sr-body">Backtracking con poda por cota μ_E parcial. Garantiza <b>todos los óptimos globales</b> con menos evaluaciones que exhaustiva cuando la poda es efectiva.</div>
+      <div class="sr-time" id="modalBnbTime"></div>
+      <button class="smodal-btn" id="modalBtnBnb" style="background:#7c3aed;color:#fff" onclick="proceedSearch('bnb')">Iniciar B&amp;B</button>
+    </div>
+    <div id="modalGaRow" class="smodal-row">
+      <div class="sr-title">🧬 Algoritmo genético (heurístico)</div>
+      <div class="sr-body">pop=300, gen=800, OX1+swap. Devuelve un <b>pseudo-óptimo</b>; para redes pequeñas puede coincidir con el óptimo global.</div>
+      <div class="sr-time" id="modalGaTime"></div>
+      <button class="smodal-btn smodal-btn-ga" onclick="proceedSearch('ga')">Iniciar AG</button>
+    </div>
+    <button class="smodal-btn smodal-btn-cancel" onclick="closeSearchModal()">Cancelar</button>
+  </div>
+</div>
 
     <div class="info-box" style="margin-top:.9rem">
       <strong>μ_E</strong> counts configurations that <em>expand</em> under f in the p-adic metric — biologically: destabilizing directions.<br>
@@ -430,8 +509,7 @@ let chartInstance = null;
 // MATH ENGINE
 // ═══════════════════════════════════════════════════════════
 
-// configToVector: config → [d_{N-1}, ..., d_1, d_0] big-endian
-// CORRECTO: little-endian, igual que compute_mu.py del proyecto.
+// configToVector: little-endian — v[0]=LSB, igual que compute_mu.py del proyecto.
 // v[0] = LSB (dígito menos significativo en base p).
 // Las bolas p-ádicas son clases de congruencia mod p^n — estructura estándar de Z_p.
 function configToVector(config, N, p) {
@@ -573,6 +651,14 @@ document.getElementById('netSelect').addEventListener('change', function() {
     renderOrderingPills(net.optimal, net.genes);
   }
   clearResults();
+  // Resetear búsqueda al cambiar red
+  _searchStop = true;
+  document.getElementById('searchProgress').style.display = 'none';
+  document.getElementById('optimaList').style.display = 'none';
+  document.getElementById('gaLog').style.display = 'none';
+  document.getElementById('searchBtn').disabled = false;
+  document.getElementById('stopSearchBtn').style.display = 'none';
+  updateSearchHint();
 });
 
 document.getElementById('orderingInput').addEventListener('input', function() {
@@ -774,6 +860,376 @@ function buildTable(net, E, Ap, I, total) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// SEARCH OPTIMA — exhaustivo / B&B / AG con modal de estimación
+// ═══════════════════════════════════════════════════════════
+let _searchStop=false;
+let _pendingSearch=null;
+function getCurrentNetwork(){return getActiveNet();}
+
+function factorial(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+
+function fmtTime(ms){
+  if(ms<800) return `~${ms.toFixed(0)} ms`;
+  if(ms<60000) return `~${(ms/1000).toFixed(1)} s`;
+  if(ms<3600000) return `~${(ms/60000).toFixed(1)} min`;
+  if(ms<86400000) return `~${(ms/3600000).toFixed(1)} h`;
+  return `~${(ms/86400000).toFixed(1)} días`;
+}
+
+function* allPerms(N){
+  const a=Array.from({length:N},(_,i)=>i);const c=new Array(N).fill(0);
+  yield a.slice();let i=0;
+  while(i<N){
+    if(c[i]<i){const j=i%2===0?0:c[i];[a[j],a[i]]=[a[i],a[j]];c[i]++;i=0;yield a.slice();}
+    else{c[i]=0;i++;}
+  }
+}
+
+// ── computeMuFastBit: versión optimizada para p=2 ──
+function computeMuFastBit(tt,N,A){
+  const sz=1<<N;
+  const ptt=new Int32Array(sz).fill(-1);
+  for(let c=0;c<sz;c++){
+    let orig=0;
+    for(let j=0;j<N;j++) if((c>>j)&1) orig|=1<<A[j];
+    const img=tt[orig]; if(img==null||img<0) continue;
+    let pimg=0;
+    for(let j=0;j<N;j++) if((img>>A[j])&1) pimg|=1<<j;
+    ptt[c]=pimg;
+  }
+  let muE=0,muA=0,muI=0;
+  for(let n=1;n<N;n++){
+    const nb=1<<n,ballSz=1<<(N-n);
+    for(let bi=0;bi<nb;bi++){
+      let imgOR=0,imgAND=sz-1,hasImg=false;
+      for(let k=0;k<ballSz;k++){
+        const img=ptt[bi|(k<<n)];
+        if(img<0) continue;
+        imgOR|=img;imgAND&=img;hasImg=true;
+      }
+      if(!hasImg) continue;
+      const diffBits=imgOR^imgAND;
+      let M;
+      if(diffBits===0){M=N;}
+      else{const lsb=diffBits&(-diffBits);M=31-Math.clz32(lsb);}
+      const w=ballSz;
+      if(M<n) muE+=w;else if(M===n) muI+=w;else muA+=w;
+    }
+  }
+  return[muE,muA,muI];
+}
+
+function computeMuFast(tt,N,p,A){
+  if(p===2) return computeMuFastBit(tt,N,A);
+  let muE=0,muA=0,muI=0;
+  for(let n=1;n<N;n++){
+    const nb=p**n,sz=p**(N-n);
+    for(let bi=0;bi<nb;bi++){
+      const imgs=[];
+      for(let k=0;k<sz;k++){
+        const y=new Array(N);let e=bi;
+        for(let j=0;j<n;j++){y[j]=e%p;e=Math.floor(e/p);}
+        e=k;for(let j=n;j<N;j++){y[j]=e%p;e=Math.floor(e/p);}
+        const x=new Array(N).fill(0);for(let j=0;j<N;j++) x[A[j]]=y[j];
+        let cfg=0;for(let j=0;j<N;j++) cfg+=x[j]*p**j;
+        const img=tt[cfg];if(img==null) continue;
+        const iv=[];let t=img;
+        for(let j=0;j<N;j++){iv.push(t%p);t=Math.floor(t/p);}
+        imgs.push(A.map(aj=>iv[aj]));
+      }
+      if(!imgs.length) continue;
+      let M=N;
+      for(let j=0;j<N;j++){if(imgs.some(v=>v[j]!==imgs[0][j])){M=j;break;}}
+      const w=sz;
+      if(M<n) muE+=w;else if(M===n) muI+=w;else muA+=w;
+    }
+  }
+  return[muE,muA,muI];
+}
+
+function benchmarkMu(tt,N,p,nRuns){
+  const A=Array.from({length:N},(_,i)=>i);
+  const t0=performance.now();
+  for(let r=0;r<nRuns;r++){
+    for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[A[i],A[j]]=[A[j],A[i]];}
+    computeMuFast(tt,N,p,A);
+  }
+  return(performance.now()-t0)/nRuns;
+}
+
+// ── bnbLevelContrib: contribución incremental de UN nivel para B&B ──
+function bnbLevelContrib(tt,N,ordering,depth){
+  if(depth<1) return 0;
+  const sz=1<<N,n=depth,nb=1<<n,w=1<<(N-n),mask=nb-1;
+  const OR=new Int32Array(nb),AND=new Int32Array(nb).fill(mask);
+  for(let c=0;c<sz;c++){
+    const img=tt[c];if(img==null||img<0) continue;
+    let bi=0,imgLow=0;
+    for(let j=0;j<n;j++){
+      const pos=ordering[j];
+      if((c>>pos)&1) bi|=1<<j;
+      if((img>>pos)&1) imgLow|=1<<j;
+    }
+    OR[bi]|=imgLow;AND[bi]&=imgLow;
+  }
+  let E=0;
+  for(let bi=0;bi<nb;bi++) if((OR[bi]^AND[bi])!==0) E+=w;
+  return E;
+}
+
+// ── bnbSearch: backtracking con poda por cota inferior parcial ──
+async function bnbSearch(tt,N,p,onProgress,onDone){
+  let best=Infinity;const optima=[];let nodes=0,prunes=0;
+  const ord=new Int32Array(N);const used=new Uint8Array(N);
+  let lastYield=performance.now();
+  async function bt(depth,partial){
+    if(_searchStop) return;
+    if(depth===N){
+      nodes++;
+      const[muE,muA,muI]=computeMuFastBit(tt,N,ord);
+      if(muE<best){best=muE;optima.length=0;optima.push({A:Array.from(ord),muE,muA,muI});}
+      else if(muE===best) optima.push({A:Array.from(ord),muE,muA,muI});
+      return;
+    }
+    const lc=bnbLevelContrib(tt,N,ord,depth);
+    const lb=partial+lc;
+    if(lb>best){prunes++;return;} // poda estricta: lb==best puede tener óptimos iguales
+    for(let g=0;g<N;g++){
+      if(used[g]) continue;
+      ord[depth]=g;used[g]=1;
+      const now=performance.now();
+      if(now-lastYield>=20){
+        onProgress(nodes,prunes,best,optima.length);
+        await new Promise(r=>setTimeout(r,0));
+        lastYield=performance.now();
+        if(_searchStop){used[g]=0;return;}
+      }
+      await bt(depth+1,lb);
+      used[g]=0;
+      if(_searchStop) return;
+    }
+  }
+  await bt(0,0);
+  onDone(optima,best,nodes,prunes,_searchStop);
+}
+
+async function exhaustiveSearch(tt,N,p,onProgress,onDone){
+  const total=factorial(N);const gen=allPerms(N);
+  let best=Infinity,optima=[],count=0;
+  const CHUNK=500;
+  function step(){
+    if(_searchStop){onDone(optima,best,count,true);return;}
+    for(let i=0;i<CHUNK;i++){
+      const{value:A,done}=gen.next();
+      if(done){onDone(optima,best,count,false);return;}
+      count++;
+      const[muE,muA,muI]=computeMuFast(tt,N,p,A);
+      if(muE<best){best=muE;optima=[{A:A.slice(),muE,muA,muI}];}
+      else if(muE===best) optima.push({A:A.slice(),muE,muA,muI});
+    }
+    onProgress(count,total,best,optima.length);
+    setTimeout(step,0);
+  }
+  step();
+}
+
+async function geneticSearch(tt,N,p,onProgress,onDone){
+  const POP=300,GENS=800,MUT=0.20,ELITE=10,CHUNK_GENS=3;
+  function randPerm(){const a=Array.from({length:N},(_,i)=>i);for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function ox1(p1,p2){const n=p1.length;const a=Math.floor(Math.random()*n),b=a+Math.floor(Math.random()*(n-a))+1;const seg=p1.slice(a,b),rest=p2.filter(x=>!seg.includes(x));return[...rest.slice(0,a),...seg,...rest.slice(a)];}
+  function mutate(perm){const c=perm.slice();const i=Math.floor(Math.random()*N),j=Math.floor(Math.random()*N);[c[i],c[j]]=[c[j],c[i]];return c;}
+  let pop=Array.from({length:POP},randPerm);
+  let fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
+  let bestEver=Math.min(...fits),bestPerm=pop[fits.indexOf(bestEver)].slice();
+  let gen=0;
+  function step(){
+    if(_searchStop){onDone([{A:bestPerm,muE:bestEver}],bestEver,gen,true);return;}
+    for(let g=0;g<CHUNK_GENS&&gen<GENS;g++,gen++){
+      const ranked=fits.map((f,i)=>({f,i})).sort((a,b)=>a.f-b.f);
+      const elite=ranked.slice(0,ELITE).map(r=>pop[r.i].slice());
+      const newPop=[...elite];
+      while(newPop.length<POP){
+        const pick=()=>{const i1=Math.floor(Math.random()*POP),i2=Math.floor(Math.random()*POP);return pop[fits[i1]<fits[i2]?i1:i2];};
+        let child=ox1(pick(),pick());
+        if(Math.random()<MUT) child=mutate(child);
+        newPop.push(child);
+      }
+      pop=newPop;fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
+      const curBest=Math.min(...fits);
+      if(curBest<bestEver){bestEver=curBest;bestPerm=pop[fits.indexOf(curBest)].slice();}
+    }
+    onProgress(gen,GENS,bestEver,bestPerm);
+    if(gen<GENS) setTimeout(step,0);
+    else onDone([{A:bestPerm,muE:bestEver}],bestEver,gen,false);
+  }
+  step();
+}
+
+// ── Modal ──
+function closeSearchModal(){
+  document.getElementById('searchModal').style.display='none';
+  _pendingSearch=null;
+  document.getElementById('searchBtn').disabled=false;
+}
+
+function proceedSearch(mode){
+  document.getElementById('searchModal').style.display='none';
+  if(_pendingSearch) _doSearch(Object.assign(_pendingSearch,{mode}));
+  _pendingSearch=null;
+}
+
+async function startSearch(){
+  const net=getCurrentNetwork();
+  if(!net||net.tt==null){alert('Selecciona una red antes de buscar.');return;}
+  const N=net.N,p=net.p,tt=net.tt;
+  _searchStop=false;
+  document.getElementById('searchBtn').disabled=true;
+  const prog=document.getElementById('searchProgress');
+  prog.style.display='block';
+  document.getElementById('searchProgressText').textContent='Midiendo velocidad…';
+  document.getElementById('searchProgBar').style.width='0%';
+  document.getElementById('searchProgressSub').textContent='';
+  await new Promise(r=>setTimeout(r,30));
+  const msPerCall=benchmarkMu(tt,N,p,5);
+  prog.style.display='none';
+  const exTotal=factorial(N);
+  const exMs=exTotal*msPerCall;
+  const gaMs=300*800*msPerCall;
+  const bnbBest=exMs*0.01,bnbWorst=exMs;
+  const exRow=document.getElementById('modalExRow');
+  exRow.className='smodal-row';
+  if(exMs>86400000) exRow.classList.add('sr-danger');
+  else if(exMs>60000) exRow.classList.add('sr-warn');
+  const bnbRow=document.getElementById('modalBnbRow');
+  bnbRow.className='smodal-row';
+  if(bnbBest>86400000) bnbRow.classList.add('sr-danger');
+  else if(bnbBest>60000) bnbRow.classList.add('sr-warn');
+  document.getElementById('modalTitle').textContent=`Búsqueda de ordenamientos — N=${N}, p=${p}`;
+  document.getElementById('modalExTotal').textContent=exTotal.toLocaleString();
+  document.getElementById('modalExTime').textContent=`Tiempo estimado: ${fmtTime(exMs)}`;
+  document.getElementById('modalBnbTime').textContent=`Tiempo estimado: ${fmtTime(bnbBest)} – ${fmtTime(bnbWorst)} (depende de la tasa de poda)`;
+  document.getElementById('modalGaTime').textContent=`Tiempo estimado: ${fmtTime(gaMs)}`;
+  const btnEx=document.getElementById('modalBtnEx');
+  if(exMs>172800000){btnEx.disabled=true;document.getElementById('modalExTime').textContent+=` ⚠ No recomendado`;}
+  else btnEx.disabled=false;
+  _pendingSearch={tt,N,p};
+  document.getElementById('searchModal').style.display='flex';
+  document.getElementById('searchBtn').disabled=false;
+}
+
+function _doSearch({tt,N,p,mode}){
+  _searchStop=false;
+  document.getElementById('searchBtn').disabled=true;
+  document.getElementById('stopSearchBtn').style.display='block';
+  document.getElementById('searchProgress').style.display='block';
+  document.getElementById('searchProgressText').textContent=mode==='exhaustive'?'Búsqueda exhaustiva…':mode==='bnb'?'B&B en ejecución…':'AG en ejecución…';
+  document.getElementById('searchProgBar').style.width='0%';
+  document.getElementById('searchProgressSub').textContent='';
+  document.getElementById('optimaList').style.display='none';
+  document.getElementById('gaLog').style.display='none';
+  document.getElementById('gaLog').innerHTML='';
+  if(mode==='exhaustive'){
+    exhaustiveSearch(tt,N,p,
+      (count,tot,best,nOpt)=>{
+        const pct=(count/tot*100).toFixed(1);
+        document.getElementById('searchProgressText').textContent=`Exhaustiva: ${count.toLocaleString()} / ${tot.toLocaleString()} (${pct}%)`;
+        document.getElementById('searchProgBar').style.width=pct+'%';
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}  ·  ${nOpt} ordenamiento${nOpt>1?'s':''}`;
+      },
+      (optima,best,count,stopped)=>{
+        document.getElementById('searchBtn').disabled=false;
+        document.getElementById('stopSearchBtn').style.display='none';
+        document.getElementById('searchProgBar').style.width=stopped?'50%':'100%';
+        document.getElementById('searchProgressText').textContent=stopped?`Detenida en ${count.toLocaleString()} perms.`:`Completa — ${count.toLocaleString()} permutaciones.`;
+        document.getElementById('searchProgressSub').textContent=`${optima.length} ordenamiento${optima.length>1?'s':''} óptimo${optima.length>1?'s':''} con μ_E = ${best}`;
+        showOptimaList(optima,best,stopped);
+      }
+    );
+  } else if(mode==='bnb'){
+    const log=document.getElementById('gaLog');log.style.display='block';
+    log.innerHTML=`<div>Branch &amp; Bound — poda por cota μ_E parcial. Garantiza todos los óptimos.</div>`;
+    bnbSearch(tt,N,p,
+      (nodes,prunes,best,nOpt)=>{
+        const pruneRate=nodes+prunes>0?(prunes/(nodes+prunes)*100).toFixed(1):'—';
+        document.getElementById('searchProgressText').textContent=`B&B: ${nodes.toLocaleString()} hojas · ${prunes.toLocaleString()} podas (${pruneRate}%)`;
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}  ·  ${nOpt} óptimo${nOpt>1?'s':''}`;
+        log.innerHTML=`<div>Hojas: ${nodes.toLocaleString()} | Podas: ${prunes.toLocaleString()} (${pruneRate}%) | Mejor μ_E: ${best}</div>`;
+      },
+      (optima,best,nodes,prunes,stopped)=>{
+        document.getElementById('searchBtn').disabled=false;
+        document.getElementById('stopSearchBtn').style.display='none';
+        document.getElementById('searchProgBar').style.width=stopped?'50%':'100%';
+        const pruneRate=nodes+prunes>0?(prunes/(nodes+prunes)*100).toFixed(1):'—';
+        document.getElementById('searchProgressText').textContent=stopped?`B&B detenido. Hojas: ${nodes.toLocaleString()}, podas: ${prunes.toLocaleString()}`:`B&B completo — ${nodes.toLocaleString()} hojas, ${pruneRate}% podado.`;
+        document.getElementById('searchProgressSub').textContent=`${optima.length} ordenamiento${optima.length>1?'s':''} óptimo${optima.length>1?'s':''} con μ_E = ${best}`+(stopped?' (parcial)':'');
+        log.innerHTML+=`<div style="color:var(--teal);font-weight:600">── ${stopped?'Detenido':'Completo'}: μ_E=${best}, poda ${pruneRate}% ──</div>`;
+        log.scrollTop=log.scrollHeight;
+        showOptimaList(optima,best,stopped);
+      }
+    );
+  } else {
+    const log=document.getElementById('gaLog');log.style.display='block';
+    log.innerHTML=`<div>N=${N}: AG (pop=300, gen=800, OX1+swap) — resultado heurístico</div>`;
+    geneticSearch(tt,N,p,
+      (gen,maxGen,best,bestPerm)=>{
+        const pct=(gen/maxGen*100).toFixed(1);
+        document.getElementById('searchProgressText').textContent=`Gen ${gen}/${maxGen}  (${pct}%)`;
+        document.getElementById('searchProgBar').style.width=pct+'%';
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}`;
+        log.innerHTML+=`<div>Gen ${gen}: μ_E=${best}  π=[${bestPerm.join(',')}]</div>`;
+        log.scrollTop=log.scrollHeight;
+      },
+      (optima,best,gen,stopped)=>{
+        document.getElementById('searchBtn').disabled=false;
+        document.getElementById('stopSearchBtn').style.display='none';
+        document.getElementById('searchProgBar').style.width=stopped?'50%':'100%';
+        document.getElementById('searchProgressText').textContent=stopped?`Detenido en gen ${gen}`:`Completo — ${gen} generaciones.`;
+        document.getElementById('searchProgressSub').textContent=`Mejor μ_E = ${best}  (pseudo-óptimo)`;
+        log.innerHTML+=`<div style="color:var(--teal);font-weight:600">── Fin AG: μ_E=${best} ──</div>`;
+        log.scrollTop=log.scrollHeight;
+        showOptimaList(optima,best,stopped);
+      }
+    );
+  }
+}
+
+function stopSearch(){_searchStop=true;}
+
+function updateSearchHint(){
+  const net=getCurrentNetwork();if(!net) return;
+  document.getElementById('searchBtn').disabled=false;
+  document.getElementById('searchHint').textContent=`N=${net.N}  ·  ${factorial(net.N).toLocaleString()} ordenamientos posibles`;
+}
+
+function showOptimaList(optima,best,partial){
+  const list=document.getElementById('optimaList');
+  const items=document.getElementById('optimaItems');
+  const title=document.getElementById('optimaListTitle');
+  list.style.display='block';
+  title.textContent=partial?`Mejor encontrado (búsqueda incompleta): μ_E = ${best}`:`${optima.length===1?'1 ordenamiento':optima.length+' ordenamientos'} óptimo${optima.length>1?'s':''} con μ_E = ${best}`;
+  items.innerHTML='';
+  const MAX_SHOW=50;
+  optima.slice(0,MAX_SHOW).forEach(opt=>{
+    const div=document.createElement('div');div.className='optima-item';
+    div.innerHTML=`<span class="opt-perm">[${opt.A.join(',')}]</span><span class="opt-score">μ_E=${opt.muE}</span><button class="opt-use" onclick="useOrdering([${opt.A.join(',')}])">Use ↑</button>`;
+    items.appendChild(div);
+  });
+  if(optima.length>MAX_SHOW){
+    const more=document.createElement('div');
+    more.style.cssText='font-size:.72rem;color:var(--muted);padding:.3rem .65rem;font-style:italic';
+    more.textContent=`… y ${optima.length-MAX_SHOW} ordenamientos más con el mismo μ_E`;
+    items.appendChild(more);
+  }
+}
+
+function useOrdering(A){
+  document.getElementById('orderingInput').value=A.join(' ');
+  document.querySelectorAll('.optima-item').forEach(el=>el.classList.remove('active-opt'));
+  event.target.closest('.optima-item').classList.add('active-opt');
+  compute();
+}
+
+// ═══════════════════════════════════════════════════════════
 // TAB SYSTEM
 // ═══════════════════════════════════════════════════════════
 
@@ -793,6 +1249,7 @@ function switchTab(id, btn) {
   document.getElementById('orderingInput').value = net.optimal.join(' ');
   renderGenePills(net.genes, 'genePills');
   renderOrderingPills(net.optimal, net.genes);
+  updateSearchHint();
 })();
 </script>
 </body>

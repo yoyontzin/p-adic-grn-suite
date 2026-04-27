@@ -338,18 +338,38 @@ consistente en portada, metadatos de paquete y archivos de citación.
 \VerbatimInput{../Paper-II.v3.2/supplementary/data/VERIFICACION_SIMETRIAS_Y_NUMEROS.md}
 
 \section{Applets y UI web reportada}
-\subsection{Estado actual}
-El demo web institucional incluye frontend HTML, backend mínimo y guía de despliegue para visualización y pruebas funcionales.
+\subsection{Estado actual y alcance}
+El demo web institucional comprende dos applets HTML autocontenidos (sin dependencias de servidor externo), un backend mínimo de referencia y guía de despliegue. Los applets implementan la metodología p-ádica completa directamente en el navegador, incluyendo: clasificación E/A/I de bolas p-ádicas, visualización fractal animada con rotación progresiva por nivel, grafo de transición funcional con detección de ciclos, análisis polinomial ANF mediante transformada de Möbius, búsqueda interactiva de orderings óptimos y soporte para redes personalizadas vía CSV.
 
-\subsection{Alcance operativo del demo web}
-La interfaz HTML institucional presentada en este expediente corresponde a la
-versión operativa utilizada para documentación y capturas del demo.
+\subsection{Applet principal: p-adic Ball Structure — GRN Animation}
+\texttt{padic-balls-animation.html} — applet autocontenido que implementa:
+\begin{itemize}
+  \item Clasificación E/A/I de bolas p-ádicas con visualización fractal animada y rotación progresiva por nivel de anidamiento.
+  \item Grafo de transición funcional $x \to f(x)$ con detección automática de ciclos y estructura $\rho$ (pestaña \emph{Transition graph}).
+  \item Análisis polinomial en Forma Normal Algebraica (ANF) mediante transformada de Möbius sobre $\mathbb{F}_2^N$ — $O(N \cdot 2^N)$ — con detección de identidades, simetrías y factorizaciones (pestaña \emph{Polynomial structure}).
+  \item Búsqueda de ordering óptimo: exhaustiva, algoritmo genético (GA) y branch-and-bound.
+  \item Soporte para redes personalizadas vía CSV (formato vectores de bits o enteros decimales).
+  \item Redes incluidas: \textit{C. elegans} ($N=8, p=2$), \textit{Drosophila melanogaster} ($N=6, p=2$), \textit{A. thaliana} ($N=13, p=2$).
+\end{itemize}
+
+\VerbatimInput{web-demo-institucional/padic-balls-animation.html}
+
+\subsection{Applet secundario: p-adic GRN Demo}
+\texttt{padic-grn-demo.html} — applet de visualización de perfil de métricas $\mu_E$, $\mu_A$, $\mu_I$ por nivel de resolución, con tabla de resultados y gráfica de perfil comparativo.
+
+\VerbatimInput{web-demo-institucional/padic-grn-demo.html}
+
+\subsection{Datos de ejemplo para redes personalizadas}
+Archivos CSV de ejemplo incluidos para prueba y demostración del soporte de redes arbitrarias:
+\VerbatimInput{web-demo-institucional/boolean_N4_example.csv}
+\VerbatimInput{web-demo-institucional/z2mod16_N4_p2.csv}
+
+\subsection{Registro de cambios del demo web}
+\VerbatimInput{web-demo-institucional/CHANGELOG.md}
 
 \subsection{README del demo web}
 \VerbatimInput{web-demo-institucional/README.md}
-\subsection{Frontend HTML}
-\VerbatimInput{web-demo-institucional/frontend/index.html}
-\subsection{Backend}
+\subsection{Backend de referencia}
 \VerbatimInput{web-demo-institucional/backend/app.py}
 \subsection{Guía de despliegue}
 \VerbatimInput{web-demo-institucional/docs/DEPLOY.md}
