@@ -1,0 +1,95 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\usepackage{hyperref}
+\usepackage{orcidlink}
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,fontsize=\small}
+\title{Dossier de Registro: padic-grn-search\\\large Búsqueda y certificación de ordenamientos p-ádicos}
+\author{
+Jesús Rogelio Pérez-Buendía\,\orcidlink{0000-0002-7739-4779}
+\and
+Víctor Nopal-Coello\,\orcidlink{0000-0003-2608-3636}
+\and
+Yuriria Cortés-Poza\,\orcidlink{0000-0003-1856-9206}
+}
+\date{2026-04-25}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\texttt{padic-grn-search} implementa estrategias de búsqueda para identificar y certificar ordenamientos relevantes en sistemas dinámicos discretos bajo el criterio de métricas p-ádicas. El dossier integra la justificación funcional del software, código ejecutable, pruebas automáticas y evidencia de corridas reproducibles para su registro formal.
+\end{abstract}
+\tableofcontents
+\newpage
+
+\section{Introducción}
+Este software extiende el análisis del núcleo \texttt{padic-grn-core} mediante rutinas de optimización y exploración del espacio de permutaciones. Incluye métodos de búsqueda genética base y búsqueda exhaustiva para escenarios de tamaño controlado, priorizando verificabilidad de resultados y trazabilidad metodológica.
+
+En términos de uso, \texttt{padic-grn-search} permite pasar de la evaluación de un ordering individual a la exploración sistemática de candidatos, facilitando estudios comparativos y procesos de validación en aplicaciones de redes de regulación genética y otros sistemas discretos.
+
+\section{Datos generales}
+\begin{itemize}
+  \item Nombre: \texttt{padic-grn-search}
+  \item Versión: \texttt{0.1.0}
+  \item Lenguaje: Python 3.10+
+  \item Tipo: optimización y certificación de orderings p-ádicos
+  \item DOI: \texttt{DOI\_SOFTWARE\_SEARCH}
+\end{itemize}
+
+\subsection{Correos electrónicos oficiales de autores}
+\begin{itemize}
+  \item Jesús Rogelio Pérez-Buendía: \texttt{rogelio.perez@cimat.mx}
+  \item Víctor Nopal-Coello: \texttt{victor\_nopal@uaeh.edu.mx}
+  \item Yuriria Cortés-Poza: \texttt{yuriria.cortes@iimas.unam.mx}
+\end{itemize}
+
+\subsection{Financiamiento}
+\begin{itemize}
+  \item Modelos matemáticos y computacionales no convencionales para el estudio y análisis de problemas relevantes en Biología, CF 2019/217367.
+\end{itemize}
+
+\section{Autoría oficial}
+\VerbatimInput{../../../AUTORIA-ORCID-DOI-OFICIAL.md}
+
+\section{Documentación funcional completa}
+\subsection{README}
+\VerbatimInput{../README.md}
+\subsection{Manual de usuario}
+\VerbatimInput{../MANUAL-USUARIO.md}
+\subsection{Manual técnico}
+\VerbatimInput{../MANUAL-TECNICO.md}
+\subsection{Configuración de paquete}
+\VerbatimInput{../pyproject.toml}
+\subsection{Cita académica}
+\VerbatimInput{../CITATION.cff}
+\subsection{Licencia}
+\VerbatimInput{../LICENSE}
+\subsection{Configuración de pruebas}
+\VerbatimInput{../pytest.ini}
+
+\section{Código fuente completo}
+\subsection{Inicialización de paquete}
+\VerbatimInput{../src/padic_grn_search/__init__.py}
+\subsection{CLI}
+\VerbatimInput{../src/padic_grn_search/cli.py}
+\subsection{Motor de búsqueda}
+\VerbatimInput{../src/padic_grn_search/engine.py}
+
+\section{Pruebas completas}
+\subsection{Prueba smoke}
+\VerbatimInput{../tests/test_smoke.py}
+\subsection{Pruebas de motor}
+\VerbatimInput{../tests/test_engine.py}
+
+\section{Evidencia textual de validación}
+\subsection{Log de ejecución de pruebas}
+\VerbatimInput{validacion_search_pytest.txt}
+\subsection{Salida GA}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/search_ga_p2.json}
+\subsection{Salida exhaustiva min muE}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/search_bbmin_p2.json}
+\subsection{Salida exhaustiva max muA}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/search_bbmax_p2.json}
+
+\end{document}

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padic-grn-core"
+version = "0.1.0"
+description = "Core general para metricas p-adicas en sistemas discretos."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Licencia propietaria para uso academico no comercial"}
+authors = [
+  {name = "Jesús Rogelio Pérez-Buendía", email = "rogelio.perez@cimat.mx"},
+  {name = "Víctor Nopal-Coello", email = "victor_nopal@uaeh.edu.mx"},
+  {name = "Yuriria Cortés-Poza", email = "yuriria.cortes@iimas.unam.mx"}
+]
+dependencies = []
+
+[project.scripts]
+pgcore-score-ordering = "padic_grn_core.cli:main_score_ordering"
+pgcore-batch-scores = "padic_grn_core.cli:main_batch_scores"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

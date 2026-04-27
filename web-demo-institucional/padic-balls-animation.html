@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>p-adic Ball Structure — GRN Animation</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2744;--navy2:#243660;--navy3:#1e3a5f;
+  --red:#ef4444;--red-bg:#fef2f2;--red-border:#fca5a5;--red-dark:#b91c1c;
+  --blue:#3b82f6;--blue-bg:#eff6ff;--blue-border:#bfdbfe;--blue-dark:#1d4ed8;
+  --gray:#94a3b8;--gray-bg:#f8fafc;--gray-border:#cbd5e1;--gray-dark:#475569;
+  --green:#16a34a;--border:#e2e8f0;--bg:#f8f7f4;--white:#fff;
+  --text:#1a1a1a;--muted:#64748b;--lighter:#94a3b8;
+  --mono:'SF Mono','Fira Mono','Cascadia Code',monospace;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+
+/* ── Header ── */
+.site-header{background:var(--navy);color:#fff;padding:1.4rem 2rem 1.2rem;border-bottom:3px solid #2d3f6b}
+.site-header h1{font-size:1.2rem;font-weight:500;letter-spacing:.01em;margin-bottom:.2rem}
+.site-header .subtitle{font-size:.82rem;color:#94a3b8;font-style:italic}
+.site-header .authors{font-size:.72rem;color:#64748b;margin-top:.35rem}
+
+/* ── Main layout ── */
+.main{max-width:1200px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* ── Panel ── */
+.panel{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem}
+.panel-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.9rem;padding-bottom:.45rem;border-bottom:1px solid #f1f5f9}
+
+/* ── Controls ── */
+label{display:block;font-size:.78rem;color:#4b5563;margin-bottom:.25rem;margin-top:.75rem}
+label:first-of-type{margin-top:0}
+select,input[type=text]{width:100%;padding:.38rem .6rem;border:1px solid #d1d5db;border-radius:6px;font-size:.8rem;font-family:inherit;background:var(--white);color:var(--text)}
+select:focus,input:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:transparent}
+
+.btn-row{display:flex;gap:.4rem;margin-top:.75rem;flex-wrap:wrap}
+button{padding:.36rem .75rem;border:1px solid #d1d5db;border-radius:6px;font-size:.78rem;cursor:pointer;background:var(--white);color:#374151;font-family:inherit;transition:background .12s}
+button:hover{background:#f3f4f6}
+button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.primary:hover{background:var(--navy2)}
+button.accent{background:#0f766e;color:#fff;border-color:#0f766e}
+button.accent:hover{background:#0d9488}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── Level slider ── */
+.level-ctrl{margin-top:1rem}
+.level-label{font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
+.level-slider-wrap{display:flex;align-items:center;gap:.6rem}
+input[type=range]{flex:1;accent-color:var(--navy)}
+.level-num{font-size:1.1rem;font-weight:700;color:var(--navy);min-width:2.5rem;text-align:center;font-variant-numeric:tabular-nums}
+
+/* ── Score cards ── */
+.scores-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:.9rem}
+.sc{border-radius:7px;padding:.65rem .6rem;text-align:center}
+.sc.E{background:var(--red-bg);border:1px solid var(--red-border)}
+.sc.A{background:var(--blue-bg);border:1px solid var(--blue-border)}
+.sc.I{background:var(--gray-bg);border:1px solid var(--gray-border)}
+.sc-lbl{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.2rem}
+.sc-lbl.E{color:var(--red-dark)}.sc-lbl.A{color:var(--blue-dark)}.sc-lbl.I{color:var(--gray-dark)}
+.sc-val{font-size:1.3rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.sc-val.E{color:var(--red)}.sc-val.A{color:var(--blue)}.sc-val.I{color:var(--gray)}
+.sc-sub{font-size:.62rem;color:var(--lighter);margin-top:.15rem}
+
+/* ── Invariant display ── */
+.invariant{background:#f1f5f9;border-radius:6px;padding:.5rem .75rem;font-size:.74rem;margin-top:.75rem;font-family:var(--mono);color:#334155;word-break:break-all}
+
+/* ── Legend ── */
+.legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem;font-size:.76rem;color:var(--muted)}
+.legend-item{display:flex;align-items:center;gap:.3rem}
+.legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* ── Viz area ── */
+.viz-area{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.2rem;min-height:520px}
+.viz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
+.viz-title{font-size:.9rem;font-weight:600;color:var(--navy)}
+.viz-subtitle{font-size:.76rem;color:var(--muted);margin-top:.15rem}
+
+#svgContainer{width:100%;overflow-x:auto}
+svg{display:block;font-family:inherit}
+
+/* ── Histogram ── */
+.hist-wrap{width:100%;overflow-x:auto;padding:.5rem 0}
+canvas{display:block;width:100%;max-width:700px;margin:0 auto}
+
+/* ── Status ── */
+.status-bar{font-size:.74rem;color:var(--muted);margin-top:.5rem;min-height:1.2em}
+.status-bar.running{color:var(--blue);font-weight:500}
+.status-bar.done{color:var(--green);font-weight:500}
+.status-bar.error{color:var(--red);font-weight:500}
+
+/* ── Info box ── */
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.7rem .85rem;font-size:.78rem;color:#1e3a5f;line-height:1.6;margin-top:.85rem}
+
+/* ── Footer ── */
+footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);border-top:1px solid var(--border);margin-top:1.5rem}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>p-adic Ball Structure of Z<sub>p</sub> — GRN Animation</h1>
+  <div class="subtitle">Visualizing how a GRN's transition function classifies p-adic balls as Expanding / Attracting / Indifferent</div>
+  <div class="authors">Pérez-Buendía · Nopal-Coello · Cortés-Poza — IIMAS / CIMAT / UAEH, 2026</div>
+</header>
+
+<div class="main">
+
+<!-- ── LEFT: Controls ── -->
+<div>
+  <div class="panel">
+    <div class="panel-title">Network</div>
+
+    <label>Organism</label>
+    <select id="netSelect" onchange="onNetChange()">
+      <option value="celegans">C. elegans — N=8, p=2</option>
+      <option value="droso">Drosophila — N=6, p=2</option>
+      <option value="athaliana">A. thaliana — N=13, p=2 (precomputed)</option>
+    </select>
+
+    <label>Ordering A (permutation of 0…N−1)</label>
+    <input type="text" id="orderingInput" value="1 0 2 3 6 5 4 7">
+
+    <div class="btn-row">
+      <button onclick="setOptimal()" class="accent">Optimal π*</button>
+      <button onclick="setIdentity()">Identity</button>
+    </div>
+
+    <div class="btn-row" style="margin-top:.85rem">
+      <button class="primary" id="computeBtn" onclick="runCompute()" style="flex:1">Compute</button>
+    </div>
+    <div class="status-bar" id="statusBar">Select network and press Compute.</div>
+
+    <div class="level-ctrl">
+      <div class="level-label">Level: <span id="levelDisplay">1</span> / <span id="maxLevelDisplay">—</span></div>
+      <div class="level-slider-wrap">
+        <input type="range" id="levelSlider" min="1" max="12" value="1" oninput="onSlider()" disabled>
+        <span class="level-num" id="levelNum">1</span>
+      </div>
+      <div class="btn-row" style="margin-top:.6rem">
+        <button id="prevBtn" onclick="prevLevel()" disabled>◀ Prev</button>
+        <button id="playBtn" onclick="togglePlay()" disabled style="flex:1">▶ Play</button>
+        <button id="nextBtn" onclick="nextLevel()" disabled>Next ▶</button>
+      </div>
+    </div>
+
+    <div class="scores-row" id="scoresRow" style="display:none">
+      <div class="sc E"><div class="sc-lbl E">E(n)</div><div class="sc-val E" id="scE">—</div><div class="sc-sub" id="scEsub"></div></div>
+      <div class="sc A"><div class="sc-lbl A">A(n)</div><div class="sc-val A" id="scA">—</div><div class="sc-sub" id="scAsub"></div></div>
+      <div class="sc I"><div class="sc-lbl I">I(n)</div><div class="sc-val I" id="scI">—</div><div class="sc-sub" id="scIsub"></div></div>
+    </div>
+
+    <div class="invariant" id="invariantLine" style="display:none"></div>
+
+    <div class="info-box" style="margin-top:.85rem">
+      <strong>Color code:</strong> each circle = one p-adic ball at level n.<br>
+      <span style="color:var(--red-dark);font-weight:600">Red (E)</span> — ball <em>expands</em> under f: images spread to a larger ball.<br>
+      <span style="color:var(--blue-dark);font-weight:600">Blue (A)</span> — ball <em>attracts</em>: images contract to a smaller ball.<br>
+      <span style="color:var(--gray-dark);font-weight:600">Gray (I)</span> — ball is <em>indifferent</em>: images stay at same scale.
+    </div>
+  </div>
+</div>
+
+<!-- ── RIGHT: Visualization ── -->
+<div>
+  <div class="viz-area">
+    <div class="viz-header">
+      <div>
+        <div class="viz-title" id="vizTitle">p-adic Ball Decomposition</div>
+        <div class="viz-subtitle" id="vizSubtitle">Press Compute to begin</div>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Expansion</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Attraction</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--gray)"></span>Indifferent</span>
+      </div>
+    </div>
+    <div id="vizBody">
+      <div style="color:var(--lighter);text-align:center;padding:4rem 1rem;font-size:.9rem">
+        Select a network and press <strong style="color:var(--muted)">Compute</strong> to visualize the p-adic ball structure.
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- main -->
+
+<footer>
+  Pérez-Buendía et al. (2026) &middot; CIMAT Mérida &middot; IIMAS UNAM &middot; UAEH
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// TRANSITION TABLE DATA
+// ═══════════════════════════════════════════════════════════
+
+// Fuente: Huang et al. (2013) Biomed Eng Online 12(S1):S1. DOI:10.1186/1475-925X-12-S1-S1
+const TT_CELEGANS = [
+  0,5,19,23,8,4,24,21,24,20,26,23,24,28,24,28,
+  80,21,83,23,88,20,88,21,88,20,90,23,88,28,88,28,
+  128,133,131,135,136,132,136,133,136,132,154,151,136,140,152,156,
+  192,133,211,151,200,132,216,149,216,148,218,151,216,156,216,156,
+  224,165,227,167,232,164,232,165,232,164,250,183,232,172,248,188,
+  224,229,243,247,232,228,248,245,248,244,250,247,248,252,248,252,
+  224,165,227,167,232,164,232,165,232,164,234,167,232,172,232,172,
+  224,229,227,231,232,228,232,229,232,228,250,247,232,236,248,252,
+  0,4,2,7,8,4,8,4,8,4,26,22,8,12,24,28,
+  64,4,82,23,72,4,88,20,88,20,90,22,88,28,88,28,
+  128,132,130,135,136,132,136,132,136,132,138,134,136,140,136,140,
+  192,132,194,135,200,132,200,132,200,132,218,150,200,140,216,156,
+  224,164,226,167,232,164,232,164,232,164,234,166,232,172,232,172,
+  224,228,226,231,232,228,232,228,232,228,250,246,232,236,248,252,
+  224,164,226,167,232,164,232,164,232,164,234,166,232,172,232,172,
+  224,228,226,231,232,228,232,228,232,228,234,230,232,236,232,236
+];
+
+const TT_DROSO = [0,3,0,7,0,1,0,5,0,3,0,3,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,56,59,56,63,32,33,32,37,40,43,40,43,32,33,32,33,48,49,48,49,32,33,32,33,32,33,32,33,32,33,32,33];
+
+// A. thaliana: precomputed E/A/I per level (golden values)
+const ATH_PRECOMPUTED = {
+  N: 13, p: 2,
+  muE: 26776, muA: 53880, muI: 17648,
+  E: {1:0,2:4,3:4,4:4,5:8,6:16,7:48,8:46,9:88,10:243,11:112,12:0},
+  A: {1:0,2:0,3:4,4:12,5:24,6:40,7:70,8:210,9:297,10:781,11:496,12:4096},
+  I: {1:2,2:0,3:0,4:0,5:0,6:8,7:10,8:0,9:127,10:0,11:1440,12:0},
+  // Ball types per level needed for coloring
+  // For A. thaliana we only store aggregate counts — balls shown as histogram
+};
+
+const NETWORKS = {
+  celegans: {name:'C. elegans (cell fate)', N:8, p:2, optimal:[1,0,2,3,6,5,4,7], tt:TT_CELEGANS, precomputed:false},
+  droso:    {name:'Drosophila melanogaster', N:6, p:2, optimal:[0,5,3,4,2,1], tt:TT_DROSO, precomputed:false},
+  athaliana:{name:'A. thaliana (flowering)', N:13, p:2, optimal:[12,3,4,8,5,1,7,2,10,11,9,6,0], tt:null, precomputed:true},
+};
+
+// ═══════════════════════════════════════════════════════════
+// ALGORITHM
+// ═══════════════════════════════════════════════════════════
+
+// CORRECTO: little-endian, v[0]=LSB — igual que compute_mu.py
+function configToVector(config, N, p) {
+  const v = new Array(N);
+  let t = config;
+  for (let i = 0; i < N; i++) { v[i] = t % p; t = Math.floor(t / p); }
+  return v;  // v[0] = LSB
+}
+function vectorToConfig(v, N, p) {
+  let c = 0;
+  for (let i = 0; i < N; i++) c += v[i] * Math.pow(p, i);
+  return c;
+}
+
+function classifyBall(n, ballIndex, N, p, A, tt) {
+  // Bola B_{n,ballIndex}: puntos y con y[0..n-1] fijos (little-endian de ballIndex),
+  // y[n..N-1] libres. Luego x[A[j]] = y[j]; imagen en coordenadas A.
+  const sz = Math.pow(p, N - n);
+  const imgs = [];
+  for (let k = 0; k < sz; k++) {
+    const y = new Array(N);
+    let e = ballIndex;
+    for (let j = 0; j < n; j++) { y[j] = e % p; e = Math.floor(e / p); }
+    e = k;
+    for (let j = n; j < N; j++) { y[j] = e % p; e = Math.floor(e / p); }
+    // x tal que x[A[j]] = y[j]
+    const x = new Array(N).fill(0);
+    for (let j = 0; j < N; j++) x[A[j]] = y[j];
+    const cfg = vectorToConfig(x, N, p);
+    const imgCfg = tt[cfg];
+    if (imgCfg === undefined || imgCfg === null) continue;
+    const imgX = configToVector(imgCfg, N, p);
+    // imagen en coordenadas A: y_img[j] = imgX[A[j]]
+    imgs.push(A.map(aj => imgX[aj]));
+  }
+  if (!imgs.length) return 'A';
+  let M = N;
+  for (let j = 0; j < N; j++) {
+    const d0 = imgs[0][j];
+    if (imgs.some(v => v[j] !== d0)) { M = j; break; }
+  }
+  if (M < n) return 'E';
+  if (M === n) return 'I';
+  return 'A';
+}
+
+function computeAllLevels(N, p, A, tt) {
+  // Returns: levelData[n] = array of 'E'/'A'/'I' for each ball at level n
+  const levelData = {};
+  for (let n = 1; n < N; n++) {
+    const nb = Math.pow(p, n);
+    const types = [];
+    for (let m = 0; m < nb; m++) types.push(classifyBall(n, m, N, p, A, tt));
+    levelData[n] = types;
+  }
+  return levelData;
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+
+let state = {
+  net: null,
+  A: null,
+  levelData: null,  // {n: ['E','A','I',...]}
+  currentLevel: 1,
+  playing: false,
+  playTimer: null,
+  isPrecomputed: false,
+  preData: null,  // for A. thaliana
+};
+
+// ═══════════════════════════════════════════════════════════
+// EVENT HANDLERS
+// ═══════════════════════════════════════════════════════════
+
+function onNetChange() {
+  const key = document.getElementById('netSelect').value;
+  const net = NETWORKS[key];
+  document.getElementById('orderingInput').value = net.optimal.join(' ');
+  resetViz();
+}
+
+function setOptimal() {
+  const key = document.getElementById('netSelect').value;
+  document.getElementById('orderingInput').value = NETWORKS[key].optimal.join(' ');
+}
+function setIdentity() {
+  const key = document.getElementById('netSelect').value;
+  const N = NETWORKS[key].N;
+  document.getElementById('orderingInput').value = Array.from({length:N},(_,i)=>i).join(' ');
+}
+
+function parseOrdering() {
+  const key = document.getElementById('netSelect').value;
+  const N = NETWORKS[key].N;
+  const parts = document.getElementById('orderingInput').value.trim().split(/[\s,;]+/).map(Number);
+  if (parts.length !== N || parts.some(isNaN)) return null;
+  const s = new Set(parts);
+  if (s.size !== N || Math.min(...parts) !== 0 || Math.max(...parts) !== N-1) return null;
+  return parts;
+}
+
+function setStatus(msg, cls) {
+  const el = document.getElementById('statusBar');
+  el.textContent = msg; el.className = 'status-bar ' + (cls||'');
+}
+
+async function runCompute() {
+  const key = document.getElementById('netSelect').value;
+  const net = NETWORKS[key];
+  const A = parseOrdering();
+  if (!A) { setStatus('Invalid permutation', 'error'); return; }
+
+  document.getElementById('computeBtn').disabled = true;
+  setStatus('Computing…', 'running');
+  resetViz();
+  await new Promise(r => setTimeout(r, 20));
+
+  state.net = net;
+  state.A = A;
+  state.currentLevel = 1;
+
+  if (net.precomputed) {
+    // A. thaliana: use precomputed data
+    state.isPrecomputed = true;
+    state.preData = ATH_PRECOMPUTED;
+    state.levelData = null;
+    setStatus('Using precomputed data (N=13 too slow for browser).', 'done');
+  } else {
+    state.isPrecomputed = false;
+    state.preData = null;
+    const t0 = performance.now();
+    state.levelData = computeAllLevels(net.N, net.p, A, net.tt);
+    const elapsed = ((performance.now()-t0)/1000).toFixed(2);
+    setStatus(`Done in ${elapsed}s`, 'done');
+  }
+
+  document.getElementById('computeBtn').disabled = false;
+
+  // Enable controls
+  const maxN = net.N - 1;
+  const slider = document.getElementById('levelSlider');
+  slider.min = 1; slider.max = maxN; slider.value = 1; slider.disabled = false;
+  document.getElementById('maxLevelDisplay').textContent = maxN;
+  document.getElementById('prevBtn').disabled = false;
+  document.getElementById('nextBtn').disabled = false;
+  document.getElementById('playBtn').disabled = false;
+
+  renderLevel(1);
+}
+
+function onSlider() {
+  const n = parseInt(document.getElementById('levelSlider').value);
+  renderLevel(n);
+}
+
+function prevLevel() {
+  if (state.currentLevel > 1) renderLevel(state.currentLevel - 1);
+}
+function nextLevel() {
+  const maxN = (state.net ? state.net.N - 1 : 1);
+  if (state.currentLevel < maxN) renderLevel(state.currentLevel + 1);
+}
+
+function togglePlay() {
+  if (state.playing) {
+    clearInterval(state.playTimer);
+    state.playing = false;
+    document.getElementById('playBtn').textContent = '▶ Play';
+  } else {
+    state.playing = true;
+    document.getElementById('playBtn').textContent = '⏸ Pause';
+    state.playTimer = setInterval(() => {
+      const maxN = state.net.N - 1;
+      if (state.currentLevel < maxN) {
+        renderLevel(state.currentLevel + 1);
+      } else {
+        renderLevel(1);
+      }
+    }, 1500);
+  }
+}
+
+function resetViz() {
+  if (state.playing) { clearInterval(state.playTimer); state.playing = false; document.getElementById('playBtn').textContent = '▶ Play'; }
+  document.getElementById('levelSlider').disabled = true;
+  document.getElementById('prevBtn').disabled = true;
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('playBtn').disabled = true;
+  document.getElementById('scoresRow').style.display = 'none';
+  document.getElementById('invariantLine').style.display = 'none';
+  document.getElementById('maxLevelDisplay').textContent = '—';
+  document.getElementById('levelDisplay').textContent = '1';
+  document.getElementById('levelNum').textContent = '1';
+  document.getElementById('vizBody').innerHTML = '<div style="color:var(--lighter);text-align:center;padding:4rem 1rem;font-size:.9rem">Press <strong style="color:var(--muted)">Compute</strong> to visualize.</div>';
+  document.getElementById('vizTitle').textContent = 'p-adic Ball Decomposition';
+  document.getElementById('vizSubtitle').textContent = 'Press Compute to begin';
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+
+const COLOR = {E:'#ef4444', A:'#3b82f6', I:'#94a3b8'};
+const COLOR_LIGHT = {E:'#fef2f2', A:'#eff6ff', I:'#f8fafc'};
+const COLOR_STROKE = {E:'#fca5a5', A:'#bfdbfe', I:'#cbd5e1'};
+const COLOR_TEXT = {E:'#991b1b', A:'#1e3a8a', I:'#475569'};
+
+function renderLevel(n) {
+  state.currentLevel = n;
+  document.getElementById('levelSlider').value = n;
+  document.getElementById('levelDisplay').textContent = n;
+  document.getElementById('levelNum').textContent = n;
+
+  const net = state.net;
+  const p = net.p;
+  const N = net.N;
+  const numBalls = Math.pow(p, n);
+  const weight = Math.pow(p, N-n);
+
+  // Get E/A/I counts for this level
+  let types = null;
+  let En = 0, An = 0, In = 0;
+
+  if (state.isPrecomputed) {
+    En = state.preData.E[n] || 0;
+    An = state.preData.A[n] || 0;
+    In = state.preData.I[n] || 0;
+  } else {
+    types = state.levelData[n];
+    types.forEach(t => { if(t==='E') En++; else if(t==='A') An++; else In++; });
+  }
+
+  // Update score cards
+  document.getElementById('scoresRow').style.display = '';
+  document.getElementById('scE').textContent = En;
+  document.getElementById('scA').textContent = An;
+  document.getElementById('scI').textContent = In;
+  document.getElementById('scEsub').textContent = `w×E = ${En*weight}`;
+  document.getElementById('scAsub').textContent = `w×A = ${An*weight}`;
+  document.getElementById('scIsub').textContent = `w×I = ${In*weight}`;
+
+  // Invariant
+  const inv = document.getElementById('invariantLine');
+  inv.style.display = '';
+  const total = (N-1)*Math.pow(p,N);
+  let muE, muA, muI;
+  if (state.isPrecomputed) {
+    muE = state.preData.muE; muA = state.preData.muA; muI = state.preData.muI;
+  } else {
+    muE = muA = muI = 0;
+    for (let k = 1; k < N; k++) {
+      const w = Math.pow(p, N-k);
+      const t2 = state.levelData[k];
+      t2.forEach(t => { if(t==='E') muE+=w; else if(t==='A') muA+=w; else muI+=w; });
+    }
+  }
+  inv.textContent = `μ_E+μ_A+μ_I = ${muE}+${muA}+${muI} = ${muE+muA+muI}  (invariant = ${total})`;
+
+  // Subtitle
+  document.getElementById('vizTitle').textContent = `${net.name} — Level n = ${n}`;
+  document.getElementById('vizSubtitle').textContent = `${numBalls} balls, each containing ${weight} config${weight>1?'s':''}. Ball type = behavior of f on this ball.`;
+
+  // Render
+  if (numBalls > 32) {
+    renderHistogram(n, En, An, In, numBalls, types);
+  } else {
+    renderCircles(n, En, An, In, types, numBalls, p, N, weight);
+  }
+}
+
+function renderCircles(n, En, An, In, types, numBalls, p, N, weight) {
+  const container = document.getElementById('vizBody');
+
+  // Layout: grid of circles
+  const W = container.clientWidth || 700;
+  const cols = Math.min(numBalls, Math.ceil(Math.sqrt(numBalls * 1.5)));
+  const rows = Math.ceil(numBalls / cols);
+  const pad = 12;
+  const cellW = Math.max(48, Math.floor((W - 2*pad) / cols));
+  const cellH = cellW;
+  const r = Math.floor(cellW * 0.38);
+  const svgW = cols * cellW + 2*pad;
+  const svgH = rows * cellH + 2*pad + 50;
+
+  let svg = `<svg viewBox="0 0 ${svgW} ${svgH}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto">`;
+
+  // Title row
+  svg += `<text x="${svgW/2}" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="#1a2744">Level n=${n}: ${numBalls} balls (weight ${weight} each)</text>`;
+
+  for (let m = 0; m < numBalls; m++) {
+    const col = m % cols;
+    const row = Math.floor(m / cols);
+    const cx = pad + col * cellW + cellW/2;
+    const cy = 40 + row * cellH + cellH/2;
+
+    const type = types ? types[m] : null;
+    const fill = type ? COLOR_LIGHT[type] : '#f8fafc';
+    const stroke = type ? COLOR[type] : '#cbd5e1';
+    const textFill = type ? COLOR_TEXT[type] : '#475569';
+
+    // Outer circle (ball)
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+
+    // Type letter
+    if (type) {
+      svg += `<text x="${cx}" y="${cy-r*0.1}" text-anchor="middle" dominant-baseline="middle" font-size="${Math.max(10,r*0.65)}" font-weight="700" fill="${COLOR[type]}">${type}</text>`;
+    }
+
+    // Ball index
+    svg += `<text x="${cx}" y="${cy+r*0.55}" text-anchor="middle" font-size="${Math.max(8,r*0.38)}" fill="${textFill}" opacity="0.7">${m}</text>`;
+  }
+
+  // Count summary at bottom
+  const by = 40 + rows * cellH + 18;
+  svg += `<text x="${svgW/2}" y="${by}" text-anchor="middle" font-size="11.5" fill="#475569">`;
+  svg += `E(${n})=${En}  A(${n})=${An}  I(${n})=${In}  |  Contribution to μ: E·w=${En*weight}  A·w=${An*weight}  I·w=${In*weight}`;
+  svg += `</text>`;
+
+  svg += `</svg>`;
+  container.innerHTML = svg;
+}
+
+function renderHistogram(n, En, An, In, numBalls, types) {
+  const container = document.getElementById('vizBody');
+  const net = state.net;
+  const N = net.N;
+  const p = net.p;
+  const weight = Math.pow(p, N-n);
+
+  // Show bar chart: E/A/I counts
+  // Also show a "ball strip" - a compact 1-row color strip showing each ball
+  let html = '';
+
+  // Ball strip (max 256 cells)
+  const showStrip = numBalls <= 256;
+  if (showStrip && types) {
+    const stripCols = Math.min(numBalls, 128);
+    const cellPx = Math.max(3, Math.floor(680 / stripCols));
+    const stripH = Math.max(12, cellPx);
+    html += `<div style="margin-bottom:1rem">`;
+    html += `<div style="font-size:.74rem;color:var(--muted);margin-bottom:.4rem">${numBalls} balls (each cell = one ball, colored by type)</div>`;
+    html += `<div style="display:flex;flex-wrap:wrap;gap:1px;max-width:100%">`;
+    for (let m = 0; m < numBalls; m++) {
+      const t = types[m];
+      html += `<div title="Ball ${m}: ${t==='E'?'Expansion':t==='A'?'Attraction':'Indifferent'}" style="width:${cellPx}px;height:${stripH}px;background:${COLOR[t]};border-radius:1px;flex-shrink:0"></div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  // Summary counts with big colored numbers
+  html += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem">`;
+  ['E','A','I'].forEach(t => {
+    const cnt = t==='E'?En:t==='A'?An:In;
+    const pct = (cnt/numBalls*100).toFixed(1);
+    html += `<div style="background:${COLOR_LIGHT[t]};border:1px solid ${COLOR_STROKE[t]};border-radius:8px;padding:.75rem;text-align:center">`;
+    html += `<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:${COLOR_TEXT[t]};margin-bottom:.25rem">${t==='E'?'Expansion':t==='A'?'Attraction':'Indifferent'}</div>`;
+    html += `<div style="font-size:2rem;font-weight:700;color:${COLOR[t]};line-height:1">${cnt}</div>`;
+    html += `<div style="font-size:.68rem;color:var(--lighter);margin-top:.2rem">${pct}% of ${numBalls} balls</div>`;
+    html += `<div style="font-size:.68rem;color:var(--muted);margin-top:.1rem">weight ×${weight} = ${cnt*weight}</div>`;
+    html += `</div>`;
+  });
+  html += `</div>`;
+
+  // Proportional bar
+  const total3 = En + An + In;
+  if (total3 > 0) {
+    const pE = (En/total3*100).toFixed(1);
+    const pA = (An/total3*100).toFixed(1);
+    const pI = (In/total3*100).toFixed(1);
+    html += `<div style="margin-bottom:.5rem;font-size:.74rem;color:var(--muted)">Proportion at this level:</div>`;
+    html += `<div style="display:flex;height:24px;border-radius:6px;overflow:hidden;border:1px solid var(--border)">`;
+    if (En>0) html += `<div style="width:${pE}%;background:${COLOR.E};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff">${pE}%</div>`;
+    if (An>0) html += `<div style="width:${pA}%;background:${COLOR.A};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff">${pA}%</div>`;
+    if (In>0) html += `<div style="width:${pI}%;background:${COLOR.I};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#475569">${pI}%</div>`;
+    html += `</div>`;
+  }
+
+  html += `<div style="font-size:.74rem;color:var(--muted);margin-top:.85rem;font-style:italic">Level n=${n} has 2<sup>${n}</sup> = ${numBalls} balls. Each ball contains 2<sup>${N}-${n}</sup> = ${weight} configurations. E(${n})×${weight} + A(${n})×${weight} + I(${n})×${weight} = ${(En+An+In)*weight} contributes to total μ.</div>`;
+
+  container.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+
+(function init() {
+  onNetChange();
+})();
+</script>
+</body>
+</html>

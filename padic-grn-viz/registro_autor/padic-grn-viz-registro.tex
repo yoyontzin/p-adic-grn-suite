@@ -1,0 +1,95 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\usepackage{hyperref}
+\usepackage{orcidlink}
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,fontsize=\small}
+\title{Dossier de Registro: padic-grn-viz\\\large Visualización y reportes para análisis p-ádico reproducible}
+\author{
+Jesús Rogelio Pérez-Buendía\,\orcidlink{0000-0002-7739-4779}
+\and
+Víctor Nopal-Coello\,\orcidlink{0000-0003-2608-3636}
+\and
+Yuriria Cortés-Poza\,\orcidlink{0000-0003-1856-9206}
+}
+\date{2026-04-25}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\texttt{padic-grn-viz} proporciona herramientas de visualización para comunicar resultados de análisis p-ádico en sistemas dinámicos discretos. Este dossier documenta su propósito, forma de uso, implementación, pruebas y evidencia de ejecución, con enfoque en claridad para personas usuarias y reproducibilidad técnica para registro de software.
+\end{abstract}
+\tableofcontents
+\newpage
+
+\section{Introducción}
+Este software transforma salidas numéricas y estructurales de padic-grn-core y padic-grn-search en gráficos y artefactos visuales reutilizables. Su papel dentro de la suite es facilitar interpretación, comparación y comunicación de resultados tanto en contextos de investigación como en reportes institucionales.
+
+La arquitectura actual se centra en motores nativos de visualización y comandos de línea para generar figuras reproducibles a partir de archivos de entrada bien definidos. Con ello, padic-grn-viz mejora la accesibilidad del análisis para personas lectoras no especializadas sin perder rigor técnico.
+
+\section{Datos generales}
+\begin{itemize}
+  \item Nombre: \texttt{padic-grn-viz}
+  \item Versión: \texttt{0.1.0}
+  \item Lenguaje: Python 3.10+
+  \item Dependencia principal: \texttt{matplotlib}
+  \item Tipo: generación de visualizaciones reproducibles
+  \item DOI: \texttt{DOI\_SOFTWARE\_VIZ}
+\end{itemize}
+
+\subsection{Correos electrónicos oficiales de autores}
+\begin{itemize}
+  \item Jesús Rogelio Pérez-Buendía: \texttt{rogelio.perez@cimat.mx}
+  \item Víctor Nopal-Coello: \texttt{victor\_nopal@uaeh.edu.mx}
+  \item Yuriria Cortés-Poza: \texttt{yuriria.cortes@iimas.unam.mx}
+\end{itemize}
+
+\subsection{Financiamiento}
+\begin{itemize}
+  \item Modelos matemáticos y computacionales no convencionales para el estudio y análisis de problemas relevantes en Biología, CF 2019/217367.
+\end{itemize}
+
+\section{Autoría oficial}
+\VerbatimInput{../../../AUTORIA-ORCID-DOI-OFICIAL.md}
+
+\section{Documentación funcional completa}
+\subsection{README}
+\VerbatimInput{../README.md}
+\subsection{Manual de usuario}
+\VerbatimInput{../MANUAL-USUARIO.md}
+\subsection{Manual técnico}
+\VerbatimInput{../MANUAL-TECNICO.md}
+\subsection{Configuración de paquete}
+\VerbatimInput{../pyproject.toml}
+\subsection{Cita académica}
+\VerbatimInput{../CITATION.cff}
+\subsection{Licencia}
+\VerbatimInput{../LICENSE}
+\subsection{Configuración de pruebas}
+\VerbatimInput{../pytest.ini}
+
+\section{Código fuente completo}
+\subsection{Inicialización de paquete}
+\VerbatimInput{../src/padic_grn_viz/__init__.py}
+\subsection{CLI}
+\VerbatimInput{../src/padic_grn_viz/cli.py}
+\subsection{Motor gráfico}
+\VerbatimInput{../src/padic_grn_viz/engine.py}
+
+\section{Pruebas completas}
+\subsection{Prueba smoke}
+\VerbatimInput{../tests/test_smoke.py}
+\subsection{Pruebas de motor}
+\VerbatimInput{../tests/test_engine.py}
+
+\section{Evidencia textual de validación}
+\subsection{Log de ejecución de pruebas}
+\VerbatimInput{validacion_viz_pytest.txt}
+\subsection{Entrada de referencia para visualización}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_scores_p2.json}
+\subsection{Nota}
+Las salidas principales de este software son archivos PNG. Por requisito de entrega en texto,
+este dossier incluye el codigo fuente completo y la entrada textual de referencia utilizada para generar las figuras.
+
+\end{document}

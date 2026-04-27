@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>p-adic GRN Explorer — Pérez-Buendía et al. 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2744;--navy2:#243660;--teal:#0f766e;--teal2:#0d9488;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fca5a5;
+  --green:#16a34a;--green-bg:#f0fdf4;--green-border:#86efac;
+  --blue:#2563eb;--slate:#475569;--slate-bg:#f8fafc;--slate-border:#cbd5e1;
+  --border:#e5e3dc;--bg:#f8f7f4;--white:#fff;
+  --text:#1a1a1a;--muted:#6b7280;--lighter:#9ca3af;
+  --mono:'SF Mono','Fira Mono','Cascadia Code',monospace;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+
+/* ── Header ── */
+.site-header{background:var(--navy);color:#fff;padding:1.8rem 2.5rem 1.4rem;border-bottom:3px solid #2d3f6b}
+.site-header h1{font-size:1.35rem;font-weight:500;letter-spacing:.01em;margin-bottom:.25rem}
+.site-header .subtitle{font-size:.85rem;color:#94a3b8;font-style:italic}
+.site-header .authors{font-size:.75rem;color:#64748b;margin-top:.45rem;letter-spacing:.01em}
+
+/* ── Tabs ── */
+.tabs-bar{background:var(--navy2);display:flex;gap:0;border-bottom:1px solid #2d3f6b}
+.tab-btn{background:transparent;border:none;color:#94a3b8;padding:.75rem 1.5rem;font-size:.82rem;cursor:pointer;font-family:inherit;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
+.tab-btn:hover{color:#e2e8f0}
+.tab-btn.active{color:#fff;border-bottom-color:var(--teal2);background:rgba(255,255,255,.05)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── Layout ── */
+.container{max-width:1140px;margin:0 auto;padding:1.8rem 2rem}
+.two-col{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start}
+@media(max-width:860px){.two-col{grid-template-columns:1fr}}
+
+/* ── Panel ── */
+.panel{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.4rem}
+.panel-title{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #f3f4f6}
+
+/* ── Form controls ── */
+label{display:block;font-size:.8rem;color:#4b5563;margin-bottom:.28rem;margin-top:.85rem}
+label:first-of-type{margin-top:0}
+select,input[type=text],textarea{width:100%;padding:.42rem .65rem;border:1px solid #d1d5db;border-radius:6px;font-size:.82rem;font-family:inherit;background:var(--white);color:var(--text);transition:border-color .15s}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:transparent}
+textarea{resize:vertical;min-height:52px;font-family:var(--mono);font-size:.78rem}
+
+/* ── Buttons ── */
+.btn-group{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.75rem}
+button{padding:.38rem .8rem;border:1px solid #d1d5db;border-radius:6px;font-size:.78rem;cursor:pointer;background:var(--white);color:#374151;font-family:inherit;transition:background .15s,border-color .15s}
+button:hover{background:#f3f4f6}
+button.primary{background:var(--navy);color:#fff;border-color:var(--navy);font-size:.82rem;padding:.45rem 1.1rem}
+button.primary:hover{background:var(--navy2)}
+button.accent{background:var(--teal);color:#fff;border-color:var(--teal)}
+button.accent:hover{background:var(--teal2)}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── Gene pills ── */
+.gene-pills{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem;min-height:28px}
+.gpill{padding:.18rem .48rem;border-radius:4px;font-size:.72rem;font-family:var(--mono);font-weight:500}
+
+/* ── Upload zone ── */
+.upload-zone{border:2px dashed #d1d5db;border-radius:8px;padding:.9rem;text-align:center;cursor:pointer;color:var(--muted);font-size:.8rem;transition:border-color .2s}
+.upload-zone:hover{border-color:#6b7280}
+.upload-zone input{display:none}
+
+/* ── Status ── */
+#status{font-size:.76rem;color:var(--muted);margin-top:.55rem;min-height:1em}
+#status.running{color:var(--blue);font-weight:500}
+#status.done{color:var(--green);font-weight:500}
+#status.error{color:var(--red);font-weight:500}
+
+/* ── Score cards ── */
+.scores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.1rem}
+.score-card{border-radius:8px;padding:.9rem .85rem .75rem;text-align:center}
+.score-card.exp{background:var(--red-bg);border:1px solid var(--red-border)}
+.score-card.con{background:var(--green-bg);border:1px solid var(--green-border)}
+.score-card.ind{background:var(--slate-bg);border:1px solid var(--slate-border)}
+.sc-label{font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.28rem}
+.sc-label.exp{color:#b91c1c}.sc-label.con{color:#15803d}.sc-label.ind{color:var(--slate)}
+.sc-value{font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.sc-value.exp{color:var(--red)}.sc-value.con{color:var(--green)}.sc-value.ind{color:var(--slate)}
+.sc-sub{font-size:.68rem;color:var(--lighter);margin-top:.2rem}
+
+/* ── Invariant line ── */
+.invariant{background:#f1f5f9;border-radius:6px;padding:.6rem .9rem;font-size:.78rem;margin-bottom:1.1rem;font-family:var(--mono);color:#334155;word-break:break-all}
+.invariant.ok::before{content:"✓ ";color:var(--green);font-weight:700}
+.invariant.fail::before{content:"✗ ";color:var(--red);font-weight:700}
+
+/* ── Chart ── */
+.chart-wrap{position:relative;width:100%;height:250px;margin-bottom:1.1rem}
+.legend{display:flex;gap:.9rem;margin-bottom:.7rem;font-size:.76rem;color:var(--muted)}
+.legend-item{display:flex;align-items:center;gap:.32rem}
+.legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* ── Profile table ── */
+.profile-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.profile-table th{background:#f8f7f4;padding:.38rem .65rem;text-align:right;font-weight:600;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.profile-table th:first-child{text-align:left}
+.profile-table td{padding:.32rem .65rem;border-top:1px solid #f3f4f6;text-align:right;font-variant-numeric:tabular-nums;color:#374151}
+.profile-table td:first-child{text-align:left;font-weight:500;color:var(--text)}
+.profile-table tr:hover td{background:#fafaf9}
+
+/* ── Info box ── */
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.85rem .95rem;font-size:.8rem;color:#1e3a5f;line-height:1.65;margin-top:.9rem}
+.info-box strong{font-weight:600}
+
+/* ── How it works tab ── */
+.how-section{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.5rem 1.8rem;margin-bottom:1.2rem;max-width:760px}
+.how-section h2{font-size:.95rem;font-weight:600;color:var(--navy);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.how-section h2 .tag{font-size:.68rem;background:var(--navy);color:#fff;padding:.18rem .5rem;border-radius:4px;font-weight:500;letter-spacing:.04em}
+.how-section p{font-size:.85rem;line-height:1.72;color:#374151;margin-bottom:.7rem}
+.how-section p:last-child{margin-bottom:0}
+.formula-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:.7rem 1rem;font-family:var(--mono);font-size:.82rem;color:#334155;margin:.75rem 0;text-align:center}
+.organism-card{background:#f8f7f4;border-radius:7px;padding:.9rem 1rem;margin:.5rem 0;font-size:.82rem;line-height:1.65}
+.organism-card strong{color:var(--navy);display:block;margin-bottom:.25rem;font-size:.85rem}
+
+/* ── Upload tab ── */
+.upload-section{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.5rem 1.8rem;max-width:680px}
+.upload-section h2{font-size:.95rem;font-weight:600;color:var(--navy);margin-bottom:.8rem}
+.upload-section p{font-size:.84rem;line-height:1.7;color:#374151;margin-bottom:.65rem}
+.csv-example{background:#1e2a44;color:#e2e8f0;border-radius:6px;padding:.8rem 1rem;font-family:var(--mono);font-size:.8rem;margin:.75rem 0;line-height:1.6}
+.csv-example .comment{color:#64748b}
+.section-sep{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--lighter);margin:.9rem 0 .4rem}
+.ordering-info{margin-top:.9rem;font-size:.78rem;color:var(--muted);border-top:1px solid #f3f4f6;padding-top:.75rem}
+
+/* ── Footer ── */
+.site-footer{text-align:center;padding:1.5rem;font-size:.74rem;color:var(--lighter);border-top:1px solid var(--border);margin-top:2rem}
+
+/* ── Placeholder ── */
+.placeholder{color:var(--lighter);font-size:.84rem;padding:2.5rem 0;text-align:center;line-height:1.6}
+.placeholder strong{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>p-adic Metrics for Gene Regulatory Networks</h1>
+  <div class="subtitle">Interactive Explorer — Stability analysis via p-adic ultrametrics</div>
+  <div class="authors">Pérez-Buendía · Nopal-Coello · Cortés-Poza — IIMAS / CIMAT / UAEH, 2026</div>
+</header>
+
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('analysis',this)">Analysis</button>
+  <button class="tab-btn" onclick="switchTab('howto',this)">How it works</button>
+  <button class="tab-btn" onclick="switchTab('upload',this)">Upload data</button>
+</div>
+
+<!-- ═══════════════════ TAB 1: ANALYSIS ═══════════════════ -->
+<div id="tab-analysis" class="tab-panel active">
+<div class="container">
+<div class="two-col">
+
+<!-- LEFT -->
+<div>
+  <div class="panel">
+    <div class="panel-title">Network &amp; permutation</div>
+
+    <label>Network</label>
+    <select id="netSelect">
+      <option value="athaliana">A. thaliana (flowering) — N=13, p=2</option>
+      <option value="celegans">C. elegans (cell fate) — N=8, p=2</option>
+      <option value="droso">Drosophila melanogaster — N=6, p=2</option>
+      <option value="custom">Custom CSV upload…</option>
+    </select>
+
+    <div id="customArea" style="display:none">
+      <label>CSV file (columns: config_from, config_to)</label>
+      <div class="upload-zone" onclick="document.getElementById('csvFile').click()">
+        <input type="file" id="csvFile" accept=".csv,.txt">
+        <span id="uploadLabel">Click to select file</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.55rem">
+        <div><label>N (genes)</label><input type="text" id="customN" placeholder="e.g. 8" value="8"></div>
+        <div><label>p (base)</label><input type="text" id="customP" placeholder="e.g. 2" value="2"></div>
+      </div>
+    </div>
+
+    <div id="geneRow" style="margin-top:.75rem">
+      <div class="section-sep">Genes in network</div>
+      <div class="gene-pills" id="genePills"></div>
+    </div>
+
+    <label>Ordering A (permutation of 0…N−1)</label>
+    <textarea id="orderingInput" rows="2" placeholder="e.g. 12 3 4 8 5 1 7 2 10 11 9 6 0"></textarea>
+
+    <div class="gene-pills" id="orderingDisplay"></div>
+
+    <div class="btn-group">
+      <button class="accent" onclick="setOptimal()">Use optimal π*</button>
+      <button onclick="setIdentity()">Identity</button>
+      <button onclick="randomOrdering()">Random</button>
+    </div>
+
+    <div class="btn-group" style="margin-top:.9rem">
+      <button class="primary" id="computeBtn" onclick="compute()" style="flex:1">Compute μ_E, μ_A, μ_I</button>
+    </div>
+    <div id="status"></div>
+
+    <div class="info-box" style="margin-top:.9rem">
+      <strong>μ_E</strong> counts configurations that <em>expand</em> under f in the p-adic metric — biologically: destabilizing directions.<br>
+      <strong>μ_A</strong> counts configurations that <em>contract</em> (attract) — stabilizing basins.<br>
+      <strong>μ_I</strong> counts <em>indifferent</em> configurations.<br>
+      Invariant: μ_E + μ_A + μ_I = (N−1)·p<sup>N</sup>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div>
+  <div class="panel" id="resultsPanel">
+    <div class="panel-title">Results</div>
+
+    <div id="placeholderMsg" class="placeholder">
+      Select a network and press <strong>Compute</strong> to see the stability profile.
+    </div>
+
+    <div id="resultsArea" style="display:none">
+      <div class="scores-grid">
+        <div class="score-card exp">
+          <div class="sc-label exp">μ_E · expansion</div>
+          <div class="sc-value exp" id="val-muE">—</div>
+          <div class="sc-sub" id="pct-muE"></div>
+        </div>
+        <div class="score-card con">
+          <div class="sc-label con">μ_A · attraction</div>
+          <div class="sc-value con" id="val-muA">—</div>
+          <div class="sc-sub" id="pct-muA"></div>
+        </div>
+        <div class="score-card ind">
+          <div class="sc-label ind">μ_I · indifferent</div>
+          <div class="sc-value ind" id="val-muI">—</div>
+          <div class="sc-sub" id="pct-muI"></div>
+        </div>
+      </div>
+
+      <div class="invariant" id="invariantLine"></div>
+
+      <div class="section-sep">Level-by-level profile</div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>E(n) expansion</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>A(n) attraction</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span>I(n) indifferent</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="profileChart" role="img" aria-label="p-adic ball profile by level"></canvas>
+      </div>
+
+      <table class="profile-table" id="profileTable">
+        <thead><tr>
+          <th>n</th><th>E(n)</th><th>A(n)</th><th>I(n)</th>
+          <th>total = p<sup>n</sup></th><th>weight p<sup>N−n</sup></th>
+        </tr></thead>
+        <tbody id="profileBody"></tbody>
+      </table>
+
+      <div class="ordering-info" id="orderingInfo"></div>
+
+      <div id="interpretBox" class="info-box" style="margin-top:.85rem"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- two-col -->
+</div><!-- container -->
+</div><!-- tab-analysis -->
+
+
+<!-- ═══════════════════ TAB 2: HOW IT WORKS ═══════════════════ -->
+<div id="tab-howto" class="tab-panel">
+<div class="container" style="max-width:820px">
+
+  <div class="how-section">
+    <h2><span class="tag">§1</span> p-adic balls</h2>
+    <p>A <em>p-adic metric</em> on a set of Boolean (or p-state) gene configurations measures distance by looking at how many leading digits of two configurations agree when written in base p. Two configurations that share the same first <em>n</em> digits are within distance p<sup>−n</sup> of each other — they live in the same <em>ball of level n</em>.</p>
+    <p>Geometrically, p-adic balls are nested: every ball of level n is partitioned into exactly p sub-balls of level n+1. This gives a rooted tree structure (the Cayley tree) that mirrors hierarchical gene regulatory logic. A permutation A of the gene indices determines which gene coordinates appear first, i.e., which biological variables define the hierarchy.</p>
+    <div class="formula-box">d<sub>A</sub>(x,y) = p<sup>−j</sup> where j = min{i : (Ax)<sub>i</sub> ≠ (Ay)<sub>i</sub>}</div>
+  </div>
+
+  <div class="how-section">
+    <h2><span class="tag">§2</span> The three measures μ_E, μ_A, μ_I</h2>
+    <p>For each ball B at level n, we ask: do the images f(B) under the Boolean transition function spread further apart (expansion), stay at the same scale (indifferent), or cluster into a smaller ball (contraction/attraction)?</p>
+    <p>Formally, the <em>diameter</em> M of the image f(B) in the A-basis is the first position where image vectors disagree. Then:</p>
+    <div class="formula-box">M &lt; n → Expansion (E) &nbsp;|&nbsp; M = n → Indifferent (I) &nbsp;|&nbsp; M &gt; n → Attraction (A)</div>
+    <p>The weighted counts μ_E, μ_A, μ_I assign each ball a weight equal to its number of configurations (p<sup>N−n</sup>), yielding a probability-like measure over the full state space. The fundamental invariant is:</p>
+    <div class="formula-box">μ_E + μ_A + μ_I = (N−1) · p<sup>N</sup></div>
+    <p>Biologically: a network with high μ_A relative to μ_E is globally contracting — robust and canalizing. A network with high μ_E is sensitive and potentially multistable.</p>
+  </div>
+
+  <div class="how-section">
+    <h2><span class="tag">§3</span> The optimal ordering π*</h2>
+    <p>The scores depend on the choice of permutation A. The <em>optimal ordering</em> π* is the permutation that maximizes μ_A (or equivalently minimizes μ_E), uncovering the most stable hierarchical structure latent in the network. Finding π* requires searching over all N! permutations; for the networks studied here, it was computed by exhaustive or heuristic search.</p>
+    <p>The optimal ordering reveals which genes act as the "dominant" hierarchical variables: those listed first in π* control the coarsest partitioning of configuration space into stable attracting basins. This has direct biological meaning: top-ranked genes in π* tend to be master regulators.</p>
+  </div>
+
+  <div class="how-section">
+    <h2><span class="tag">§4</span> The three model organisms</h2>
+    <div class="organism-card">
+      <strong>Arabidopsis thaliana — flowering transition (N=13, p=2, 8192 states)</strong>
+      The 13-gene network controls the switch from vegetative to reproductive growth. Key genes include FT (florigen), AP1, AG, and TFL1. The optimal ordering π* = [12,3,4,8,5,1,7,2,10,11,9,6,0] places UFO and EMF1 at the top of the p-adic hierarchy, consistent with their role as early-acting developmental switches. Expected scores under π*: μ_E = 26,776; μ_A = 53,880; μ_I = 17,648.
+    </div>
+    <div class="organism-card">
+      <strong>Caenorhabditis elegans — cell fate (N=8, p=2, 256 states)</strong>
+      An 8-gene network governing cell fate decisions in early C. elegans embryogenesis (Huang et al. 2013). Genes: cdk-2, cdc-25.1, cul-1, lin-35, cdk-1, fzr-1, cdc-14, cki-1. The optimal ordering π* = [1,0,2,3,6,5,4,7] minimizes μ_E = 956; μ_A = 392; μ_I = 444 (exhaustive search over all 40,320 permutations). The relatively high μ_E reflects the network's role in generating diverse cell fates through divergent dynamics.
+    </div>
+    <div class="organism-card">
+      <strong>Drosophila melanogaster — gap gene network (N=6, p=2, 64 states)</strong>
+      The six gap genes (bicoid, hunchback, Krüppel, knirps, giant, tailless) pattern the anterior-posterior axis of the Drosophila embryo. The optimal ordering π* = [0,5,3,4,2,1] (exhaustive search over all 720 permutations) gives μ_E = 64; μ_A = 156; μ_I = 100. High μ_A reflects robust positional information encoded along the embryonic axis.
+    </div>
+  </div>
+
+</div><!-- container -->
+</div><!-- tab-howto -->
+
+
+<!-- ═══════════════════ TAB 3: UPLOAD ═══════════════════ -->
+<div id="tab-upload" class="tab-panel">
+<div class="container">
+<div class="upload-section">
+  <h2>Upload a custom GRN</h2>
+
+  <p>You can analyze any synchronous Boolean (or p-state) gene regulatory network defined by a complete transition table. Prepare a CSV file with exactly p<sup>N</sup> rows and two columns:</p>
+
+  <div class="csv-example">
+<span class="comment"># Example: N=2, p=2 (four configurations 0..3)</span>
+config_from,config_to
+0,3
+1,2
+2,0
+3,1</div>
+
+  <p><strong>config_from</strong>: integer 0 … p<sup>N</sup>−1, all configurations in base-p enumeration (bit 0 = gene 0, etc.). <strong>config_to</strong>: the image under f. All p<sup>N</sup> rows are required; the file must be complete.</p>
+
+  <p>Once loaded, go to the <strong>Analysis</strong> tab, choose "Custom CSV upload…", enter N and p, and use the permutation input to explore different orderings.</p>
+
+  <div class="section-sep">Load file</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.75rem">
+    <div><label>N (number of genes)</label><input type="text" id="up-N" value="8" placeholder="e.g. 8"></div>
+    <div><label>p (number of states per gene)</label><input type="text" id="up-p" value="2" placeholder="e.g. 2"></div>
+  </div>
+
+  <div class="upload-zone" onclick="document.getElementById('csvFile2').click()">
+    <input type="file" id="csvFile2" accept=".csv,.txt">
+    <span id="uploadLabel2">Click to select CSV file</span>
+  </div>
+
+  <div id="upload-status" style="font-size:.78rem;margin-top:.5rem;min-height:1em;color:var(--muted)"></div>
+
+  <div class="info-box" style="margin-top:1rem">
+    After loading, switch to the <strong>Analysis</strong> tab and select <em>Custom CSV upload…</em> from the network dropdown. The file is stored in memory for the current session only.
+  </div>
+</div>
+</div>
+</div><!-- tab-upload -->
+
+<footer class="site-footer">
+  Pérez-Buendía et al. (2026) &middot; CIMAT Mérida &middot; IIMAS UNAM &middot; UAEH
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA: Transition tables
+// ═══════════════════════════════════════════════════════════
+
+// A. thaliana transition table: 8192 values, index = config_from
+const TT_ATHALIANA = [191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1206,1206,1206,1206,1077,1077,1077,1077,1076,1076,1076,1076,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1078,1078,1078,1078,1077,1077,1077,1077,1076,1076,1076,1076,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1174,1174,1174,1174,1028,1028,1028,1028,1028,1028,1028,1028,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1046,1046,1046,1046,1028,1028,1028,1028,1028,1028,1028,1028,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1206,1206,1206,1206,1077,1077,1077,1077,1076,1076,1076,1076,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1207,1207,1207,1207,1078,1078,1078,1078,1077,1077,1077,1077,1076,1076,1076,1076,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1271,1271,1271,1271,1270,1270,1270,1270,1141,1141,1141,1141,1140,1140,1140,1140,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1174,1174,1174,1174,1028,1028,1028,1028,1028,1028,1028,1028,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1174,1174,1174,1174,1046,1046,1046,1046,1028,1028,1028,1028,1028,1028,1028,1028,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1238,1238,1238,1238,1238,1238,1238,1238,1092,1092,1092,1092,1092,1092,1092,1092,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1718,1718,1718,1718,1589,1589,1589,1589,1588,1588,1588,1588,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1590,1590,1590,1590,1589,1589,1589,1589,1588,1588,1588,1588,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1686,1686,1686,1686,1540,1540,1540,1540,1540,1540,1540,1540,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1558,1558,1558,1558,1540,1540,1540,1540,1540,1540,1540,1540,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,191,191,191,191,190,190,190,190,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1718,1718,1718,1718,1589,1589,1589,1589,1588,1588,1588,1588,63,63,63,63,62,62,62,62,317,317,317,317,60,60,60,60,1719,1719,1719,1719,1590,1590,1590,1590,1589,1589,1589,1589,1588,1588,1588,1588,255,255,255,255,254,254,254,254,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,127,127,127,127,126,126,126,126,381,381,381,381,124,124,124,124,1783,1783,1783,1783,1782,1782,1782,1782,1653,1653,1653,1653,1652,1652,1652,1652,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1686,1686,1682,1682,1686,1686,1536,1536,1540,1540,1536,1536,1540,1540,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1686,1686,1554,1554,1558,1558,1536,1536,1540,1540,1536,1536,1540,1540,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1750,1750,1746,1746,1750,1750,1600,1600,1604,1604,1600,1600,1604,1604,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1750,1750,1746,1746,1750,1750,1600,1600,1604,1604,1600,1600,1604,1604,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1682,1682,1682,1682,1536,1536,1536,1536,1536,1536,1536,1536,26,26,26,26,26,26,26,26,264,264,264,264,8,8,8,8,1682,1682,1682,1682,1554,1554,1554,1554,1536,1536,1536,1536,1536,1536,1536,1536,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,90,90,90,90,90,90,90,90,328,328,328,328,72,72,72,72,1746,1746,1746,1746,1746,1746,1746,1746,1600,1600,1600,1600,1600,1600,1600,1600,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7350,7350,7350,7350,7221,7221,7221,7221,7220,7220,7220,7220,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7222,7222,7222,7222,7221,7221,7221,7221,7220,7220,7220,7220,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7318,7318,7318,7318,7172,7172,7172,7172,7172,7172,7172,7172,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7190,7190,7190,7190,7172,7172,7172,7172,7172,7172,7172,7172,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7350,7350,7350,7350,7221,7221,7221,7221,7220,7220,7220,7220,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7351,7351,7351,7351,7222,7222,7222,7222,7221,7221,7221,7221,7220,7220,7220,7220,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7415,7415,7415,7415,7414,7414,7414,7414,7285,7285,7285,7285,7284,7284,7284,7284,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7318,7318,7318,7318,7172,7172,7172,7172,7172,7172,7172,7172,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7318,7318,7318,7318,7190,7190,7190,7190,7172,7172,7172,7172,7172,7172,7172,7172,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7382,7382,7382,7382,7382,7382,7382,7382,7236,7236,7236,7236,7236,7236,7236,7236,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4283,4283,4283,4283,4282,4282,4282,4282,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4155,4155,4155,4155,4154,4154,4154,4154,4409,4409,4409,4409,4152,4152,4152,4152,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7830,7830,7830,7830,7684,7684,7684,7684,7684,7684,7684,7684,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7702,7702,7702,7702,7684,7684,7684,7684,7684,7684,7684,7684,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,6843,6843,6843,6843,6842,6842,6842,6842,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6715,6715,6715,6715,6714,6714,6714,6714,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6843,6843,6843,6843,6842,6842,6842,6842,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6715,6715,6715,6715,6714,6714,6714,6714,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,4122,4122,4122,4122,6682,6682,6682,6682,4360,4360,4360,4360,6664,6664,6664,6664,7826,7826,7830,7830,7826,7826,7830,7830,7680,7680,7684,7684,7680,7680,7684,7684,4122,4122,4122,4122,6682,6682,6682,6682,4360,4360,4360,4360,6664,6664,6664,6664,7826,7826,7830,7830,7698,7698,7702,7702,7680,7680,7684,7684,7680,7680,7684,7684,4186,4186,4186,4186,6746,6746,6746,6746,4424,4424,4424,4424,6728,6728,6728,6728,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,4186,4186,4186,4186,6746,6746,6746,6746,4424,4424,4424,4424,6728,6728,6728,6728,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4287,4287,4287,4287,6846,6846,6846,6846,4413,4413,4413,4413,6716,6716,6716,6716,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,6718,6718,6718,6718,4413,4413,4413,4413,6716,6716,6716,6716,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,6910,6910,6910,6910,4477,4477,4477,4477,6780,6780,6780,6780,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,6782,6782,6782,6782,4477,4477,4477,4477,6780,6780,6780,6780,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,6843,6843,6843,6843,6842,6842,6842,6842,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7858,7858,7858,7858,7729,7729,7729,7729,7728,7728,7728,7728,6715,6715,6715,6715,6714,6714,6714,6714,6969,6969,6969,6969,6712,6712,6712,6712,7859,7859,7859,7859,7730,7730,7730,7730,7729,7729,7729,7729,7728,7728,7728,7728,4347,4347,4347,4347,4346,4346,4346,4346,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4219,4219,4219,4219,4218,4218,4218,4218,4473,4473,4473,4473,4216,4216,4216,4216,7923,7923,7923,7923,7922,7922,7922,7922,7793,7793,7793,7793,7792,7792,7792,7792,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7826,7826,7830,7830,7826,7826,7830,7830,7680,7680,7684,7684,7680,7680,7684,7684,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7826,7826,7830,7830,7698,7698,7702,7702,7680,7680,7684,7684,7680,7680,7684,7684,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7890,7890,7894,7894,7890,7890,7894,7894,7744,7744,7748,7748,7744,7744,7748,7748,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7830,7830,7830,7830,7684,7684,7684,7684,7684,7684,7684,7684,4122,4122,4126,4126,4122,4122,4126,4126,4360,4360,4364,4364,4104,4104,4108,4108,7830,7830,7830,7830,7702,7702,7702,7702,7684,7684,7684,7684,7684,7684,7684,7684,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4186,4186,4190,4190,4186,4186,4190,4190,4424,4424,4428,4428,4168,4168,4172,4172,7894,7894,7894,7894,7894,7894,7894,7894,7748,7748,7748,7748,7748,7748,7748,7748,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,4122,4122,4122,4122,4122,4122,4122,4122,4360,4360,4360,4360,4104,4104,4104,4104,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4186,4186,4186,4186,4186,4186,4186,4186,4424,4424,4424,4424,4168,4168,4168,4168,7890,7890,7890,7890,7890,7890,7890,7890,7744,7744,7744,7744,7744,7744,7744,7744,4287,4287,4287,4287,4286,4286,4286,4286,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7862,7862,7862,7862,7733,7733,7733,7733,7732,7732,7732,7732,4159,4159,4159,4159,4158,4158,4158,4158,4413,4413,4413,4413,4156,4156,4156,4156,7863,7863,7863,7863,7734,7734,7734,7734,7733,7733,7733,7733,7732,7732,7732,7732,4351,4351,4351,4351,4350,4350,4350,4350,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,4223,4223,4223,4223,4222,4222,4222,4222,4477,4477,4477,4477,4220,4220,4220,4220,7927,7927,7927,7927,7926,7926,7926,7926,7797,7797,7797,7797,7796,7796,7796,7796,191,191,191,191,2750,2750,2750,2750,317,317,317,317,2620,2620,2620,2620,1719,1719,1719,1719,3766,3766,3766,3766,1589,1589,1589,1589,3636,3636,3636,3636,63,63,63,63,2622,2622,2622,2622,317,317,317,317,2620,2620,2620,2620,1719,1719,1719,1719,3638,3638,3638,3638,1589,1589,1589,1589,3636,3636,3636,3636,255,255,255,255,2814,2814,2814,2814,381,381,381,381,2684,2684,2684,2684,1783,1783,1783,1783,3830,3830,3830,3830,1653,1653,1653,1653,3700,3700,3700,3700,127,127,127,127,2686,2686,2686,2686,381,381,381,381,2684,2684,2684,2684,1783,1783,1783,1783,3830,3830,3830,3830,1653,1653,1653,1653,3700,3700,3700,3700,187,187,187,187,186,186,186,186,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1714,1714,1714,1714,1585,1585,1585,1585,1584,1584,1584,1584,59,59,59,59,58,58,58,58,313,313,313,313,56,56,56,56,1715,1715,1715,1715,1586,1586,1586,1586,1585,1585,1585,1585,1584,1584,1584,1584,251,251,251,251,250,250,250,250,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,123,123,123,123,122,122,122,122,377,377,377,377,120,120,120,120,1779,1779,1779,1779,1778,1778,1778,1778,1649,1649,1649,1649,1648,1648,1648,1648,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1686,1686,1686,1686,1540,1540,1540,1540,1540,1540,1540,1540,26,26,30,30,26,26,30,30,264,264,268,268,8,8,12,12,1686,1686,1686,1686,1558,1558,1558,1558,1540,1540,1540,1540,1540,1540,1540,1540,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,90,90,94,94,90,90,94,94,328,328,332,332,72,72,76,76,1750,1750,1750,1750,1750,1750,1750,1750,1604,1604,1604,1604,1604,1604,1604,1604,26,26,26,26,2586,2586,2586,2586,264,264,264,264,2568,2568,2568,2568,1682,1682,1686,1686,3730,3730,3734,3734,1536,1536,1540,1540,3584,3584,3588,3588,26,26,26,26,2586,2586,2586,2586,264,264,264,264,2568,2568,2568,2568,1682,1682,1686,1686,3602,3602,3606,3606,1536,1536,1540,1540,3584,3584,3588,3588,90,90,90,90,2650,2650,2650,2650,328,328,328,328,2632,2632,2632,2632,1746,1746,1750,1750,3794,3794,3798,3798,1600,1600,1604,1604,3648,3648,3652,3652,90,90,90,90,2650,2650,2650,2650,328,328,328,328,2632,2632,2632,2632,1746,1746,1750,1750,3794,3794,3798,3798,1600,1600,1604,1604,3648,3648,3652,3652,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3730,3730,3730,3730,3584,3584,3584,3584,3584,3584,3584,3584,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3602,3602,3602,3602,3584,3584,3584,3584,3584,3584,3584,3584,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3730,3730,3730,3730,3584,3584,3584,3584,3584,3584,3584,3584,2586,2586,2586,2586,2586,2586,2586,2586,2824,2824,2824,2824,2568,2568,2568,2568,3730,3730,3730,3730,3730,3730,3730,3730,3584,3584,3584,3584,3584,3584,3584,3584,2747,2747,2747,2747,2746,2746,2746,2746,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,2619,2619,2619,2619,2618,2618,2618,2618,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,2747,2747,2747,2747,2746,2746,2746,2746,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,2619,2619,2619,2619,2618,2618,2618,2618,2873,2873,2873,2873,2616,2616,2616,2616,3763,3763,3763,3763,3762,3762,3762,3762,3633,3633,3633,3633,3632,3632,3632,3632,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7830,7830,7826,7826,7830,7830,7680,7680,7684,7684,7680,7680,7684,7684,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7830,7830,7698,7698,7702,7702,7680,7680,7684,7684,7680,7680,7684,7684,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7826,7826,7826,7826,7680,7680,7680,7680,7680,7680,7680,7680,6682,6682,6682,6682,6682,6682,6682,6682,6920,6920,6920,6920,6664,6664,6664,6664,7826,7826,7826,7826,7698,7698,7698,7698,7680,7680,7680,7680,7680,7680,7680,7680];
+
+// C. elegans
+// Fuente: Huang et al. (2013) Biomed Eng Online 12(S1):S1. DOI:10.1186/1475-925X-12-S1-S1
+// Generada con build_celegans_transitions_huang.py (Paper II supplementary)
+const TT_CELEGANS = [
+  0,5,19,23,8,4,24,21,24,20,26,23,24,28,24,28,
+  80,21,83,23,88,20,88,21,88,20,90,23,88,28,88,28,
+  128,133,131,135,136,132,136,133,136,132,154,151,136,140,152,156,
+  192,133,211,151,200,132,216,149,216,148,218,151,216,156,216,156,
+  224,165,227,167,232,164,232,165,232,164,250,183,232,172,248,188,
+  224,229,243,247,232,228,248,245,248,244,250,247,248,252,248,252,
+  224,165,227,167,232,164,232,165,232,164,234,167,232,172,232,172,
+  224,229,227,231,232,228,232,229,232,228,250,247,232,236,248,252,
+  0,4,2,7,8,4,8,4,8,4,26,22,8,12,24,28,
+  64,4,82,23,72,4,88,20,88,20,90,22,88,28,88,28,
+  128,132,130,135,136,132,136,132,136,132,138,134,136,140,136,140,
+  192,132,194,135,200,132,200,132,200,132,218,150,200,140,216,156,
+  224,164,226,167,232,164,232,164,232,164,234,166,232,172,232,172,
+  224,228,226,231,232,228,232,228,232,228,250,246,232,236,248,252,
+  224,164,226,167,232,164,232,164,232,164,234,166,232,172,232,172,
+  224,228,226,231,232,228,232,228,232,228,234,230,232,236,232,236
+];
+
+// Drosophila
+const TT_DROSO = [0,3,0,7,0,1,0,5,0,3,0,3,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,56,59,56,63,32,33,32,37,40,43,40,43,32,33,32,33,48,49,48,49,32,33,32,33,32,33,32,33,32,33,32,33];
+
+const NETWORKS = {
+  athaliana: {
+    name:"A. thaliana (flowering)", N:13, p:2,
+    genes:["FUL","FT","AP1","EMF1","LYF","AP2","WUS","AG","TFL1","P1","SEP","AP3","UFO"],
+    optimal:[12,3,4,8,5,1,7,2,10,11,9,6,0],
+    expectedE:26776, expectedA:53880, expectedI:17648,
+    tt: TT_ATHALIANA
+  },
+  celegans: {
+    name:"C. elegans (cell fate)", N:8, p:2,
+    genes:["cdk-2","cdc-25.1","cul-1","lin-35","cdk-1","fzr-1","cdc-14","cki-1"],
+    optimal:[1,0,2,3,6,5,4,7],
+    expectedE:956, expectedA:392, expectedI:444,
+    tt: TT_CELEGANS
+  },
+  droso: {
+    name:"Drosophila melanogaster", N:6, p:2,
+    genes:["bcd","hb","Kr","kni","gt","tll"],
+    optimal:[0,5,3,4,2,1],
+    expectedE:64, expectedA:156, expectedI:100,
+    tt: TT_DROSO
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let customTT = null;
+let chartInstance = null;
+
+// ═══════════════════════════════════════════════════════════
+// MATH ENGINE
+// ═══════════════════════════════════════════════════════════
+
+// configToVector: config → [d_{N-1}, ..., d_1, d_0] big-endian
+// CORRECTO: little-endian, igual que compute_mu.py del proyecto.
+// v[0] = LSB (dígito menos significativo en base p).
+// Las bolas p-ádicas son clases de congruencia mod p^n — estructura estándar de Z_p.
+function configToVector(config, N, p) {
+  const v = new Array(N);
+  let t = config;
+  for (let i = 0; i < N; i++) { v[i] = t % p; t = Math.floor(t / p); }
+  return v;  // v[0]=LSB, v[N-1]=MSB
+}
+
+function vectorToConfig(v, N, p) {
+  let c = 0;
+  for (let i = 0; i < N; i++) c += v[i] * Math.pow(p, i);
+  return c;
+}
+
+function computeBallDiameter(n, ballIndex, N, p, A, tt) {
+  // Bola B_{n,m}: genes A[0]..A[n-1] fijos (dígitos 0..n-1 de ballIndex),
+  //              genes A[n]..A[N-1] libres (barridos por k=0..p^{N-n}-1).
+  const ballSize = Math.pow(p, N - n);
+  const imageVecs = [];
+  for (let k = 0; k < ballSize; k++) {
+    const y = new Array(N);
+    let e = ballIndex;
+    for (let j = 0; j < n; j++) { y[j] = e % p; e = Math.floor(e / p); }
+    e = k;
+    for (let j = n; j < N; j++) { y[j] = e % p; e = Math.floor(e / p); }
+    // x[A[j]] = y[j]  →  vector en base original
+    const x = new Array(N).fill(0);
+    for (let j = 0; j < N; j++) x[A[j]] = y[j];
+    const cfg = vectorToConfig(x, N, p);
+    const imgCfg = tt[cfg];
+    if (imgCfg === undefined || imgCfg === null) continue;
+    // Imagen en A-ordenamiento: yImg[j] = imgX[A[j]]
+    const imgX = configToVector(imgCfg, N, p);
+    imageVecs.push(A.map(aj => imgX[aj]));
+  }
+  if (!imageVecs.length) return N;
+  // M = primer j donde alguna imagen difiere
+  for (let j = 0; j < N; j++) {
+    const d0 = imageVecs[0][j];
+    for (let k = 1; k < imageVecs.length; k++) {
+      if (imageVecs[k][j] !== d0) return j;
+    }
+  }
+  return N; // todas iguales → M = N → contracción máxima
+}
+
+function computeScores(N, p, A, tt) {
+  const E = {}, Ap = {}, I = {};
+  let muE = 0, muA = 0, muI = 0;
+  for (let n = 1; n < N; n++) {
+    let En = 0, An = 0, In = 0;
+    const numBalls = Math.pow(p, n);
+    const w = Math.pow(p, N-n);
+    for (let i = 0; i < numBalls; i++) {
+      const M = computeBallDiameter(n, i, N, p, A, tt);
+      if (M < n) En++;
+      else if (M === n) In++;
+      else An++;
+    }
+    E[n] = En; Ap[n] = An; I[n] = In;
+    muE += En * w; muA += An * w; muI += In * w;
+  }
+  return {muE, muA, muI, E, A:Ap, I};
+}
+
+// ═══════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════
+
+const GENE_COLORS = [
+  '#dbeafe','#dcfce7','#fef9c3','#fce7f3','#ede9fe','#ffedd5',
+  '#f0f9ff','#f0fdf4','#fdf4ff','#fff1f2','#ecfdf5','#fefce8',
+  '#e0f2fe'
+];
+const GENE_TEXT_COLORS = [
+  '#1e40af','#166534','#92400e','#9d174d','#5b21b6','#9a3412',
+  '#0c4a6e','#14532d','#701a75','#9f1239','#065f46','#713f12',
+  '#0369a1'
+];
+
+function renderGenePills(genes, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = genes.map((g,i) =>
+    `<span class="gpill" style="background:${GENE_COLORS[i%GENE_COLORS.length]};color:${GENE_TEXT_COLORS[i%GENE_TEXT_COLORS.length]}">${g}</span>`
+  ).join('');
+}
+
+function renderOrderingPills(A, genes) {
+  const el = document.getElementById('orderingDisplay');
+  el.innerHTML = A.map((idx,pos) => {
+    const name = genes && genes[idx] !== undefined ? genes[idx] : 'g'+idx;
+    const ci = idx % GENE_COLORS.length;
+    return `<span class="gpill" style="background:${GENE_COLORS[ci]};color:${GENE_TEXT_COLORS[ci]}" title="pos ${pos} → gene ${idx}">${name}</span>`;
+  }).join('');
+}
+
+function parseOrdering(str) {
+  const parts = str.trim().split(/[\s,;]+/).map(Number);
+  if (parts.some(isNaN)) return null;
+  return parts;
+}
+
+function setStatus(msg, cls) {
+  const el = document.getElementById('status');
+  el.textContent = msg; el.className = cls || '';
+}
+
+function clearResults() {
+  document.getElementById('resultsArea').style.display = 'none';
+  document.getElementById('placeholderMsg').style.display = 'block';
+}
+
+function getActiveNet() {
+  const sel = document.getElementById('netSelect').value;
+  if (sel === 'custom') {
+    if (!customTT) return null;
+    const N = parseInt(document.getElementById('customN').value);
+    const p = parseInt(document.getElementById('customP').value);
+    const genes = Array.from({length:N},(_,i)=>'G'+i);
+    return {name:"Custom network", N, p, genes, tt:customTT, optimal:null};
+  }
+  return NETWORKS[sel];
+}
+
+// ═══════════════════════════════════════════════════════════
+// EVENT HANDLERS
+// ═══════════════════════════════════════════════════════════
+
+document.getElementById('netSelect').addEventListener('change', function() {
+  const isCustom = this.value === 'custom';
+  document.getElementById('customArea').style.display = isCustom ? 'block' : 'none';
+  document.getElementById('geneRow').style.display = isCustom ? 'none' : 'block';
+  const net = NETWORKS[this.value];
+  if (net) {
+    document.getElementById('orderingInput').value = net.optimal.join(' ');
+    renderGenePills(net.genes, 'genePills');
+    renderOrderingPills(net.optimal, net.genes);
+  }
+  clearResults();
+});
+
+document.getElementById('orderingInput').addEventListener('input', function() {
+  const net = getActiveNet();
+  const A = parseOrdering(this.value);
+  if (A) renderOrderingPills(A, net ? net.genes : null);
+});
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const tt = {};
+  let maxConfig = -1;
+  for (const line of lines) {
+    const parts = line.trim().split(',');
+    if (parts.length < 2) continue;
+    const a = parseInt(parts[0].trim()), b = parseInt(parts[1].trim());
+    if (isNaN(a) || isNaN(b)) continue;
+    tt[a] = b;
+    if (a > maxConfig) maxConfig = a;
+  }
+  if (maxConfig < 0) return null;
+  const arr = new Array(maxConfig+1);
+  for (let i = 0; i <= maxConfig; i++) arr[i] = tt[i] ?? 0;
+  return arr;
+}
+
+document.getElementById('csvFile').addEventListener('change', function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  document.getElementById('uploadLabel').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const arr = parseCSV(ev.target.result);
+    if (!arr) { setStatus('Could not parse CSV','error'); return; }
+    customTT = arr;
+    const N = parseInt(document.getElementById('customN').value);
+    const p = parseInt(document.getElementById('customP').value);
+    const expected = Math.pow(p,N);
+    setStatus(`CSV loaded: ${arr.length} states (expected p^N = ${expected})`, arr.length === expected ? 'done' : 'error');
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('csvFile2').addEventListener('change', function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  document.getElementById('uploadLabel2').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const arr = parseCSV(ev.target.result);
+    if (!arr) { document.getElementById('upload-status').textContent = 'Could not parse CSV'; return; }
+    customTT = arr;
+    const N = parseInt(document.getElementById('up-N').value);
+    const p = parseInt(document.getElementById('up-p').value);
+    document.getElementById('customN').value = N;
+    document.getElementById('customP').value = p;
+    const expected = Math.pow(p,N);
+    const ok = arr.length === expected;
+    document.getElementById('upload-status').textContent =
+      `${ok ? '✓' : '✗'} Loaded ${arr.length} states (expected p^N = ${expected})`;
+    document.getElementById('upload-status').style.color = ok ? 'var(--green)' : 'var(--red)';
+    // Switch to analysis tab and select custom
+    document.getElementById('netSelect').value = 'custom';
+    document.getElementById('customArea').style.display = 'block';
+    document.getElementById('geneRow').style.display = 'none';
+    setStatus('CSV ready. Set permutation and press Compute.', 'done');
+  };
+  reader.readAsText(file);
+});
+
+function setOptimal() {
+  const net = getActiveNet();
+  if (!net || !net.optimal) { setStatus('No known π* for this network','error'); return; }
+  document.getElementById('orderingInput').value = net.optimal.join(' ');
+  renderOrderingPills(net.optimal, net.genes);
+}
+
+function setIdentity() {
+  const net = getActiveNet();
+  if (!net) return;
+  const A = Array.from({length:net.N},(_,i)=>i);
+  document.getElementById('orderingInput').value = A.join(' ');
+  renderOrderingPills(A, net.genes);
+}
+
+function randomOrdering() {
+  const net = getActiveNet();
+  if (!net) { setStatus('Select a network first','error'); return; }
+  const A = Array.from({length:net.N},(_,i)=>i);
+  for (let i = A.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [A[i],A[j]] = [A[j],A[i]];
+  }
+  document.getElementById('orderingInput').value = A.join(' ');
+  renderOrderingPills(A, net.genes);
+}
+
+async function compute() {
+  const net = getActiveNet();
+  if (!net) { setStatus('Load a network first','error'); return; }
+  const A = parseOrdering(document.getElementById('orderingInput').value);
+  if (!A || A.length !== net.N) { setStatus(`Ordering must have exactly ${net.N} elements`,'error'); return; }
+  const seen = new Set(A);
+  if (seen.size !== net.N || Math.min(...A) !== 0 || Math.max(...A) !== net.N-1) {
+    setStatus('Not a valid permutation of 0…N-1','error'); return;
+  }
+  setStatus('Computing…','running');
+  document.getElementById('computeBtn').disabled = true;
+  clearResults();
+  await new Promise(r => setTimeout(r, 20));
+  const t0 = performance.now();
+  const res = computeScores(net.N, net.p, A, net.tt);
+  const elapsed = ((performance.now()-t0)/1000).toFixed(2);
+  setStatus(`Done in ${elapsed}s`, 'done');
+  document.getElementById('computeBtn').disabled = false;
+  showResults(res, net, A);
+}
+
+function showResults(res, net, A) {
+  const {muE, muA, muI, E, A:Ap, I} = res;
+  const total = (net.N-1) * Math.pow(net.p, net.N);
+  const pct = v => ((v/total)*100).toFixed(1)+'%';
+
+  document.getElementById('val-muE').textContent = muE.toLocaleString();
+  document.getElementById('val-muA').textContent = muA.toLocaleString();
+  document.getElementById('val-muI').textContent = muI.toLocaleString();
+  document.getElementById('pct-muE').textContent = pct(muE)+' of total';
+  document.getElementById('pct-muA').textContent = pct(muA)+' of total';
+  document.getElementById('pct-muI').textContent = pct(muI)+' of total';
+
+  const sum = muE+muA+muI;
+  const invOk = sum === total;
+  const invEl = document.getElementById('invariantLine');
+  invEl.textContent = `μ_E + μ_A + μ_I = ${muE.toLocaleString()} + ${muA.toLocaleString()} + ${muI.toLocaleString()} = ${sum.toLocaleString()} = (N−1)·p^N = ${total.toLocaleString()}`;
+  invEl.className = 'invariant ' + (invOk ? 'ok' : 'fail');
+
+  buildChart(net, E, Ap, I);
+  buildTable(net, E, Ap, I, total);
+
+  const geneNames = A.map(i => net.genes ? (net.genes[i] || 'g'+i) : 'g'+i);
+  document.getElementById('orderingInfo').innerHTML =
+    `<strong>Applied ordering A:</strong> [${A.join(', ')}]<br>` +
+    `<span style="color:var(--muted)">Genes in p-adic order: ${geneNames.join(' → ')}</span>`;
+
+  // Interpretation
+  const ratio = muA / (muE + 1e-9);
+  let interp = '';
+  if (ratio > 2) interp = `<strong>High stability (μ_A/μ_E ≈ ${ratio.toFixed(1)}).</strong> The majority of configuration space contracts under f — consistent with robust canalization toward a small set of attractors.`;
+  else if (ratio > 1) interp = `<strong>Moderate stability (μ_A/μ_E ≈ ${ratio.toFixed(1)}).</strong> Attraction dominates but there is a significant expansive region.`;
+  else interp = `<strong>Low stability (μ_A/μ_E ≈ ${ratio.toFixed(1)}).</strong> Expansive dynamics dominate — the network generates diverse or oscillatory trajectories from most initial conditions.`;
+  if (net.expectedE && Math.abs(muE - net.expectedE) < 2) {
+    interp += ` Values match the known optimal (π*): μ_E=${net.expectedE.toLocaleString()}, μ_A=${net.expectedA.toLocaleString()}, μ_I=${net.expectedI.toLocaleString()}.`;
+  }
+  document.getElementById('interpretBox').innerHTML = interp;
+
+  document.getElementById('resultsArea').style.display = 'block';
+  document.getElementById('placeholderMsg').style.display = 'none';
+}
+
+function buildChart(net, E, Ap, I) {
+  const labels = Array.from({length:net.N-1},(_,i)=>`n=${i+1}`);
+  const dataE = labels.map((_,i) => E[i+1]);
+  const dataA = labels.map((_,i) => Ap[i+1]);
+  const dataI = labels.map((_,i) => I[i+1]);
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  chartInstance = new Chart(document.getElementById('profileChart'), {
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'E(n) expansion', data:dataE, backgroundColor:'#dc2626', stack:'s'},
+      {label:'A(n) attraction', data:dataA, backgroundColor:'#16a34a', stack:'s'},
+      {label:'I(n) indifferent', data:dataI, backgroundColor:'#94a3b8', stack:'s'}
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{mode:'index',intersect:false,
+        callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} (of ${Math.pow(net.p,ctx.dataIndex+1)} balls)`}}},
+      scales:{
+        x:{stacked:true,ticks:{font:{size:11}},grid:{display:false}},
+        y:{stacked:true,ticks:{font:{size:11}},grid:{color:'rgba(0,0,0,.05)'}}
+      }
+    }
+  });
+}
+
+function buildTable(net, E, Ap, I, total) {
+  const tbody = document.getElementById('profileBody');
+  tbody.innerHTML = '';
+  for (let n = 1; n < net.N; n++) {
+    const pn = Math.pow(net.p, n);
+    const pNn = Math.pow(net.p, net.N-n);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${n}</td>
+      <td style="color:var(--red)">${E[n]}</td>
+      <td style="color:var(--green)">${Ap[n]}</td>
+      <td style="color:var(--slate)">${I[n]}</td>
+      <td style="color:var(--muted)">${E[n]+Ap[n]+I[n]} = ${pn}</td>
+      <td style="color:var(--muted)">${pNn}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB SYSTEM
+// ═══════════════════════════════════════════════════════════
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+
+(function init() {
+  const net = NETWORKS.athaliana;
+  document.getElementById('orderingInput').value = net.optimal.join(' ');
+  renderGenePills(net.genes, 'genePills');
+  renderOrderingPills(net.optimal, net.genes);
+})();
+</script>
+</body>
+</html>

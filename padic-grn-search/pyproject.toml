@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "padic-grn-search"
+version = "0.1.0"
+description = "Busqueda y certificacion de ordenamientos para sistemas discretos."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Licencia propietaria para uso academico no comercial"}
+authors = [
+  {name = "Jesús Rogelio Pérez-Buendía", email = "rogelio.perez@cimat.mx"},
+  {name = "Víctor Nopal-Coello", email = "victor_nopal@uaeh.edu.mx"},
+  {name = "Yuriria Cortés-Poza", email = "yuriria.cortes@iimas.unam.mx"}
+]
+dependencies = []
+
+[project.scripts]
+pgsearch-ga = "padic_grn_search.cli:main_ga"
+pgsearch-bb-min-muE = "padic_grn_search.cli:main_bb_min_mue"
+pgsearch-bb-max-muA = "padic_grn_search.cli:main_bb_max_mua"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

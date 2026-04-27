@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "padic-grn-search"
+version: "0.1.0"
+type: software
+authors:
+  - family-names: "Pérez-Buendía"
+    given-names: "Jesús Rogelio"
+    affiliation: "SECIHTI - Centro de Investigación en Matemáticas (CIMAT), Unidad Mérida"
+    orcid: "https://orcid.org/0000-0002-7739-4779"
+  - family-names: "Nopal-Coello"
+    given-names: "Víctor"
+    affiliation: "Universidad Autónoma del Estado de Hidalgo (UAEH)"
+    orcid: "https://orcid.org/0000-0003-2608-3636"
+  - family-names: "Cortés-Poza"
+    given-names: "Yuriria"
+    affiliation: "Instituto de Investigaciones en Matemáticas Aplicadas y en Sistemas (IIMAS), UNAM -- Unidad Académica Yucatán"
+    orcid: "https://orcid.org/0000-0003-1856-9206"
+abstract: "Módulo de búsqueda y certificación de ordenamientos óptimos mediante algoritmos genéticos y branch-and-bound para sistemas dinámicos discretos."
+license: "Licencia propietaria para uso academico no comercial"
+repository-code: "PENDING_REPOSITORY_URL"
+doi: "10.0000/pending-doi"

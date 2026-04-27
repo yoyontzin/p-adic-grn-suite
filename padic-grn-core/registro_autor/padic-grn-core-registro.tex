@@ -1,0 +1,110 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\usepackage{hyperref}
+\usepackage{orcidlink}
+\usepackage{longtable}
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,fontsize=\small}
+\title{Dossier de Registro: padic-grn-core\\\large Núcleo de análisis p-ádico para sistemas dinámicos discretos}
+\author{
+Jesús Rogelio Pérez-Buendía\,\orcidlink{0000-0002-7739-4779}
+\and
+Víctor Nopal-Coello\,\orcidlink{0000-0003-2608-3636}
+\and
+Yuriria Cortés-Poza\,\orcidlink{0000-0003-1856-9206}
+}
+\date{2026-04-25}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\texttt{padic-grn-core} es el núcleo matemático y computacional para calcular métricas p-ádicas (\texttt{mu\_E}, \texttt{mu\_A}, \texttt{mu\_I}) en redes de regulación genética y, con adaptaciones controladas, en sistemas dinámicos discretos finitos más generales. Este dossier reúne documentación funcional, código fuente, pruebas y evidencia de validación reproducible para fines de registro de software.
+\end{abstract}
+\tableofcontents
+\newpage
+
+\section{Introducción}
+Este software centraliza el cálculo de perfiles p-ádicos de expansión, contracción e indiferencia sobre dinámicas discretas deterministas. Su diseño prioriza trazabilidad científica, reproducibilidad y reutilización por terceros: incluye interfaz de línea de comandos, adaptadores de entrada, pruebas automatizadas y ejemplos mínimos verificables.
+
+El objetivo práctico de \texttt{padic-grn-core} es ofrecer una base confiable sobre la cual puedan construirse módulos de búsqueda (\texttt{padic-grn-search}) y de visualización (\texttt{padic-grn-viz}), manteniendo consistencia matemática y operativa en todo el ecosistema.
+
+\section{Datos generales}
+\begin{itemize}
+  \item Nombre: \texttt{padic-grn-core}
+  \item Versión: \texttt{0.1.0}
+  \item Lenguaje: Python 3.10+
+  \item Tipo: software de cálculo de métricas p-ádicas para sistemas discretos finitos
+  \item DOI: \texttt{DOI\_SOFTWARE\_CORE}
+\end{itemize}
+
+\subsection{Correos electrónicos oficiales de autores}
+\begin{itemize}
+  \item Jesús Rogelio Pérez-Buendía: \texttt{rogelio.perez@cimat.mx}
+  \item Víctor Nopal-Coello: \texttt{victor\_nopal@uaeh.edu.mx}
+  \item Yuriria Cortés-Poza: \texttt{yuriria.cortes@iimas.unam.mx}
+\end{itemize}
+
+\subsection{Financiamiento}
+\begin{itemize}
+  \item Modelos matemáticos y computacionales no convencionales para el estudio y análisis de problemas relevantes en Biología, CF 2019/217367.
+\end{itemize}
+
+\section{Autoría oficial}
+\VerbatimInput{../../../AUTORIA-ORCID-DOI-OFICIAL.md}
+
+\section{Documentación funcional completa}
+\subsection{README}
+\VerbatimInput{../README.md}
+\subsection{Manual de usuario}
+\VerbatimInput{../MANUAL-USUARIO.md}
+\subsection{Manual técnico}
+\VerbatimInput{../MANUAL-TECNICO.md}
+\subsection{Configuración de paquete}
+\VerbatimInput{../pyproject.toml}
+\subsection{Cita académica}
+\VerbatimInput{../CITATION.cff}
+\subsection{Licencia}
+\VerbatimInput{../LICENSE}
+\subsection{Configuración de pruebas}
+\VerbatimInput{../pytest.ini}
+
+\section{Código fuente completo}
+\subsection{Inicialización de paquete}
+\VerbatimInput{../src/padic_grn_core/__init__.py}
+\subsection{CLI}
+\VerbatimInput{../src/padic_grn_core/cli.py}
+\subsection{Adaptadores}
+\VerbatimInput{../src/padic_grn_core/adapters.py}
+\subsection{Script de validación}
+\VerbatimInput{../tools/validate_expected_values.py}
+
+\section{Pruebas y ejemplos completos}
+\subsection{Prueba smoke}
+\VerbatimInput{../tests/test_smoke.py}
+\subsection{Pruebas de adaptadores}
+\VerbatimInput{../tests/test_adapters.py}
+\subsection{Ejemplo de transiciones p=2}
+\VerbatimInput{../examples/transitions_p2_n2_identity.csv}
+\subsection{Ejemplo de transiciones p=3}
+\VerbatimInput{../examples/transitions_p3_n2_identity.csv}
+\subsection{Ejemplo de orderings}
+\VerbatimInput{../examples/orderings_n2.csv}
+
+\section{Evidencia textual de validación}
+\subsection{Log de ejecución de pruebas}
+\VerbatimInput{validacion_core_pytest.txt}
+\subsection{Salida JSON toy p=2}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_scores_p2.json}
+\subsection{Salida JSON toy p=3}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_scores_p3.json}
+\subsection{Salida CSV batch}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_batch_p2.csv}
+\subsection{Salida A. thaliana}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_scores_athaliana_pi_star.json}
+\subsection{Salida C. elegans}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_scores_celegans_pi_star.json}
+\subsection{Salida Drosophila}
+\VerbatimInput{../../../registro-dossier/06_evidencia_corridas/core_scores_drosophila_pi_star.json}
+
+\end{document}
