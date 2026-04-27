@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>p-adic GRN Suite — Rogelio Pérez-Buendía</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2744;--navy2:#243660;--teal:#0f766e;
+  --border:#e2e8f0;--bg:#f8f7f4;--white:#fff;
+  --text:#1a1a1a;--muted:#64748b;--light:#94a3b8;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--text);font-size:15px;line-height:1.65}
+
+/* Header */
+.header{background:var(--navy);color:#fff;padding:2rem 2rem 1.6rem;border-bottom:3px solid #2d3f6b}
+.header-inner{max-width:900px;margin:0 auto}
+.header h1{font-size:1.45rem;font-weight:600;letter-spacing:.01em;margin-bottom:.3rem}
+.header .subtitle{font-size:.88rem;color:#94a3b8;font-style:italic;margin-bottom:.5rem}
+.header .authors{font-size:.78rem;color:#64748b}
+.badge-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.28rem .65rem;
+  border-radius:5px;font-size:.74rem;font-weight:600;text-decoration:none;
+  border:1px solid rgba(255,255,255,.2);color:#e2e8f0;transition:background .12s}
+.badge:hover{background:rgba(255,255,255,.1)}
+.badge-zenodo{background:#024d8f22}
+.badge-github{background:#23292e22}
+.badge-swh{background:#0f766e22}
+
+/* Main */
+.main{max-width:900px;margin:0 auto;padding:2rem}
+
+/* Section */
+.section{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:1.5rem 1.8rem;margin-bottom:1.4rem}
+.section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--muted);margin-bottom:1rem;
+  padding-bottom:.5rem;border-bottom:1px solid #f1f5f9}
+
+/* Abstract */
+.abstract{font-size:.9rem;color:#374151;line-height:1.75}
+
+/* App cards */
+.app-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.25rem}
+@media(max-width:640px){.app-grid{grid-template-columns:1fr}}
+.app-card{border:1px solid var(--border);border-radius:8px;padding:1.1rem 1.2rem;
+  text-decoration:none;color:inherit;display:block;transition:box-shadow .15s,border-color .15s}
+.app-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);border-color:#94a3b8}
+.app-card-title{font-size:.92rem;font-weight:700;color:var(--navy);margin-bottom:.3rem}
+.app-card-desc{font-size:.78rem;color:var(--muted);line-height:1.6}
+.app-card-tag{display:inline-block;margin-top:.55rem;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--teal);
+  background:#f0fdfa;border:1px solid #99f6e4;border-radius:3px;padding:.1rem .4rem}
+
+/* Features */
+.feature-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.4rem .8rem}
+@media(max-width:600px){.feature-list{grid-template-columns:1fr}}
+.feature-list li{font-size:.82rem;color:#374151;padding-left:1.1rem;position:relative}
+.feature-list li::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:700}
+
+/* Networks table */
+.net-table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:.25rem}
+.net-table th{font-size:.67rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);padding:.35rem .6rem;
+  border-bottom:2px solid var(--border);text-align:left}
+.net-table td{padding:.4rem .6rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.net-table tr:last-child td{border-bottom:none}
+.net-table tr:hover td{background:#f8fafc}
+.mono{font-family:'SF Mono','Fira Mono',monospace;font-size:.75rem}
+.tag-E{color:#b91c1c;font-weight:700}.tag-A{color:#1d4ed8;font-weight:700}.tag-I{color:#475569;font-weight:700}
+
+/* Citation */
+.citation-box{background:#f8fafc;border:1px solid var(--border);border-radius:7px;
+  padding:.85rem 1rem;font-family:'SF Mono','Fira Mono',monospace;
+  font-size:.72rem;color:#334155;white-space:pre-wrap;word-break:break-all;line-height:1.7}
+
+/* Links */
+.link-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.btn{display:inline-block;padding:.38rem .9rem;border-radius:6px;font-size:.8rem;
+  font-weight:600;text-decoration:none;transition:opacity .12s}
+.btn:hover{opacity:.85}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-outline{border:1px solid var(--border);color:var(--navy);background:var(--white)}
+
+/* Footer */
+footer{text-align:center;padding:1.4rem;font-size:.72rem;color:var(--light);
+  border-top:1px solid var(--border);margin-top:.5rem}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <h1>p-adic GRN Suite</h1>
+    <div class="subtitle">Interactive analysis of gene regulatory networks via p-adic ultrametric geometry</div>
+    <div class="authors">
+      J.R. Pérez-Buendía · V. Nopal-Coello · Y.-C. Cortés-Poza —
+      CIMAT / UAEH / IIMAS-UNAM, 2025–2026
+    </div>
+    <div class="badge-row">
+      <a class="badge badge-zenodo" href="https://doi.org/10.5281/zenodo.19805643" target="_blank">
+        📦 Zenodo DOI: 10.5281/zenodo.19805643
+      </a>
+      <a class="badge badge-github" href="https://github.com/yoyontzin/p-adic-grn-suite" target="_blank">
+        ⌥ GitHub: yoyontzin/p-adic-grn-suite
+      </a>
+      <a class="badge badge-swh" href="https://archive.softwareheritage.org/swh:1:dir:8441947af7175929272589c872a5dc63eb3c7fca" target="_blank">
+        🗃 Software Heritage archived
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Abstract -->
+  <div class="section">
+    <div class="section-title">About</div>
+    <p class="abstract">
+      <strong>p-adic GRN Suite</strong> is a scientific software tool for analyzing Boolean gene regulatory
+      networks (GRNs) using p-adic ultrametric geometry. Given a GRN's discrete transition table,
+      the suite classifies each p-adic ball as <strong class="tag-E">Expanding</strong>,
+      <strong class="tag-A">Attracting</strong>, or <strong class="tag-I">Indifferent</strong>,
+      computes the stability measure μ<sub>E</sub>, finds the optimal gene ordering π* that minimizes
+      instability, and provides interactive visualization of the fractal ball structure,
+      functional transition graph, and algebraic normal form (ANF) polynomial decomposition.
+      The methodology applies to any finite discrete dynamical system with p-adic encoding.
+    </p>
+    <div class="link-row" style="margin-top:1rem">
+      <a class="btn btn-navy" href="padic-balls-animation.html">Launch main applet →</a>
+      <a class="btn btn-teal" href="padic-grn-demo.html">Launch metric demo →</a>
+      <a class="btn btn-outline" href="https://doi.org/10.5281/zenodo.19805643" target="_blank">Download source (Zenodo)</a>
+    </div>
+  </div>
+
+  <!-- Applets -->
+  <div class="section">
+    <div class="section-title">Interactive Applets</div>
+    <div class="app-grid">
+      <a class="app-card" href="padic-balls-animation.html">
+        <div class="app-card-title">p-adic Ball Structure &amp; GRN Analysis</div>
+        <div class="app-card-desc">
+          Full p-adic analysis: E/A/I ball classification, fractal visualization,
+          transition graph, ANF polynomial structure, optimal ordering search.
+          Supports custom networks via CSV upload.
+        </div>
+        <span class="app-card-tag">Main applet</span>
+      </a>
+      <a class="app-card" href="padic-grn-demo.html">
+        <div class="app-card-title">p-adic Metric Profile Demo</div>
+        <div class="app-card-desc">
+          Level-by-level visualization of μ<sub>E</sub>, μ<sub>A</sub>, μ<sub>I</sub>
+          metrics with comparative bar profile and results table.
+        </div>
+        <span class="app-card-tag">Metric demo</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="section">
+    <div class="section-title">Key Features</div>
+    <ul class="feature-list">
+      <li>E/A/I ball classification at all resolution levels</li>
+      <li>Stability measure μ<sub>E</sub> with optimal ordering π*</li>
+      <li>Functional transition graph with cycle detection</li>
+      <li>ANF polynomial analysis via Möbius transform over 𝔽₂ᴺ</li>
+      <li>Algebraic structure detection (identities, symmetries, OR gates)</li>
+      <li>Exhaustive, genetic algorithm &amp; branch-and-bound search</li>
+      <li>Animated fractal ball visualization with level rotation</li>
+      <li>Custom GRN input via CSV (bit-vector or decimal format)</li>
+    </ul>
+  </div>
+
+  <!-- Networks -->
+  <div class="section">
+    <div class="section-title">Included Networks</div>
+    <table class="net-table">
+      <thead>
+        <tr>
+          <th>Organism</th><th>N genes</th><th>p</th><th>States</th><th>μ<sub>E</sub>(π*)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><em>A. thaliana</em> — flowering network</td>
+          <td class="mono">13</td><td class="mono">2</td>
+          <td class="mono">8 192</td><td class="mono">26 776</td>
+        </tr>
+        <tr>
+          <td><em>C. elegans</em> — cell cycle network</td>
+          <td class="mono">8</td><td class="mono">2</td>
+          <td class="mono">256</td><td class="mono">956</td>
+        </tr>
+        <tr>
+          <td><em>D. melanogaster</em> — gap gene network</td>
+          <td class="mono">6</td><td class="mono">2</td>
+          <td class="mono">64</td><td class="mono">64</td>
+        </tr>
+        <tr>
+          <td>Custom network (CSV upload)</td>
+          <td class="mono">2–20</td><td class="mono">2–4</td>
+          <td class="mono">—</td><td class="mono">computed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Citation -->
+  <div class="section">
+    <div class="section-title">Citation</div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">
+      If you use this software in your research, please cite both the paper and the software:
+    </p>
+    <div class="citation-box">Pérez-Buendía, J.R., Nopal-Coello, V., Cortés-Poza, Y.-C. (2025).
+p-adic analysis of Boolean gene regulatory networks.
+[Submitted]. Zenodo. https://doi.org/10.5281/zenodo.19805643
+
+Pérez-Buendía, J.R., Nopal-Coello, V., Cortés-Poza, Y.-C. (2025–2026).
+p-adic GRN Suite (v1.1.0) [Software].
+Zenodo. https://doi.org/10.5281/zenodo.19805643
+GitHub. https://github.com/yoyontzin/p-adic-grn-suite</div>
+    <div class="link-row">
+      <a class="btn btn-outline" href="https://github.com/yoyontzin/p-adic-grn-suite/blob/main/padic-grn-core/CITATION.cff" target="_blank">CITATION.cff</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  p-adic GRN Suite · CIMAT / UAEH / IIMAS-UNAM · 2025–2026 ·
+  <a href="https://doi.org/10.5281/zenodo.19805643" style="color:var(--light)">Zenodo</a> ·
+  <a href="https://github.com/yoyontzin/p-adic-grn-suite" style="color:var(--light)">GitHub</a>
+</footer>
+
+</body>
+</html>

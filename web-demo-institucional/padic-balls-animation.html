@@ -256,7 +256,7 @@ footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);bo
     </div>
     <div id="modalGaRow" class="smodal-row">
       <div class="sr-title">🧬 Algoritmo genético (heurístico)</div>
-      <div class="sr-body">pop=300, gen=800, OX1+swap. Devuelve un <b>pseudo-óptimo</b>; para redes pequeñas puede coincidir con el óptimo global.</div>
+      <div class="sr-body">pop=300, gen=800, OX1+swap+hill-climbing exhaustivo. AG memético con reinicios y búsqueda local en cada mejora. Devuelve un <b>pseudo-óptimo</b>; para redes pequeñas suele coincidir con el óptimo global.</div>
       <div class="sr-time" id="modalGaTime"></div>
       <button class="smodal-btn smodal-btn-ga" onclick="proceedSearch('ga')">Iniciar AG</button>
     </div>
@@ -1770,20 +1770,53 @@ async function exhaustiveSearch(tt,N,p,onProgress,onDone){
 }
 
 async function geneticSearch(tt,N,p,onProgress,onDone){
-  const POP=300,GENS=800,MUT=0.20,ELITE=10,CHUNK_GENS=3;
+  const POP=300,GENS=800,MUT=0.25,ELITE=10,CHUNK_GENS=3;
+  const STAG_LIMIT=40;   // generaciones sin mejora → reinicio parcial
+  const IMMIGRANT_FRAC=0.08; // fracción de la población reemplazada con aleatorios cada gen
   function randPerm(){const a=Array.from({length:N},(_,i)=>i);for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   function ox1(p1,p2){const n=p1.length;const a=Math.floor(Math.random()*n),b=a+Math.floor(Math.random()*(n-a))+1;const seg=p1.slice(a,b),rest=p2.filter(x=>!seg.includes(x));return[...rest.slice(0,a),...seg,...rest.slice(a)];}
-  function mutate(perm){const c=perm.slice();const i=Math.floor(Math.random()*N),j=Math.floor(Math.random()*N);[c[i],c[j]]=[c[j],c[i]];return c;}
+  // Mutación fuerte: 1–3 swaps + ocasionalmente inversión de segmento
+  function mutate(perm){
+    const c=perm.slice();
+    const nSwaps=1+Math.floor(Math.random()*3);
+    for(let s=0;s<nSwaps;s++){const i=Math.floor(Math.random()*N),j=Math.floor(Math.random()*N);[c[i],c[j]]=[c[j],c[i]];}
+    if(Math.random()<0.20){
+      const a=Math.floor(Math.random()*N),b=a+1+Math.floor(Math.random()*(N-a));
+      c.splice(a,b-a,...c.slice(a,b).reverse());
+    }
+    return c;
+  }
+  // Hill-climbing exhaustivo por swaps adyacentes — O(N²) por pasada, itera hasta convergencia
+  function hillClimb(perm,fit){
+    let best=perm.slice(),bestFit=fit;
+    let improved=true;
+    while(improved){
+      improved=false;
+      for(let i=0;i<N-1;i++){
+        for(let j=i+1;j<N;j++){
+          const c=best.slice();[c[i],c[j]]=[c[j],c[i]];
+          const f=computeMuFast(tt,N,p,c)[0];
+          if(f<bestFit){bestFit=f;best=c;improved=true;}
+        }
+      }
+    }
+    return[best,bestFit];
+  }
   let pop=Array.from({length:POP},randPerm);
   let fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
   let bestEver=Math.min(...fits),bestPerm=pop[fits.indexOf(bestEver)].slice();
-  let gen=0;
+  // Hill-climb desde el mejor inicial
+  [bestPerm,bestEver]=hillClimb(bestPerm,bestEver);
+  let gen=0,stagCount=0,lastBest=bestEver;
   function step(){
     if(_searchStop){onDone([{A:bestPerm,muE:bestEver}],bestEver,gen,true);return;}
     for(let g=0;g<CHUNK_GENS&&gen<GENS;g++,gen++){
       const ranked=fits.map((f,i)=>({f,i})).sort((a,b)=>a.f-b.f);
       const elite=ranked.slice(0,ELITE).map(r=>pop[r.i].slice());
       const newPop=[...elite];
+      // Inmigrantes aleatorios — mantienen diversidad en cada generación
+      const nImmigrants=Math.floor(POP*IMMIGRANT_FRAC);
+      for(let k=0;k<nImmigrants;k++) newPop.push(randPerm());
       while(newPop.length<POP){
         const pick=()=>{const i1=Math.floor(Math.random()*POP),i2=Math.floor(Math.random()*POP);return pop[fits[i1]<fits[i2]?i1:i2];};
         let child=ox1(pick(),pick());
@@ -1792,7 +1825,25 @@ async function geneticSearch(tt,N,p,onProgress,onDone){
       }
       pop=newPop; fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
       const curBest=Math.min(...fits);
-      if(curBest<bestEver){bestEver=curBest;bestPerm=pop[fits.indexOf(curBest)].slice();}
+      if(curBest<bestEver){
+        bestEver=curBest;bestPerm=pop[fits.indexOf(curBest)].slice();
+        // Hill-climb cada vez que encontramos un nuevo mejor global
+        [bestPerm,bestEver]=hillClimb(bestPerm,bestEver);
+      }
+      // Detección de estancamiento → reinicio parcial + hill-climb desde bestEver
+      if(curBest<lastBest){lastBest=curBest;stagCount=0;}
+      else stagCount++;
+      if(stagCount>=STAG_LIMIT){
+        stagCount=0;
+        // Hill-climb desde bestEver antes del reinicio — puede escapar la cuenca actual
+        const[hcPerm,hcFit]=hillClimb(bestPerm,bestEver);
+        if(hcFit<bestEver){bestEver=hcFit;bestPerm=hcPerm;}
+        lastBest=bestEver;
+        // Reiniciar conservando sólo el mejor conocido; el resto completamente aleatorio
+        const fresh=Array.from({length:POP-1},randPerm);
+        pop=[bestPerm.slice(),...fresh];
+        fits=pop.map(a=>computeMuFast(tt,N,p,a)[0]);
+      }
     }
     onProgress(gen,GENS,bestEver,bestPerm);
     if(gen<GENS) setTimeout(step,0);
@@ -1932,7 +1983,7 @@ function _doSearch({tt,N,p,mode}){
     );
   } else {
     const log=document.getElementById('gaLog'); log.style.display='block';
-    log.innerHTML=`<div>N=${N}: AG (pop=300, gen=800, OX1+swap) — resultado heurístico</div>`;
+    log.innerHTML=`<div>N=${N}: AG memético (pop=300, gen=800, OX1+swap+hill-climb) — resultado heurístico</div>`;
     document.getElementById('searchProgressText').textContent='AG en ejecución…';
     geneticSearch(tt,N,p,
       (gen,maxGen,best,bestPerm)=>{
