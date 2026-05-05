@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "p-adic GRN Suite"
+version: "v1.0.1"
+date-released: "2026-04-27"
+authors:
+  - family-names: "Pérez-Buendía"
+    given-names: "J. Rogelio"
+    alias: "Jesús Rogelio Pérez Buendía"
+    orcid: "https://orcid.org/0000-0002-7739-4779"
+    affiliation: "SECIHTI — Centro de Investigación en Matemáticas (CIMAT), Unidad Mérida"
+    website: "https://www.cimat.mx/~rogelio.perez"
+    email: "rogelio.perez@cimat.mx"
+  - family-names: "Nopal-Coello"
+    given-names: "Víctor"
+    orcid: "https://orcid.org/0000-0003-2608-3636"
+    affiliation: "Universidad Autónoma del Estado de Hidalgo"
+  - family-names: "Cortés-Poza"
+    given-names: "Yuriria"
+    orcid: "https://orcid.org/0000-0003-1856-9206"
+    affiliation: "IIMAS, UNAM — Unidad Académica Yucatán"
+license: "other"
+url: "https://github.com/yoyontzin/p-adic-grn-suite"
+doi: "10.5281/zenodo.19805644"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19805644"
+    description: "Zenodo DOI for p-adic GRN Suite v1.0.1 (version DOI)."
+  - type: doi
+    value: "10.5281/zenodo.19805643"
+    description: "Zenodo concept DOI (all versions)."
+  - type: url
+    value: "https://zenodo.org/records/19805644"
+    description: "Zenodo record for v1.0.1."
+  - type: url
+    value: "https://github.com/yoyontzin/p-adic-grn-suite/releases/tag/v1.0.1"
+    description: "GitHub release v1.0.1."
+keywords:
+  - p-adic analysis
+  - gene regulatory networks
+  - discrete dynamics
+  - ultrametric
+  - topological data analysis
+  - systems biology
+  - p-adic metrics
