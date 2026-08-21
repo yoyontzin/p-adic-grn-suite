@@ -1,4 +1,26 @@
-"""Valida valores esperados contra evidencia JSON generada."""
+"""Valida valores esperados contra evidencia JSON generada.
+
+NOTA DE CONVENCIÓN (herramienta legado). Este validador y la evidencia JSON
+del dossier de registro (2026-04-25) usan la convención de niveles
+n = 1..N-1, bajo la cual la identidad global es
+
+    mu_E + mu_A + mu_I = (N-1) * p^N.
+
+La convención vigente del programa (Paper I y su bundle de reproducibilidad
+en Zenodo, versión 1.3.1, concept DOI 10.5281/zenodo.20709159) es
+n = 0..N-1: incluye el nivel raíz n = 0, cuya única bola se clasifica como
+informativa, de modo que la identidad global pasa a ser
+
+    mu_E + mu_A + mu_I = N * p^N,
+
+con mu_E y mu_A sin cambio y mu_I aumentado exactamente en p^N. Ejemplo
+(A. thaliana, N = 13, p = 2): mu_I pasa de 17648 a 25840 y la suma global
+de 98304 a 106496 = 13 * 2^13.
+
+Los valores esperados de este archivo se conservan a propósito en la
+convención anterior porque validan la evidencia congelada del dossier. Para
+los valores vigentes, la fuente de verdad es el bundle de Zenodo citado.
+"""
 
 from __future__ import annotations
 
@@ -33,13 +55,17 @@ def check_case(case: CaseSpec) -> Tuple[bool, List[str]]:
         if got != expected:
             issues.append(f"{key}: esperado={expected}, obtenido={got}")
 
-    # Global identity: mu_E + mu_A + mu_I = (N-1) * p^N
+    # Identidad global en la convención legado (niveles n = 1..N-1):
+    # mu_E + mu_A + mu_I = (N-1) * p^N. En la convención vigente (n = 0..N-1,
+    # bundle Zenodo concept DOI 10.5281/zenodo.20709159) la identidad es
+    # N * p^N. Ver la nota al inicio del archivo.
     left = scores["mu_E"] + scores["mu_A"] + scores["mu_I"]
     right = (case.n - 1) * (case.p**case.n)
     if left != right:
         issues.append(f"identidad_global: esperado={right}, obtenido={left}")
 
-    # Per-level identity: E(n)+A(n)+I(n)=p^n
+    # Identidad por nivel: E(n)+A(n)+I(n) = p^n, con n = 1..N-1 (convención
+    # legado, sin el nivel raíz n = 0).
     E = scores.get("E", {})
     A = scores.get("A", {})
     I = scores.get("I", {})
@@ -97,6 +123,9 @@ def main() -> None:
         raise RuntimeError("No se encontró raíz del workspace.")
 
     ev = workspace / "registro-dossier" / "06_evidencia_corridas"
+    # Valores esperados en la convención legado n = 1..N-1, tal como quedaron
+    # en la evidencia del dossier (2026-04-25). No actualizar a la convención
+    # vigente: ver la nota al inicio del archivo.
     cases = [
         CaseSpec(
             name="Athaliana pi* (N=13, p=2)",

@@ -210,6 +210,12 @@ footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);bo
       <div class="sc I"><div class="sc-lbl I">I(n)</div><div class="sc-val I" id="scI">—</div><div class="sc-sub" id="scIsub"></div></div>
     </div>
     <div class="invariant" id="invariantLine" style="display:none"></div>
+    <div style="font-size:.72rem;color:var(--lighter);margin-top:.3rem">
+      Level convention in this demo: n = 1..N-1 (legacy), so μ_E+μ_A+μ_I = (N-1)·p^N.
+      The current convention (Paper I reproducibility bundle, DOI
+      <a href="https://doi.org/10.5281/zenodo.20709159">10.5281/zenodo.20709159</a>)
+      uses n = 0..N-1: μ_I grows by exactly p^N and the sum becomes N·p^N.
+    </div>
     <div class="info-box" style="margin-top:.85rem">
       <strong>Color code:</strong> each circle = one p-adic ball at level n.<br>
       <span style="color:var(--red-dark);font-weight:600">Red (E)</span> — ball <em>expands</em>: images spread to a larger ball.<br>

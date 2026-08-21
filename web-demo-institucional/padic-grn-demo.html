@@ -439,7 +439,11 @@ config_from,config_to
 </div><!-- tab-upload -->
 
 <footer class="site-footer">
-  Pérez-Buendía et al. (2026) &middot; CIMAT Mérida &middot; IIMAS UNAM &middot; UAEH
+  Pérez-Buendía et al. (2026) &middot; CIMAT Mérida &middot; IIMAS UNAM &middot; UAEH<br>
+  Level convention: n = 1..N-1 (legacy). The reference values shown here (e.g. A. thaliana μ_I = 17648) follow it.
+  Under the current convention n = 0..N-1 (Paper I reproducibility bundle, DOI
+  <a href="https://doi.org/10.5281/zenodo.20709159">10.5281/zenodo.20709159</a>)
+  μ_I increases by exactly p^N (A. thaliana: μ_I = 25840) and μ_E+μ_A+μ_I = N·p^N.
 </footer>
 
 <script>
@@ -808,7 +812,7 @@ function showResults(res, net, A) {
   else if (ratio > 1) interp = `<strong>Moderate stability (μ_A/μ_E ≈ ${ratio.toFixed(1)}).</strong> Attraction dominates but there is a significant expansive region.`;
   else interp = `<strong>Low stability (μ_A/μ_E ≈ ${ratio.toFixed(1)}).</strong> Expansive dynamics dominate — the network generates diverse or oscillatory trajectories from most initial conditions.`;
   if (net.expectedE && Math.abs(muE - net.expectedE) < 2) {
-    interp += ` Values match the known optimal (π*): μ_E=${net.expectedE.toLocaleString()}, μ_A=${net.expectedA.toLocaleString()}, μ_I=${net.expectedI.toLocaleString()}.`;
+    interp += ` Values match the known optimal (π*): μ_E=${net.expectedE.toLocaleString()}, μ_A=${net.expectedA.toLocaleString()}, μ_I=${net.expectedI.toLocaleString()} (legacy level convention n = 1..N-1, see footer note).`;
   }
   document.getElementById('interpretBox').innerHTML = interp;
 
