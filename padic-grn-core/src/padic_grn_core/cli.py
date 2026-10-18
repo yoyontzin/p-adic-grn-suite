@@ -4,40 +4,16 @@ from __future__ import annotations
 
 import argparse
 import csv
-import importlib.util
 import json
 import sys
 from pathlib import Path
 from typing import Any
 
-
-def _workspace_root() -> Path:
-    current = Path(__file__).resolve()
-    for parent in current.parents:
-        if (parent / "20250115-p-adic-GRN-rewrite").exists():
-            return parent
-    raise RuntimeError("No se encontró la raíz del workspace.")
+from . import __version__, compute_mu
 
 
 def _load_core_module() -> Any:
-    root = _workspace_root()
-    module_path = (
-        root
-        / "20250115-p-adic-GRN-rewrite"
-        / "articulo-final"
-        / "supplementary"
-        / "code"
-        / "core"
-        / "compute_mu_generalized.py"
-    )
-    if not module_path.exists():
-        raise FileNotFoundError(f"No existe el módulo core: {module_path}")
-    spec = importlib.util.spec_from_file_location("core_compute_mu_generalized", module_path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError("No se pudo cargar el módulo core de referencia.")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return compute_mu
 
 
 def _parse_ordering(ordering_text: str, n: int) -> list[int]:
@@ -75,7 +51,7 @@ def main_score_ordering() -> None:
         scores = module.compute_scores(args.p, args.N, ordering, table, return_profiles=True)
         payload = {
             "software": "padic-grn-core",
-            "version": "0.1.0",
+            "version": __version__,
             "N": args.N,
             "p": args.p,
             "ordering": ordering,

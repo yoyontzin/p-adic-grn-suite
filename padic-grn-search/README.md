@@ -21,9 +21,9 @@ La implementación actual incluye:
 - `pgsearch-ga`: algoritmo genético con selección por torneo, cruce PMX,
   mutación por intercambio y élite.
 - `pgsearch-bb-min-muE`: búsqueda por branch-and-bound/backtracking exacto para
-  minimizar `mu_E`, con poda por cota parcial cuando está disponible.
-- `pgsearch-bb-max-muA`: búsqueda exacta por backtracking para maximizar
-  `mu_A`.
+  minimizar `mu_E`, con poda por la cota inferior `partial_mu_E`.
+- `pgsearch-bb-max-muA`: búsqueda por branch-and-bound para maximizar `mu_A`,
+  con poda por la cota superior `partial_mu_A + (N-1-k) p^N`.
 
 El cálculo de métricas se realiza con el núcleo matemático de referencia para
 mantener continuidad y trazabilidad científica.

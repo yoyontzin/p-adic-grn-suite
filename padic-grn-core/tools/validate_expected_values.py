@@ -1,77 +1,58 @@
-"""Valida valores esperados contra evidencia JSON generada.
+"""Valida los valores de referencia recalculándolos con el motor de padic-grn-core.
 
-NOTA DE CONVENCIÓN (herramienta legado). Este validador y la evidencia JSON
-del dossier de registro (2026-04-25) usan la convención de niveles
-n = 1..N-1, bajo la cual la identidad global es
+Los niveles son n = 0, ..., N-1. El nivel raíz n = 0 tiene una sola bola (todo
+el espacio), que nunca es expansiva, de modo que
 
-    mu_E + mu_A + mu_I = (N-1) * p^N.
+    mu_E + mu_A + mu_I = N * p^N     y     E(n) + A(n) + I(n) = p^n.
 
-La convención vigente del programa (Paper I y su bundle de reproducibilidad
-en Zenodo, versión 1.3.1, concept DOI 10.5281/zenodo.20709159) es
-n = 0..N-1: incluye el nivel raíz n = 0, cuya única bola se clasifica como
-informativa, de modo que la identidad global pasa a ser
+Los valores de A. thaliana y C. elegans coinciden con el bundle de
+reproducibilidad de Paper II (mu_dp_exact.js y compute_mu_generalized.py).
 
-    mu_E + mu_A + mu_I = N * p^N,
-
-con mu_E y mu_A sin cambio y mu_I aumentado exactamente en p^N. Ejemplo
-(A. thaliana, N = 13, p = 2): mu_I pasa de 17648 a 25840 y la suma global
-de 98304 a 106496 = 13 * 2^13.
-
-Los valores esperados de este archivo se conservan a propósito en la
-convención anterior porque validan la evidencia congelada del dossier. Para
-los valores vigentes, la fuente de verdad es el bundle de Zenodo citado.
+Uso (desde padic-grn-core/):
+    python3 tools/validate_expected_values.py [--output reporte.md]
 """
 
 from __future__ import annotations
 
-import json
+import argparse
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from padic_grn_core import compute_mu  # noqa: E402
 
 
 @dataclass
 class CaseSpec:
     name: str
-    json_path: Path
+    csv_path: Path
+    ordering: List[int]
     expected_scores: Dict[str, int]
     n: int
     p: int
 
 
-def load_json(path: Path) -> dict:
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
-
-
 def check_case(case: CaseSpec) -> Tuple[bool, List[str]]:
-    payload = load_json(case.json_path)
-    scores = payload["scores"]
+    table = compute_mu.read_transition_table_csv(str(case.csv_path), case.p)
+    scores = compute_mu.compute_scores(case.p, case.n, case.ordering, table, return_profiles=True)
     issues: List[str] = []
 
-    # Exact score checks
     for key, expected in case.expected_scores.items():
         got = scores.get(key)
         if got != expected:
             issues.append(f"{key}: esperado={expected}, obtenido={got}")
 
-    # Identidad global en la convención legado (niveles n = 1..N-1):
-    # mu_E + mu_A + mu_I = (N-1) * p^N. En la convención vigente (n = 0..N-1,
-    # bundle Zenodo concept DOI 10.5281/zenodo.20709159) la identidad es
-    # N * p^N. Ver la nota al inicio del archivo.
     left = scores["mu_E"] + scores["mu_A"] + scores["mu_I"]
-    right = (case.n - 1) * (case.p**case.n)
+    right = case.n * case.p**case.n
     if left != right:
         issues.append(f"identidad_global: esperado={right}, obtenido={left}")
 
-    # Identidad por nivel: E(n)+A(n)+I(n) = p^n, con n = 1..N-1 (convención
-    # legado, sin el nivel raíz n = 0).
-    E = scores.get("E", {})
-    A = scores.get("A", {})
-    I = scores.get("I", {})
-    for level in range(1, case.n):
-        k = str(level)
-        got = int(E.get(k, 0)) + int(A.get(k, 0)) + int(I.get(k, 0))
+    for level in range(0, case.n):
+        got = scores["E"][level] + scores["A"][level] + scores["I"][level]
         expected = case.p**level
         if got != expected:
             issues.append(f"identidad_nivel_{level}: esperado={expected}, obtenido={got}")
@@ -79,93 +60,93 @@ def check_case(case: CaseSpec) -> Tuple[bool, List[str]]:
     return (len(issues) == 0), issues
 
 
-def make_report(cases: List[CaseSpec], out_path: Path) -> None:
+def make_report(cases: List[CaseSpec]) -> Tuple[bool, str]:
     lines = [
-        "# Validación cruzada automática vs valores esperados",
+        "# Validación de valores de referencia (niveles n = 0..N-1)",
         "",
-        "Fecha: 2026-04-25",
-        "",
-        "Este reporte compara los JSON de evidencia con valores esperados de artículo y checks matemáticos.",
+        "Cada caso se recalcula desde su tabla de transición con padic_grn_core.compute_mu.",
         "",
     ]
-
     global_ok = True
     for case in cases:
         ok, issues = check_case(case)
-        status = "PASS" if ok else "FAIL"
-        lines.append(f"## Caso: {case.name} — {status}")
+        global_ok = global_ok and ok
+        lines.append(f"## Caso: {case.name} — {'PASS' if ok else 'FAIL'}")
         lines.append("")
-        lines.append(f"- Archivo: `{case.json_path}`")
+        lines.append(f"- Tabla: `{case.csv_path.relative_to(ROOT)}`")
+        lines.append(f"- Ordering: `{case.ordering}`")
         lines.append(f"- Esperados: `{case.expected_scores}`")
         if ok:
             lines.append("- Resultado: todos los checks pasaron.")
         else:
-            global_ok = False
             lines.append("- Issues:")
-            for issue in issues:
-                lines.append(f"  - {issue}")
+            lines.extend(f"  - {issue}" for issue in issues)
         lines.append("")
-
     lines.append(f"## Resultado global: {'PASS' if global_ok else 'FAIL'}")
     lines.append("")
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text("\n".join(lines), encoding="utf-8")
+    return global_ok, "\n".join(lines)
 
 
-def main() -> None:
-    root = Path(__file__).resolve()
-    workspace = None
-    for p in root.parents:
-        if (p / "registro-dossier").exists():
-            workspace = p
-            break
-    if workspace is None:
-        raise RuntimeError("No se encontró raíz del workspace.")
-
-    ev = workspace / "registro-dossier" / "06_evidencia_corridas"
-    # Valores esperados en la convención legado n = 1..N-1, tal como quedaron
-    # en la evidencia del dossier (2026-04-25). No actualizar a la convención
-    # vigente: ver la nota al inicio del archivo.
-    cases = [
+def reference_cases() -> List[CaseSpec]:
+    ex = ROOT / "examples"
+    return [
         CaseSpec(
-            name="Athaliana pi* (N=13, p=2)",
-            json_path=ev / "core_scores_athaliana_pi_star.json",
-            expected_scores={"mu_E": 26776, "mu_A": 53880, "mu_I": 17648},
+            name="A. thaliana pi* (N=13, p=2)",
+            csv_path=ex / "transitions_athaliana_N13_p2.csv",
+            ordering=[12, 3, 4, 8, 5, 1, 7, 2, 10, 11, 9, 6, 0],
+            expected_scores={"mu_E": 26776, "mu_A": 53880, "mu_I": 25840},
             n=13,
             p=2,
         ),
         CaseSpec(
             name="C. elegans pi* (N=8, p=2)",
-            json_path=ev / "core_scores_celegans_pi_star.json",
-            expected_scores={"mu_E": 956, "mu_A": 392, "mu_I": 444},
+            csv_path=ex / "transitions_celegans_N8_p2.csv",
+            ordering=[1, 0, 2, 3, 6, 5, 4, 7],
+            expected_scores={"mu_E": 956, "mu_A": 392, "mu_I": 700},
             n=8,
             p=2,
         ),
         CaseSpec(
             name="Drosophila pi* (N=6, p=2)",
-            json_path=ev / "core_scores_drosophila_pi_star.json",
-            expected_scores={"mu_E": 64, "mu_A": 156, "mu_I": 100},
+            csv_path=ex / "transitions_drosophila_N6_p2.csv",
+            ordering=[0, 5, 3, 4, 2, 1],
+            expected_scores={"mu_E": 64, "mu_A": 156, "mu_I": 164},
             n=6,
             p=2,
         ),
         CaseSpec(
             name="Toy identidad p=2, N=2",
-            json_path=ev / "core_scores_p2.json",
-            expected_scores={"mu_E": 0, "mu_A": 0, "mu_I": 4},
+            csv_path=ex / "transitions_p2_n2_identity.csv",
+            ordering=[0, 1],
+            expected_scores={"mu_E": 0, "mu_A": 0, "mu_I": 8},
             n=2,
             p=2,
         ),
         CaseSpec(
             name="Toy identidad p=3, N=2",
-            json_path=ev / "core_scores_p3.json",
-            expected_scores={"mu_E": 0, "mu_A": 0, "mu_I": 9},
+            csv_path=ex / "transitions_p3_n2_identity.csv",
+            ordering=[0, 1],
+            expected_scores={"mu_E": 0, "mu_A": 0, "mu_I": 18},
             n=2,
             p=3,
         ),
     ]
-    out = workspace / "registro-dossier" / "06_evidencia_corridas" / "VALIDACION-CRUZADA-VALORES.md"
-    make_report(cases, out)
-    print(f"OK: reporte generado en {out}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Valida valores de referencia (n = 0..N-1).")
+    parser.add_argument("--output", default=None, help="Archivo Markdown para el reporte (opcional)")
+    args = parser.parse_args()
+
+    ok, report = make_report(reference_cases())
+    if args.output:
+        out = Path(args.output).resolve()
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(report, encoding="utf-8")
+        print(f"Reporte guardado en {out}")
+    else:
+        print(report)
+    raise SystemExit(0 if ok else 1)
 
 
 if __name__ == "__main__":

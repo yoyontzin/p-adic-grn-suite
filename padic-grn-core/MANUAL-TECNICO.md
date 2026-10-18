@@ -17,7 +17,8 @@ Sea `f: C -> C` un sistema discreto determinista sobre `|C| = p^N`.
 
 1. Se fija un ordenamiento `pi` de variables.
 2. Se identifica cada estado con su expansión base `p`.
-3. Para cada nivel `n = 1, ..., N-1`, el espacio se particiona en cilindros/bolas `B_{n,m}`.
+3. Para cada nivel `n = 0, ..., N-1`, el espacio se particiona en cilindros/bolas `B_{n,m}`.
+   El nivel `n = 0` es una sola bola, todo el espacio; nunca es expansiva.
 4. Para cada bola, se calcula `M_{n,m}` = primer nivel de discrepancia en imágenes bajo `f`.
 5. Se clasifica:
    - `E` si `M_{n,m} < n`,
@@ -32,6 +33,10 @@ Invariante de consistencia por nivel:
 
 - `E(n) + I(n) + A(n) = p^n`.
 
+Invariante global (cada nivel aporta `p^n * p^(N-n) = p^N`):
+
+- `mu_E + mu_A + mu_I = N * p^N`.
+
 ## 3. Arquitectura de implementación
 
 - `src/padic_grn_core/cli.py`
@@ -43,8 +48,17 @@ Invariante de consistencia por nivel:
 
 Motor de cálculo:
 
-- La CLI se conecta al módulo validado de referencia:
-  - `20250115-p-adic-GRN-rewrite/articulo-final/supplementary/code/core/compute_mu_generalized.py`
+- `src/padic_grn_core/compute_mu.py`, copia del motor del bundle de
+  reproducibilidad de Paper II (`compute_mu_generalized.py`, commit `681aeee`).
+  Lo usan la CLI y `padic-grn-search`.
+- Cotas parciales para branch and bound, con prefijo `(a_0, ..., a_k)`:
+  - `partial_mu_E(prefix, ...)`: suma de `E(n) p^(N-n)` para `n = 0..k`; cota inferior de `mu_E`.
+  - `partial_mu_A(prefix, ...)`: suma de `A(n) p^(N-n)` para `n = 0..k`.
+  - `mu_A_upper_bound(prefix, ...) = partial_mu_A + (N-1-k) p^N`; cota superior de `mu_A`.
+- `tools/validate_expected_values.py` recalcula los valores de referencia desde
+  `examples/` y comprueba ambas identidades.
+- `tools/mu_dp_exact.js` (Node, p = 2) optimiza `mu_E` y `mu_A` sobre los `N!`
+  ordenamientos por programación dinámica sobre subconjuntos.
 
 ## 4. Contrato de datos
 
@@ -65,9 +79,9 @@ Salida estándar (`scores.json`):
 
 ## 5. Complejidad y límites prácticos
 
-- Cálculo de una permutación: depende de `sum_{n=1}^{N-1} p^n` y del costo por bola.
+- Cálculo de una permutación: depende de `sum_{n=0}^{N-1} p^n` y del costo por bola.
 - Para `N` grande, el cuello de botella está en evaluación masiva de bolas.
-- El módulo soporta paralelismo en backend legado; la capa empaquetada lo expone indirectamente.
+- `compute_scores(..., use_parallel=True)` reparte las bolas de cada nivel entre procesos.
 
 ## 6. Validación y trazabilidad
 

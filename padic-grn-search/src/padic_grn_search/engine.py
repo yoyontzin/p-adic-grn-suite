@@ -15,37 +15,23 @@ from pathlib import Path
 from typing import Any
 
 
-def workspace_root() -> Path:
-    current = Path(__file__).resolve()
-    for parent in current.parents:
-        if (parent / "20250115-p-adic-GRN-rewrite").exists():
-            return parent
-    raise RuntimeError("No se encontró la raíz del workspace.")
-
-
-def _core_candidate_paths(root: Path) -> list[Path]:
-    return [
-        root / "Paper-II.v3.2" / "supplementary" / "code" / "core" / "compute_mu_generalized.py",
-        root
-        / "20250115-p-adic-GRN-rewrite"
-        / "articulo-final"
-        / "supplementary"
-        / "code"
-        / "core"
-        / "compute_mu_generalized.py",
-    ]
+def _vendored_core_path() -> Path:
+    # engine.py -> padic_grn_search -> src -> padic-grn-search -> raíz de la suite
+    return Path(__file__).resolve().parents[3] / "padic-grn-core" / "src" / "padic_grn_core" / "compute_mu.py"
 
 
 def load_reference_core_module() -> Any:
-    root = workspace_root()
-    module_path = None
-    for candidate in _core_candidate_paths(root):
-        if candidate.exists():
-            module_path = candidate
-            break
-    if module_path is None:
-        raise FileNotFoundError("No se encontró compute_mu_generalized.py en rutas de referencia.")
-    spec = importlib.util.spec_from_file_location("reference_core_module", module_path)
+    """Motor de referencia de padic-grn-core (niveles n = 0..N-1)."""
+    try:
+        from padic_grn_core import compute_mu
+
+        return compute_mu
+    except ImportError:
+        pass
+    module_path = _vendored_core_path()
+    if not module_path.exists():
+        raise FileNotFoundError(f"No se encontró el motor de padic-grn-core: {module_path}")
+    spec = importlib.util.spec_from_file_location("padic_grn_core_compute_mu", module_path)
     if spec is None or spec.loader is None:
         raise RuntimeError("No se pudo crear spec del módulo core de referencia.")
     mod = importlib.util.module_from_spec(spec)
@@ -71,10 +57,13 @@ class _ReferenceEvaluator:
             scores = self.core.compute_scores(self.p, self.n, ordering, self.table, return_profiles=False)
         return {"mu_E": scores["mu_E"], "mu_A": scores["mu_A"], "mu_I": scores["mu_I"]}
 
-    def partial_mu_e(self, prefix: list[int]) -> int | None:
-        if hasattr(self.core, "partial_mu_E"):
-            return int(self.core.partial_mu_E(prefix, self.n, self.p, self.table))
-        return None
+    def partial_mu_e(self, prefix: list[int]) -> int:
+        """Cota inferior de mu_E: niveles n = 0..k fijados por el prefijo."""
+        return int(self.core.partial_mu_E(prefix, self.n, self.p, self.table))
+
+    def mu_a_upper_bound(self, prefix: list[int]) -> int:
+        """Cota superior de mu_A: partial_mu_A + (N-1-k) p^N."""
+        return int(self.core.mu_A_upper_bound(prefix, self.n, self.p, self.table))
 
 
 def evaluate_ordering(
@@ -261,7 +250,11 @@ def branch_and_bound_search(
     best_order: list[int] | None = None
     best_scores: dict[str, int] | None = None
 
-    use_partial_bound = objective == "minimize_mu_E" and evaluator.partial_mu_e([0]) is not None
+    # Cota del objetivo (fitness = mu_E o -mu_A) válida para toda completación del prefijo.
+    if objective == "minimize_mu_E":
+        bound = evaluator.partial_mu_e
+    else:
+        bound = lambda prefix: -evaluator.mu_a_upper_bound(prefix)  # noqa: E731
 
     def backtrack(depth: int) -> None:
         nonlocal evals, pruned, best_fit, best_order, best_scores
@@ -283,18 +276,16 @@ def branch_and_bound_search(
             if used[g]:
                 continue
             current[depth] = g
-            if use_partial_bound:
-                mu_k = evaluator.partial_mu_e(current[: depth + 1])
-                if mu_k is not None and mu_k > best_fit:
-                    pruned += 1
-                    continue
+            if bound(current[: depth + 1]) > best_fit:
+                pruned += 1
+                continue
             used[g] = True
             backtrack(depth + 1)
             used[g] = False
 
     backtrack(0)
     return {
-        "method": "branch_and_bound_partial_muE" if use_partial_bound else "backtracking_exact",
+        "method": "branch_and_bound_partial_muE" if objective == "minimize_mu_E" else "branch_and_bound_upper_muA",
         "objective": objective,
         "evaluations": evals,
         "pruned": pruned,

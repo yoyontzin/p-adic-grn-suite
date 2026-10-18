@@ -1,6 +1,7 @@
 """
 Búsqueda exhaustiva de ordenamientos óptimos para C. elegans y Drosophila.
-Algoritmo little-endian, idéntico a compute_mu.py.
+Algoritmo little-endian, idéntico a padic_grn_core/compute_mu.py: niveles
+n = 0, ..., N-1, con mu_E + mu_A + mu_I = N * p^N.
 
 Uso:
     python3 find_optimal_orderings.py
@@ -23,9 +24,9 @@ def vector_to_config(v, p):
 
 
 def compute_mu(tt, N, p, A):
-    """Calcula (mu_E, mu_A, mu_I) para el ordenamiento A."""
+    """Calcula (mu_E, mu_A, mu_I) para el ordenamiento A (niveles n = 0..N-1)."""
     mu_E = mu_A = mu_I = 0
-    for n in range(1, N):
+    for n in range(0, N):
         nb = p ** n
         sz = p ** (N - n)
         w  = sz  # peso de cada bola en nivel n
@@ -117,7 +118,7 @@ def search(name, tt, N, p, known_perm=None):
             best_I_val = muI
             best_perm = A[:]
 
-    inv = (N - 1) * (p ** N)
+    inv = N * (p ** N)
     print(f"\n  ── Óptimo encontrado ──")
     print(f"  A     = {best_perm}")
     print(f"  mu_E  = {best_E}")

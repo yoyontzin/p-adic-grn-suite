@@ -50,5 +50,3 @@ Resultado:
   - verifica que contenga todos los índices `0..N-1` sin repetición.
 - Error de CSV:
   - verifica columnas `config_from,config_to`.
-- Error de módulo legado no encontrado:
-  - ejecutar desde el workspace donde existe el árbol fuente oficial.

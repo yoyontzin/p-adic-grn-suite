@@ -30,8 +30,8 @@ de referencia para conservar continuidad científica.
   - élite por generación,
   - evaluación por objetivo (`mu_E` o `-mu_A`) con cache de evaluaciones.
 - Branch-and-Bound / backtracking exacto:
-  - para `minimize_mu_E` usa poda por cota parcial cuando está disponible,
-  - para `maximize_mu_A` ejecuta búsqueda exacta por backtracking.
+  - para `minimize_mu_E` poda con la cota inferior `partial_mu_E` (niveles `n = 0..k` del prefijo),
+  - para `maximize_mu_A` poda con la cota superior `partial_mu_A + (N-1-k) p^N`.
 - Exhaustivo nativo:
   - recorre `N!` permutaciones,
   - opción de truncamiento por presupuesto de evaluaciones.

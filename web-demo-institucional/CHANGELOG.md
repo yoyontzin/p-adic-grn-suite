@@ -2,6 +2,14 @@
 
 ---
 
+## 2026-10-18 (suite v1.2.0)
+
+- Niveles `n = 0, …, N−1` en `computeAllLevels`, `computeMuFast`, `computeMuFastBit`, el invariante (`μ_E+μ_A+μ_I = N·p^N`), la tabla de perfil, el slider, la tira de historia por nivel, el selector del grafo de bolas y el μ_E del panel *How to*.
+- Nivel `n = 0`: el fractal pinta la raíz ℤₚ con su tipo.
+- Corrección del texto del centro de una bola: quedan `N−n` genes libres.
+
+---
+
 ## 2026-04-27 (sesión Cowork)
 
 ### Nuevas funcionalidades

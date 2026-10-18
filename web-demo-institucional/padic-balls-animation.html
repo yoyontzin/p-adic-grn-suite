@@ -195,7 +195,7 @@ footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);bo
     <div class="level-ctrl">
       <div class="level-label">Level: <span id="levelDisplay">1</span> / <span id="maxLevelDisplay">—</span></div>
       <div class="level-slider-wrap">
-        <input type="range" id="levelSlider" min="1" max="12" value="1" oninput="onSlider()" disabled>
+        <input type="range" id="levelSlider" min="0" max="12" value="1" oninput="onSlider()" disabled>
         <span class="level-num" id="levelNum">1</span>
       </div>
       <div class="btn-row" style="margin-top:.6rem">
@@ -211,10 +211,7 @@ footer{text-align:center;padding:1.2rem;font-size:.72rem;color:var(--lighter);bo
     </div>
     <div class="invariant" id="invariantLine" style="display:none"></div>
     <div style="font-size:.72rem;color:var(--lighter);margin-top:.3rem">
-      Level convention in this demo: n = 1..N-1 (legacy), so μ_E+μ_A+μ_I = (N-1)·p^N.
-      The current convention (Paper I reproducibility bundle, DOI
-      <a href="https://doi.org/10.5281/zenodo.20709159">10.5281/zenodo.20709159</a>)
-      uses n = 0..N-1: μ_I grows by exactly p^N and the sum becomes N·p^N.
+      Levels n = 0, …, N−1 (n = 0 is the whole state space, one ball), so μ_E+μ_A+μ_I = N·p^N.
     </div>
     <div class="info-box" style="margin-top:.85rem">
       <strong>Color code:</strong> each circle = one p-adic ball at level n.<br>
@@ -401,7 +398,7 @@ function classifyBall(n, ballIndex, N, p, A, tt) {
 
 function computeAllLevels(N, p, A, tt) {
   const ld={};
-  for(let n=1;n<N;n++){
+  for(let n=0;n<N;n++){
     const nb=Math.pow(p,n); const types=[];
     for(let m=0;m<nb;m++) types.push(classifyBall(n,m,N,p,A,tt));
     ld[n]=types;
@@ -600,12 +597,12 @@ async function runCompute(){
   document.getElementById('computeBtn').disabled=false;
   const maxN=net.N-1;
   const slider=document.getElementById('levelSlider');
-  slider.min=1;slider.max=maxN;slider.value=1;slider.disabled=false;
+  slider.min=0;slider.max=maxN;slider.value=Math.min(1,maxN);slider.disabled=false;
   document.getElementById('maxLevelDisplay').textContent=maxN;
   document.getElementById('prevBtn').disabled=false;
   document.getElementById('nextBtn').disabled=false;
   document.getElementById('playBtn').disabled=false;
-  renderLevel(1);
+  renderLevel(Math.min(1,maxN));
   document.getElementById('dynamicsArea').style.display='';
   renderCyclesPanel();
   renderTransitionGraph();
@@ -615,7 +612,7 @@ async function runCompute(){
 }
 
 function onSlider(){renderLevel(parseInt(document.getElementById('levelSlider').value));}
-function prevLevel(){if(state.currentLevel>1) renderLevel(state.currentLevel-1);}
+function prevLevel(){if(state.currentLevel>0) renderLevel(state.currentLevel-1);}
 function nextLevel(){if(state.currentLevel<state.net.N-1) renderLevel(state.currentLevel+1);}
 
 function togglePlay(){
@@ -627,7 +624,7 @@ function togglePlay(){
     document.getElementById('playBtn').textContent='⏸ Pause';
     state.playTimer=setInterval(()=>{
       const maxN=state.net.N-1;
-      renderLevel(state.currentLevel<maxN?state.currentLevel+1:1);
+      renderLevel(state.currentLevel<maxN?state.currentLevel+1:0);
     },1500);
   }
 }
@@ -685,6 +682,16 @@ function drawFractalNode(ctx,cx,cy,R,depth,maxDepth,ballIdx,p,levelData,pack,the
       ctx.fillStyle=COLOR_MID[t]; ctx.fill();
       ctx.strokeStyle=COLOR_STROKE[t]; ctx.lineWidth=Math.max(0.3,1.4-depth*0.1); ctx.stroke();
     }
+  } else if(maxDepth===0){
+    // Nivel n = 0: la raíz ℤₚ es la única bola y se colorea con su tipo.
+    const t=(levelData[0]&&levelData[0][0])?levelData[0][0]:'I';
+    _renderedBalls.push({cx,cy,R,depth:0,ballIdx:0,type:t});
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI);
+    ctx.fillStyle=COLOR[t]; ctx.fill();
+    ctx.strokeStyle='#334155'; ctx.lineWidth=2; ctx.stroke();
+    ctx.font=`bold ${Math.min(R*0.3,48)}px sans-serif`;
+    ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(t,cx,cy);
   } else {
     ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI);
     ctx.fillStyle='#eef2f7'; ctx.fill();
@@ -762,7 +769,7 @@ function renderFractal(maxDepth,p,N,levelData){
   ctx.fillText(`n=${maxDepth}  ·  ${ttl} balls  ·  E=${En}  A=${An}  I=${In}`,CW/2,barY+15);
   const rMin=R0*Math.pow(pack.rRatio,maxDepth);
   ctx.fillStyle='#94a3b8'; ctx.font='10px -apple-system,sans-serif';
-  ctx.fillText(`Each ball at level ${maxDepth-1} contains exactly ${p} sub-balls.  Min radius ≈ ${rMin.toFixed(1)}px`,CW/2,barY+31);
+  ctx.fillText(maxDepth===0?`Level 0 is the whole state space: a single ball.`:`Each ball at level ${maxDepth-1} contains exactly ${p} sub-balls.  Min radius ≈ ${rMin.toFixed(1)}px`,CW/2,barY+31);
   // Attach hover handler once
   if(!canvas._hoverAttached){
     canvas._hoverAttached=true;
@@ -809,7 +816,7 @@ function renderAggregateView(n){
   html+=`<div style="font-size:.72rem;font-weight:600;color:#334155;margin-bottom:.4rem">Complete E/A/I profile by level:</div>`;
   html+=`<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.71rem;font-family:monospace">`;
   html+=`<tr style="background:#f1f5f9"><th style="padding:.25rem .5rem;text-align:center">n</th><th style="color:${COLOR.E};padding:.25rem .5rem">E(n)</th><th style="color:${COLOR.A};padding:.25rem .5rem">A(n)</th><th style="color:${COLOR.I};padding:.25rem .5rem">I(n)</th><th style="padding:.25rem .5rem;color:#64748b">p^n</th></tr>`;
-  for(let k=1;k<N;k++){
+  for(let k=0;k<N;k++){
     const Ek=ld[k].filter(t=>t==='E').length;
     const Ak=ld[k].filter(t=>t==='A').length;
     const Ik=ld[k].filter(t=>t==='I').length;
@@ -847,11 +854,11 @@ function renderLevel(n){
   document.getElementById('scIsub').textContent=`×${weight} = ${In*weight}`;
   const inv=document.getElementById('invariantLine'); inv.style.display='';
   let muE=0,muA=0,muI=0;
-  for(let k=1;k<N;k++){
+  for(let k=0;k<N;k++){
     const w=Math.pow(p,N-k);
     ld[k].forEach(t=>{if(t==='E')muE+=w;else if(t==='A')muA+=w;else muI+=w;});
   }
-  inv.textContent=`μ_E+μ_A+μ_I = ${muE}+${muA}+${muI} = ${muE+muA+muI}  (expected ${(N-1)*Math.pow(p,N)})`;
+  inv.textContent=`μ_E+μ_A+μ_I = ${muE}+${muA}+${muI} = ${muE+muA+muI}  (expected N·p^N = ${N*Math.pow(p,N)})`;
   document.getElementById('vizTitle').textContent=`${net.name} — level n = ${n}`;
   document.getElementById('vizSubtitle').textContent=
     `${numBalls} ball${numBalls>1?'s':''} at level n, each contains ${weight} config${weight>1?'s':''}`;
@@ -934,10 +941,10 @@ function renderCyclesPanel(){
   const cycs=state.cycles.filter(c=>c.length>1);
 
   // ─── Historia de tipos por nivel para una configuración ───
-  // Para cada nivel lv=1..N-1 devuelve {n:lv, ball, type}
+  // Para cada nivel lv=0..N-1 devuelve {n:lv, ball, type}
   function typeHistory(cfg){
-    return Array.from({length:N-1},(_,i)=>{
-      const lv=i+1;
+    return Array.from({length:N},(_,i)=>{
+      const lv=i;
       const b=getBallAt(cfg,lv,N,p,A);
       const t=state.levelData&&state.levelData[lv]?state.levelData[lv][b]:'?';
       return{n:lv,ball:b,type:t};
@@ -958,7 +965,7 @@ function renderCyclesPanel(){
         ` title="n=${lv}: B(${lv},${ball}) = ${LABEL[type]}">${lv}</span>`;
     }).join('');
     return `<div style="display:flex;align-items:center;flex-wrap:wrap;margin:.32rem 0 .1rem">`+
-      `<span style="font-size:.6rem;color:#94a3b8;margin-right:.35rem;white-space:nowrap">n=1…${N-1}:</span>`+
+      `<span style="font-size:.6rem;color:#94a3b8;margin-right:.35rem;white-space:nowrap">n=0…${N-1}:</span>`+
       cells+`</div>`;
   }
 
@@ -990,7 +997,7 @@ function renderCyclesPanel(){
     La tira <span style="background:#ef4444;color:#fff;padding:0 .3rem;border-radius:2px;font-size:.67rem">E</span>
     <span style="background:#3b82f6;color:#fff;padding:0 .3rem;border-radius:2px;font-size:.67rem">A</span>
     <span style="background:#94a3b8;color:#fff;padding:0 .3rem;border-radius:2px;font-size:.67rem">I</span>
-    muestra el tipo de la bola contenedora en cada nivel p-ádico n=1…${N-1}.
+    muestra el tipo de la bola contenedora en cada nivel p-ádico n=0…${N-1}.
     El nivel actual (n=${n}) aparece <span style="outline:2px solid #1a2744;outline-offset:1px;display:inline-block;width:16px;height:16px;border-radius:2px;background:#3b82f6;vertical-align:middle"></span> bordeado.
     <span style="color:#15803d">●</span>=pto. fijo en el fractal, <span style="color:#a16207">○</span>=elem. de ciclo.
   </div>`;
@@ -1038,7 +1045,7 @@ function populateGraphLevelSelect(){
   const sel=document.getElementById('graphLevelSel');
   sel.innerHTML='';
   const maxN=state.net.N-1;
-  for(let n=1;n<=Math.min(maxN,6);n++){
+  for(let n=0;n<=Math.min(maxN,6);n++){
     const opt=document.createElement('option');
     opt.value=n; opt.textContent=`n=${n} (${Math.pow(state.net.p,n)} balls)`;
     if(n===2) opt.selected=true;
@@ -1573,7 +1580,7 @@ function renderHowtoPanel(){
   </div>
   <div class="howto-section">
     <h4>Center of a p-adic ball</h4>
-    <p>Ball B<sub>n, i</sub> consists of all configurations whose first n genes (in ordering A) match the base-p digits of the index i. Its <em>center</em> is the configuration where those n genes are fixed to those digits and the remaining ${net.N-1}−n genes are set to 0. Formally: <span class="howto-code">center = Σⱼ₌₀ⁿ⁻¹ digit_j(i) · pʲ · e_{A[j]}</span> where e_k is the k-th standard basis vector.</p>
+    <p>Ball B<sub>n, i</sub> consists of all configurations whose first n genes (in ordering A) match the base-p digits of the index i. Its <em>center</em> is the configuration where those n genes are fixed to those digits and the remaining ${net.N}−n genes are set to 0. Formally: <span class="howto-code">center = Σⱼ₌₀ⁿ⁻¹ digit_j(i) · pʲ · e_{A[j]}</span> where e_k is the k-th standard basis vector.</p>
   </div>
   <div class="howto-section">
     <h4>Fixed points &amp; cycles tab</h4>
@@ -1586,7 +1593,7 @@ function renderHowtoPanel(){
   </div>
   <div class="howto-section">
     <h4>Optimal ordering</h4>
-    <p>The ordering A affects both the classification and the fractal structure. The <em>optimal ordering π*</em> minimizes μ_E (total expansive mass). For <strong>${net.name}</strong>: π* = [${net.optimal.join(', ')}], giving μ_E = ${state.levelData?[...Array(net.N-1).keys()].reduce((s,k)=>{const n=k+1,w=Math.pow(net.p,net.N-n);return s+state.levelData[n].filter(t=>t==='E').length*w;},0):'—'}. Use <em>Search optima</em> to find all orderings achieving this minimum.</p>
+    <p>The ordering A affects both the classification and the fractal structure. The <em>optimal ordering π*</em> minimizes μ_E (total expansive mass). For <strong>${net.name}</strong>: π* = [${net.optimal.join(', ')}], giving μ_E = ${state.levelData?[...Array(net.N).keys()].reduce((s,k)=>{const n=k,w=Math.pow(net.p,net.N-n);return s+state.levelData[n].filter(t=>t==='E').length*w;},0):'—'}. Use <em>Search optima</em> to find all orderings achieving this minimum.</p>
   </div>`;
 }
 
@@ -1632,7 +1639,7 @@ function computeMuFastBit(tt,N,A){
     ptt[c]=pimg;
   }
   let muE=0,muA=0,muI=0;
-  for(let n=1;n<N;n++){
+  for(let n=0;n<N;n++){
     const nb=1<<n, ballSz=1<<(N-n);
     for(let bi=0;bi<nb;bi++){
       let imgOR=0,imgAND=sz-1,hasImg=false;
@@ -1641,10 +1648,9 @@ function computeMuFastBit(tt,N,A){
         if(img<0) continue;
         imgOR|=img; imgAND&=img; hasImg=true;
       }
-      if(!hasImg) continue;
       const diffBits=imgOR^imgAND;
       let M;
-      if(diffBits===0){M=N;}
+      if(!hasImg||diffBits===0){M=N;}
       else{const lsb=diffBits&(-diffBits);M=31-Math.clz32(lsb);}
       const w=ballSz;
       if(M<n) muE+=w; else if(M===n) muI+=w; else muA+=w;
@@ -1654,7 +1660,8 @@ function computeMuFastBit(tt,N,A){
 }
 
 // ── bnbLevelContrib: contribución incremental de UN nivel para B&B ──
-// Computa E_{n} * 2^{N-n} usando ordering[0..n-1] (n = depth).
+// Computa E_{n} * 2^{N-n} usando ordering[0..n-1] (n = depth). En la raíz
+// (n = 0) E_0 = 0, así que la suma parcial de los niveles 0..depth acota μ_E por abajo.
 // Costo: n * 2^N ops. Se llama UNA vez por nodo, no repite niveles anteriores.
 function bnbLevelContrib(tt,N,ordering,depth){
   if(depth<1) return 0;
@@ -1719,7 +1726,7 @@ async function bnbSearch(tt,N,p,onProgress,onDone){
 function computeMuFast(tt,N,p,A){
   if(p===2) return computeMuFastBit(tt,N,A);
   let muE=0,muA=0,muI=0;
-  for(let n=1;n<N;n++){
+  for(let n=0;n<N;n++){
     const nb=p**n,sz=p**(N-n);
     for(let bi=0;bi<nb;bi++){
       const imgs=[];
@@ -1734,9 +1741,8 @@ function computeMuFast(tt,N,p,A){
         for(let j=0;j<N;j++){iv.push(t%p);t=Math.floor(t/p);}
         imgs.push(A.map(aj=>iv[aj]));
       }
-      if(!imgs.length) continue;
       let M=N;
-      for(let j=0;j<N;j++){if(imgs.some(v=>v[j]!==imgs[0][j])){M=j;break;}}
+      for(let j=0;j<N&&imgs.length;j++){if(imgs.some(v=>v[j]!==imgs[0][j])){M=j;break;}}
       const w=sz;
       if(M<n) muE+=w; else if(M===n) muI+=w; else muA+=w;
     }

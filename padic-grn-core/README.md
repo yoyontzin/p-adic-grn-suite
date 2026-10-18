@@ -3,6 +3,7 @@
 ## Resumen
 
 Paquete base para calcular métricas p-ádicas (`mu_E`, `mu_A`, `mu_I`) en sistemas dinámicos discretos finitos.
+Las medidas suman los niveles `n = 0, ..., N-1`, con `mu_E + mu_A + mu_I = N * p^N`.
 
 ## Introducción
 

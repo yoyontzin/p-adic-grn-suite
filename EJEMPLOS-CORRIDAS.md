@@ -15,13 +15,13 @@ Archivo de salida:
 
 - `toy_core_scores.json`
 
-Salida real de referencia (`core_scores_p2.json`):
+Salida real (`toy_core_scores.json`, campo `scores`):
 
 ```json
 {
   "mu_E": 0,
   "mu_A": 0,
-  "mu_I": 4
+  "mu_I": 8
 }
 ```
 
@@ -32,12 +32,12 @@ cd ../padic-grn-search
 pgsearch-ga ../padic-grn-core/examples/transitions_p2_n2_identity.csv 2 2 --objective minimize_mu_E --generations 5 --population 10
 ```
 
-Resultado real de referencia (`search_ga_p2.json`):
+Resultado real:
 
 - `method`: `ga_pmx_tournament_elite`
 - `best_ordering`: `[1, 0]`
 - `best_fitness`: `0`
-- `best_scores`: `mu_E=0`, `mu_A=0`, `mu_I=4`
+- `best_scores`: `mu_E=0`, `mu_A=0`, `mu_I=8`
 - `evaluations`: `2`
 
 ### Paso C. Visualización con viz
@@ -76,23 +76,32 @@ Resultados de referencia:
   - `objective`: `minimize_mu_E`
   - `best_ordering`: `[0, 1]`
   - `best_fitness`: `0`
-  - `best_scores`: `mu_E=0`, `mu_A=0`, `mu_I=4`
+  - `best_scores`: `mu_E=0`, `mu_A=0`, `mu_I=8`
 - `search_bbmax_p2.json`
-  - `method`: `backtracking_exact`
+  - `method`: `branch_and_bound_upper_muA`
   - `objective`: `maximize_mu_A`
   - `best_ordering`: `[0, 1]`
   - `best_fitness`: `0`
-  - `best_scores`: `mu_E=0`, `mu_A=0`, `mu_I=4`
+  - `best_scores`: `mu_E=0`, `mu_A=0`, `mu_I=8`
 
-## Ejemplo 4: evidencias de referencia incluidas
+En el toy identidad cada nivel `n = 0, 1` es indiferente, así que
+`mu_I = N p^N = 2 * 2^2 = 8`.
 
-Para revisión documental se incluyen salidas de referencia en:
+## Ejemplo 4: valores de referencia de las tres redes
 
-- `registro-dossier/06_evidencia_corridas/core_scores_p2.json`
-- `registro-dossier/06_evidencia_corridas/core_scores_p3.json`
-- `registro-dossier/06_evidencia_corridas/search_ga_p2.json`
-- `registro-dossier/06_evidencia_corridas/search_bbmin_p2.json`
-- `registro-dossier/06_evidencia_corridas/search_bbmax_p2.json`
+```bash
+cd padic-grn-core
+python3 tools/validate_expected_values.py
+```
 
-Estas salidas permiten verificar reproducibilidad contra corridas previas y se
-usan como base documental en el PDF principal de la suite.
+Recalcula cada caso desde `examples/` y comprueba `mu_E + mu_A + mu_I = N p^N`
+y `E(n) + A(n) + I(n) = p^n` para `n = 0..N-1`:
+
+| Red | N | pi* | (mu_E, mu_A, mu_I) |
+|---|---|---|---|
+| *A. thaliana* | 13 | `[12,3,4,8,5,1,7,2,10,11,9,6,0]` | (26776, 53880, 25840) |
+| *C. elegans* | 8 | `[1,0,2,3,6,5,4,7]` | (956, 392, 700) |
+| *Drosophila* | 6 | `[0,5,3,4,2,1]` | (64, 156, 164) |
+
+Las tablas de *A. thaliana* y *C. elegans* son las del bundle de
+reproducibilidad de Paper II. La de *Drosophila* es la red de las demos web.
