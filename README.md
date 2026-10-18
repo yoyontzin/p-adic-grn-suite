@@ -1,6 +1,6 @@
 # p-adic GRN Suite
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19805644.svg)](https://doi.org/10.5281/zenodo.19805644)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19805643.svg)](https://doi.org/10.5281/zenodo.19805643)
 
 Suite cientifica para analisis p-adico de redes de regulacion genetica en dinamica discreta finita.
 
@@ -23,10 +23,13 @@ El nivel `n = 0` es una sola bola (todo el espacio) y nunca es expansiva.
 Valores de referencia: `padic-grn-core/tools/validate_expected_values.py`.
 Historial de versiones: `CHANGELOG.md`.
 
-## Referencias oficiales
+## Cómo citar
 
-- DOI de version: `10.5281/zenodo.19805644`
-- DOI conceptual: `10.5281/zenodo.19805643`
-- Registro Zenodo: <https://zenodo.org/records/19805644>
-- Release GitHub: <https://github.com/yoyontzin/p-adic-grn-suite/releases/tag/v1.0.1>
-- Software Heritage SWHID: `swh:1:dir:8441947af7175929272589c872a5dc63eb3c7fca`
+- Versión actual: v1.2.0 (`CITATION.cff`).
+- DOI conceptual (todas las versiones; resuelve a la más reciente):
+  `10.5281/zenodo.19805643`, <https://doi.org/10.5281/zenodo.19805643>
+- Releases: <https://github.com/yoyontzin/p-adic-grn-suite/releases>
+
+La v1.0.1 (DOI de versión `10.5281/zenodo.19805644`, SWHID
+`swh:1:dir:8441947af7175929272589c872a5dc63eb3c7fca`) es la versión depositada
+del registro de autor y se conserva sin cambios.
