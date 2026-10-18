@@ -1,5 +1,11 @@
 # Changelog — p-adic GRN Suite
 
+## v1.2.1 (2026-10-18)
+
+- `.zenodo.json` con los metadatos del depósito (autores, ORCID, licencia
+  `other-closed`, palabras clave), para que Zenodo archive la versión. El
+  código y los resultados son los de v1.2.0.
+
 ## v1.2.0 (2026-10-18)
 
 ### Medidas

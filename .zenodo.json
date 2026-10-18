@@ -1,0 +1,33 @@
+{
+  "upload_type": "software",
+  "title": "p-adic GRN Suite",
+  "version": "v1.2.1",
+  "description": "<p>Scientific software for p-adic analysis of Boolean and multi-valued gene regulatory networks. For a gene ordering, the scores mu_E, mu_A and mu_I sum the expanding, attracting and indifferent balls over the levels n = 0, ..., N-1, so that mu_E + mu_A + mu_I = N p^N.</p>",
+  "creators": [
+    {
+      "name": "Pérez-Buendía, J. Rogelio",
+      "affiliation": "SECIHTI — Centro de Investigación en Matemáticas (CIMAT), Unidad Mérida",
+      "orcid": "0000-0002-7739-4779"
+    },
+    {
+      "name": "Nopal-Coello, Víctor",
+      "affiliation": "Universidad Autónoma del Estado de Hidalgo",
+      "orcid": "0000-0003-2608-3636"
+    },
+    {
+      "name": "Cortés-Poza, Yuriria",
+      "affiliation": "IIMAS, UNAM — Unidad Académica Yucatán",
+      "orcid": "0000-0003-1856-9206"
+    }
+  ],
+  "license": "other-closed",
+  "keywords": [
+    "p-adic analysis",
+    "gene regulatory networks",
+    "discrete dynamics",
+    "ultrametric",
+    "topological data analysis",
+    "systems biology",
+    "p-adic metrics"
+  ]
+}
