@@ -1,5 +1,12 @@
 # Changelog — p-adic GRN Suite
 
+## v1.2.2 (2026-10-18)
+
+- Licencia MIT para toda la suite (`LICENSE` en la raíz y en cada paquete;
+  `CITATION.cff`, `pyproject.toml` y `.zenodo.json`). Coincide con el CC-BY-4.0
+  con que ya se publicó el motor en los bundles de reproducibilidad. El código
+  es el de v1.2.0.
+
 ## v1.2.1 (2026-10-18)
 
 - `.zenodo.json` con los metadatos del depósito (autores, ORCID, licencia

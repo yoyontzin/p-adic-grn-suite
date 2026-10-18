@@ -17,6 +17,6 @@ authors:
     affiliation: "Instituto de Investigaciones en Matemáticas Aplicadas y en Sistemas (IIMAS), UNAM -- Unidad Académica Yucatán"
     orcid: "https://orcid.org/0000-0003-1856-9206"
 abstract: "Core general para cálculo de métricas p-ádicas (mu_E, mu_A, mu_I) y análisis base en sistemas dinámicos discretos."
-license: "Licencia propietaria para uso academico no comercial"
+license: MIT
 repository-code: "PENDING_REPOSITORY_URL"
 doi: "10.0000/pending-doi"

@@ -25,7 +25,7 @@ Historial de versiones: `CHANGELOG.md`.
 
 ## Cómo citar
 
-- Versión actual: v1.2.1 (`CITATION.cff`).
+- Versión actual: v1.2.2 (`CITATION.cff`).
 - DOI conceptual (todas las versiones; resuelve a la más reciente):
   `10.5281/zenodo.19805643`, <https://doi.org/10.5281/zenodo.19805643>
 - Releases: <https://github.com/yoyontzin/p-adic-grn-suite/releases>
@@ -33,3 +33,8 @@ Historial de versiones: `CHANGELOG.md`.
 La v1.0.1 (DOI de versión `10.5281/zenodo.19805644`, SWHID
 `swh:1:dir:8441947af7175929272589c872a5dc63eb3c7fca`) es la versión depositada
 del registro de autor y se conserva sin cambios.
+
+## Licencia
+
+MIT (archivo `LICENSE`). Si usas la suite en un trabajo publicado, cítala con
+el DOI conceptual.

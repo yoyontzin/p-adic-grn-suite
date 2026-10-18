@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "Busqueda y certificacion de ordenamientos para sistemas discretos."
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Licencia propietaria para uso academico no comercial"}
+license = {text = "MIT"}
 authors = [
   {name = "Jesús Rogelio Pérez-Buendía", email = "rogelio.perez@cimat.mx"},
   {name = "Víctor Nopal-Coello", email = "victor_nopal@uaeh.edu.mx"},

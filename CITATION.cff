@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "p-adic GRN Suite"
-version: "v1.2.1"
+version: "v1.2.2"
 date-released: "2026-10-18"
 abstract: "Scientific software for p-adic analysis of Boolean and multi-valued gene regulatory networks. For a gene ordering, the scores mu_E, mu_A and mu_I sum the expanding, attracting and indifferent balls over the levels n = 0, ..., N-1, so that mu_E + mu_A + mu_I = N p^N."
 authors:
@@ -21,7 +21,7 @@ authors:
     given-names: "Yuriria"
     orcid: "https://orcid.org/0000-0003-1856-9206"
     affiliation: "IIMAS, UNAM — Unidad Académica Yucatán"
-license: "other"
+license: MIT
 url: "https://github.com/yoyontzin/p-adic-grn-suite"
 doi: "10.5281/zenodo.19805643"
 identifiers:
