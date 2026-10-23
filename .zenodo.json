@@ -1,7 +1,7 @@
 {
   "upload_type": "software",
   "title": "p-adic GRN Suite",
-  "version": "v1.2.2",
+  "version": "v1.2.3",
   "description": "<p>Scientific software for p-adic analysis of Boolean and multi-valued gene regulatory networks. For a gene ordering, the scores mu_E, mu_A and mu_I sum the expanding, attracting and indifferent balls over the levels n = 0, ..., N-1, so that mu_E + mu_A + mu_I = N p^N.</p>",
   "creators": [
     {

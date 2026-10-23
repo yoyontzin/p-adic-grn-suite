@@ -25,7 +25,7 @@ Historial de versiones: `CHANGELOG.md`.
 
 ## Cómo citar
 
-- Versión actual: v1.2.2 (`CITATION.cff`).
+- Versión actual: v1.2.3 (`CITATION.cff`).
 - DOI conceptual (todas las versiones; resuelve a la más reciente):
   `10.5281/zenodo.19805643`, <https://doi.org/10.5281/zenodo.19805643>
 - Releases: <https://github.com/yoyontzin/p-adic-grn-suite/releases>

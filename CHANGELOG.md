@@ -1,5 +1,30 @@
 # Changelog — p-adic GRN Suite
 
+## v1.2.3 (2026-10-23)
+
+### Algoritmo genético
+
+- Ruta rápida exacta para p = 2 en `MuCalculator` (plegado de bits): da los mismos
+  enteros que el cálculo por bola y baja el costo por orden en *A. thaliana* de unos
+  130 ms a 0.7 ms. Evaluación incremental tras un intercambio o una inserción.
+- La caché por bola se vacía al pasar de 4 millones de entradas. Antes crecía sin
+  límite, unos 2.2 MB por orden nuevo en *A. thaliana*.
+- `random_ga_search` revisa también a los hijos de la última generación. Antes se
+  perdían. No cambia el uso del generador aleatorio. Solo puede mejorar el mejor
+  orden reportado cuando la mejora aparece en esa generación.
+- Modo memético opcional (`random_ga_search(local_search=True)`,
+  `pgsearch-ga --local-search`): ascenso de colinas con intercambios e inserciones
+  sobre cada nuevo mejor orden. El valor μ_E = 28,000 en *A. thaliana* es un óptimo
+  local de la vecindad de intercambios, y las inserciones lo superan. Con 50
+  generaciones de 30 individuos y semillas 1 a 20, el modo por omisión llega a
+  26,776 en 3 de 20 corridas y el memético en 20 de 20. Apagado por omisión, para
+  que cada semilla conserve su trayectoria.
+- Pruebas nuevas en `padic-grn-search/tests/test_ga_fast.py`: evaluador contra la
+  referencia y contra los óptimos certificados, identidad N p^N, mínimo exhaustivo
+  con N = 6 y N = 8, movimientos incrementales, AG que encuentra 26,776 y
+  reproducibilidad por semilla. Core 40 y search 41 pruebas.
+- `padic-grn-core` y `padic-grn-search` pasan a 0.2.1.
+
 ## v1.2.2 (2026-10-18)
 
 - Licencia MIT para toda la suite (`LICENSE` en la raíz y en cada paquete;
