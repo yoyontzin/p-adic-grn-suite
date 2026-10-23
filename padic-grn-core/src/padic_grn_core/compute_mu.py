@@ -34,10 +34,10 @@ Example (p=3, each gene has 3 states):
 import sys
 import csv
 import math
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Set, Tuple, Optional, Sequence
 from functools import lru_cache
 import multiprocessing as mp
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 # ============================================================================
 # GENERALIZED HELPER FUNCTIONS
@@ -394,6 +394,309 @@ def compute_mu_generalized(N: int, p: int, A: List[int],
     return scores["mu_E"]
 
 # ============================================================================
+# EXACT FAST PATH FOR p = 2 (BIT FOLDING)
+# ============================================================================
+# Exact evaluation of the scores mu_E, mu_A, mu_I for Boolean networks (p = 2),
+# with bit operations and standard-library Python only.
+#
+# It returns exactly the same integers as compute_scores of the reference engine
+# (compute_mu_generalized.py) for every ordering, provided the transition table is
+# complete (2^N entries, configurations and images in 0..2^N-1).
+#
+# Ordering and balls (little-endian, as in the reference engine). Configuration c
+# encodes gene g in bit g. An ordering A = (a_0, ..., a_{N-1}) lists the genes from
+# the most significant coordinate. A ball of level n fixes the genes a_0, ..., a_{n-1}
+# and leaves the other N-n genes free. Let OR and AND be the bitwise OR and AND of the
+# images F(x) over the ball, and V = OR ^ AND the genes whose next state is not
+# constant on the ball. The reference engine takes M = the first position j of the
+# ordering with gene a_j in V and classifies the ball as E (M < n), I (M = n) or
+# A (M > n). Hence
+#     E  <=>  V meets {a_0, ..., a_{n-1}},
+#     I  <=>  V misses {a_0, ..., a_{n-1}} and contains a_n,
+#     A  otherwise,
+# and the level-n counts depend only on the set {a_0, ..., a_{n-1}} and on a_n.
+#
+# Algorithm. Relabel the configurations so that bit j of the index y holds gene a_j
+# (the images keep the original labels). Then a ball of level n is a residue class of
+# y modulo 2^n, and the OR/AND over the free genes is obtained by folding the top bit
+# of the array, one level at a time, from n = N-1 down to n = 0. Total cost O(2^N)
+# list operations per ordering, against O(N^2 2^N) interpreted operations in the
+# reference engine.
+#
+# Level conventions. first_level = 0 sums n = 0, ..., N-1 (mu_E + mu_A + mu_I = N 2^N,
+# current convention). first_level = 1 sums n = 1, ..., N-1 (legacy convention of the
+# 2026-04 registration, mu_E + mu_A + mu_I = (N-1) 2^N). mu_E does not depend on the
+# convention, because the root ball (n = 0) is never expanding. The root ball is A when
+# the next state of a_0 is constant on the whole space and I otherwise, so the legacy
+# convention removes its weight 2^N from mu_I, or from mu_A in that constant case.
+def table_supports_fast_path(N: int, p: int, transition_table: Dict[int, int]) -> bool:
+    """True if p = 2 and the table is complete with all values in range."""
+    if p != 2 or N < 1 or N > 26:
+        return False
+    size = 1 << N
+    if len(transition_table) != size:
+        return False
+    try:
+        for c in range(size):
+            v = transition_table[c]
+            if not (0 <= v < size):
+                return False
+    except (KeyError, TypeError):
+        return False
+    return True
+
+
+class FastMuP2:
+    """Exact scores for p = 2 by bit folding.
+
+    scores(A)            -> dict(mu_E, mu_A, mu_I[, E, A, I])
+    swap_scores(A, i, j) -> scores of A with positions i and j exchanged, computed
+                            incrementally from A (levels outside i..j are reused).
+    """
+
+    def __init__(self, N: int, transition_table: Dict[int, int], first_level: int = 0,
+                 memo_size: int = 1 << 16):
+        if first_level not in (0, 1):
+            raise ValueError("first_level must be 0 or 1")
+        self.N = N
+        self.size = 1 << N
+        self.F = [int(transition_table[c]) for c in range(self.size)]
+        self.first_level = first_level
+        self.memo_size = memo_size
+        self._memo: "OrderedDict[Tuple[int, ...], Tuple[Tuple[int, ...], Tuple[int, ...], Tuple[int, ...]]]" = OrderedDict()
+        # Checkpoint for incremental swaps: ordering and the folded arrays of every level.
+        self._ck_order: Optional[Tuple[int, ...]] = None
+        self._ck_and: List[List[int]] = []
+        self._ck_or: List[List[int]] = []
+        self._ck_counts: Optional[Tuple[List[int], List[int], List[int]]] = None
+        self.n_full = 0
+        self.n_incremental = 0
+        self.n_memo_hits = 0
+
+    # ------------------------------------------------------------------ core
+    def _relabel(self, A: Sequence[int]) -> List[int]:
+        X = [0]
+        for g in A:
+            b = 1 << g
+            X += [x | b for x in X]
+        F = self.F
+        return [F[x] for x in X]
+
+    @staticmethod
+    def _count(AND: List[int], OR: List[int], pmask: int, gbit: int) -> Tuple[int, int]:
+        e = i = 0
+        for a, o in zip(AND, OR):
+            v = a ^ o
+            if v & pmask:
+                e += 1
+            elif v & gbit:
+                i += 1
+        return e, i
+
+    def _full(self, A: Sequence[int], keep: bool):
+        N = self.N
+        G = self._relabel(A)
+        AND = G
+        OR = G
+        prefix = [0] * (N + 1)
+        for k in range(N):
+            prefix[k + 1] = prefix[k] | (1 << A[k])
+        E = [0] * N
+        I = [0] * N
+        Acnt = [0] * N
+        ands: List[List[int]] = [None] * (N + 1)  # type: ignore[list-item]
+        ors: List[List[int]] = [None] * (N + 1)  # type: ignore[list-item]
+        if keep:
+            ands[N] = G
+            ors[N] = G
+        for n in range(N - 1, -1, -1):
+            half = 1 << n
+            AND = [a & b for a, b in zip(AND[:half], AND[half:])]
+            OR = [a | b for a, b in zip(OR[:half], OR[half:])]
+            e, i = self._count(AND, OR, prefix[n], 1 << A[n])
+            E[n] = e
+            I[n] = i
+            Acnt[n] = half - e - i
+            if keep:
+                ands[n] = AND
+                ors[n] = OR
+        self.n_full += 1
+        if keep:
+            self._ck_order = tuple(A)
+            self._ck_and = ands
+            self._ck_or = ors
+            self._ck_counts = (E, Acnt, I)
+        return E, Acnt, I
+
+    def level_counts(self, A: Sequence[int]) -> Tuple[Tuple[int, ...], Tuple[int, ...], Tuple[int, ...]]:
+        """(E_n, A_n, I_n) for n = 0..N-1, memoized by ordering."""
+        key = tuple(A)
+        hit = self._memo.get(key)
+        if hit is not None:
+            self._memo.move_to_end(key)
+            self.n_memo_hits += 1
+            return hit
+        E, Acnt, I = self._full(key, keep=False)
+        res = (tuple(E), tuple(Acnt), tuple(I))
+        self._remember(key, res)
+        return res
+
+    def _remember(self, key, res) -> None:
+        if self.memo_size <= 0:
+            return
+        self._memo[key] = res
+        if len(self._memo) > self.memo_size:
+            self._memo.popitem(last=False)
+
+    def _to_scores(self, counts, return_profiles: bool) -> Dict:
+        E, Acnt, I = counts
+        N = self.N
+        muE = muA = muI = 0
+        for n in range(self.first_level, N):
+            w = 1 << (N - n)
+            muE += E[n] * w
+            muA += Acnt[n] * w
+            muI += I[n] * w
+        out = {"mu_E": muE, "mu_A": muA, "mu_I": muI, "p": 2, "N": N}
+        if return_profiles:
+            lv = range(self.first_level, N)
+            out["E"] = {n: E[n] for n in lv}
+            out["A"] = {n: Acnt[n] for n in lv}
+            out["I"] = {n: I[n] for n in lv}
+        return out
+
+    def scores(self, A: Sequence[int], return_profiles: bool = False) -> Dict:
+        return self._to_scores(self.level_counts(A), return_profiles)
+
+    # ------------------------------------------------------- incremental swap
+    @staticmethod
+    def _swap_index_bits(arr: List[int], i: int, j: int) -> List[int]:
+        """New array b with b[y] = arr[y'] where y' is y with bits i < j exchanged.
+        len(arr) = 2^(j+1), so bit j is the top bit of the index."""
+        h = 1 << j
+        L = arr[:h]
+        U = arr[h:]
+        bs = 1 << i
+        newL: List[int] = []
+        newU: List[int] = []
+        for s in range(0, h, bs << 1):
+            # block [s, s+bs) has bit i = 0, block [s+bs, s+2bs) has bit i = 1
+            newL += L[s:s + bs]
+            newL += U[s:s + bs]
+            newU += L[s + bs:s + 2 * bs]
+            newU += U[s + bs:s + 2 * bs]
+        return newL + newU
+
+    def swap_level_counts(self, A: Sequence[int], i: int, j: int):
+        """Level counts of A with positions i and j exchanged (exact)."""
+        if i == j:
+            return self.level_counts(A)
+        if i > j:
+            i, j = j, i
+        B = list(A)
+        B[i], B[j] = B[j], B[i]
+        key = tuple(B)
+        hit = self._memo.get(key)
+        if hit is not None:
+            self._memo.move_to_end(key)
+            self.n_memo_hits += 1
+            return hit
+        if self._ck_order != tuple(A):
+            self._full(A, keep=True)
+        E0, A0, I0 = self._ck_counts  # type: ignore[misc]
+        E = list(E0)
+        Acnt = list(A0)
+        I = list(I0)
+        AND = self._swap_index_bits(self._ck_and[j + 1], i, j)
+        OR = self._swap_index_bits(self._ck_or[j + 1], i, j)
+        pmask = 0
+        for k in range(i):
+            pmask |= 1 << B[k]
+        prefix = [0] * (j + 1)
+        acc = pmask
+        for n in range(i, j + 1):
+            prefix[n] = acc
+            acc |= 1 << B[n]
+        for n in range(j, i - 1, -1):
+            half = 1 << n
+            AND = [a & b for a, b in zip(AND[:half], AND[half:])]
+            OR = [a | b for a, b in zip(OR[:half], OR[half:])]
+            e, ii = self._count(AND, OR, prefix[n], 1 << B[n])
+            E[n] = e
+            I[n] = ii
+            Acnt[n] = half - e - ii
+        self.n_incremental += 1
+        res = (tuple(E), tuple(Acnt), tuple(I))
+        self._remember(key, res)
+        return res
+
+    def swap_scores(self, A: Sequence[int], i: int, j: int, return_profiles: bool = False) -> Dict:
+        return self._to_scores(self.swap_level_counts(A, i, j), return_profiles)
+
+    def neighbor_level_counts(self, A: Sequence[int], B: Sequence[int]):
+        """Level counts of an ordering B that differs from A only inside one block of
+        positions lo..hi (a transposition, an insertion move, a segment reversal...).
+        The levels outside lo..hi are reused from A (exact)."""
+        N = self.N
+        lo = 0
+        while lo < N and A[lo] == B[lo]:
+            lo += 1
+        if lo == N:
+            return self.level_counts(A)
+        hi = N - 1
+        while A[hi] == B[hi]:
+            hi -= 1
+        key = tuple(B)
+        hit = self._memo.get(key)
+        if hit is not None:
+            self._memo.move_to_end(key)
+            self.n_memo_hits += 1
+            return hit
+        if self._ck_order != tuple(A):
+            self._full(A, keep=True)
+        pos = {g: k for k, g in enumerate(A)}
+        # index map of level hi+1: bit k of the new index holds gene B[k]
+        idx = [0]
+        for k in range(hi + 1):
+            b = 1 << pos[B[k]]
+            idx += [x | b for x in idx]
+        oa = self._ck_and[hi + 1]
+        oo = self._ck_or[hi + 1]
+        AND = [oa[t] for t in idx]
+        OR = [oo[t] for t in idx]
+        E0, A0, I0 = self._ck_counts  # type: ignore[misc]
+        E = list(E0)
+        Acnt = list(A0)
+        I = list(I0)
+        prefix = [0] * (hi + 1)
+        acc = 0
+        for n in range(hi + 1):
+            prefix[n] = acc
+            acc |= 1 << B[n]
+        for n in range(hi, lo - 1, -1):
+            half = 1 << n
+            AND = [a & b for a, b in zip(AND[:half], AND[half:])]
+            OR = [a | b for a, b in zip(OR[:half], OR[half:])]
+            e, ii = self._count(AND, OR, prefix[n], 1 << B[n])
+            E[n] = e
+            I[n] = ii
+            Acnt[n] = half - e - ii
+        self.n_incremental += 1
+        res = (tuple(E), tuple(Acnt), tuple(I))
+        self._remember(key, res)
+        return res
+
+    def neighbor_scores(self, A: Sequence[int], B: Sequence[int], return_profiles: bool = False) -> Dict:
+        return self._to_scores(self.neighbor_level_counts(A, B), return_profiles)
+
+    def clear(self) -> None:
+        self._memo.clear()
+        self._ck_order = None
+        self._ck_and = []
+        self._ck_or = []
+        self._ck_counts = None
+
+# ============================================================================
 # OPTIMIZATION: MEMOIZATION AND CACHE
 # ============================================================================
 
@@ -408,12 +711,21 @@ class MuCalculator:
         self.p = p
         self.transition_table = transition_table
         self._cache: Dict[Tuple[int, int, Tuple[int, ...]], int] = {}
+        # Exact fast path for p = 2 with a complete table (same integers as the
+        # per-ball computation below, verified against it and against the exact DP).
+        self._fast: Optional[FastMuP2] = None
+        if table_supports_fast_path(N, p, transition_table):
+            self._fast = FastMuP2(N, transition_table, first_level=0)
 
     def compute_ball_diameter_cached(self, n: int, ball_index: int, A: List[int]) -> int:
         """Compute M (the level such that t_{n,m} = 1/p^M), with cache."""
         cache_key = (n, ball_index, tuple(A))
         if cache_key in self._cache:
             return self._cache[cache_key]
+        if len(self._cache) >= 4_000_000:
+            # one entry per ball and per ordering: without a bound it grows by
+            # about 2^N entries for every new ordering
+            self._cache.clear()
         M = compute_ball_diameter_generalized(
             n, ball_index, self.N, self.p, A, self.transition_table
         )
@@ -422,6 +734,8 @@ class MuCalculator:
 
     def compute_mu(self, A: List[int], use_parallel: bool = False) -> int:
         """Compute mu_E (expansion measure)."""
+        if self._fast is not None:
+            return self._fast.scores(A)["mu_E"]
         return compute_mu_generalized(
             self.N, self.p, A, self.transition_table,
             use_parallel=use_parallel
@@ -431,6 +745,8 @@ class MuCalculator:
         self, A: List[int], return_profiles: bool = True
     ) -> Dict:
         """Compute mu_E, mu_A, mu_I and the E/A/I profiles using the cache of M."""
+        if self._fast is not None:
+            return self._fast.scores(A, return_profiles=return_profiles)
         E_profile = {}
         A_profile = {}
         I_profile = {}
@@ -459,8 +775,32 @@ class MuCalculator:
             out["I"] = I_profile
         return out
 
+    def compute_scores_swap(
+        self, A: List[int], i: int, j: int, return_profiles: bool = False
+    ) -> Dict:
+        """Scores of A with positions i and j exchanged. On the p = 2 fast path the
+        levels outside i..j are reused from A, otherwise the swapped ordering is
+        evaluated in full. The result equals compute_scores_cached(swapped)."""
+        if self._fast is not None:
+            return self._fast.swap_scores(A, i, j, return_profiles=return_profiles)
+        B = list(A)
+        B[i], B[j] = B[j], B[i]
+        return self.compute_scores_cached(B, return_profiles=return_profiles)
+
+    def compute_scores_neighbor(
+        self, A: List[int], B: List[int], return_profiles: bool = False
+    ) -> Dict:
+        """Scores of an ordering B that differs from A in one block of positions
+        (insertion move, transposition, reversal). On the p = 2 fast path the
+        levels outside that block are reused from A. Equals compute_scores_cached(B)."""
+        if self._fast is not None:
+            return self._fast.neighbor_scores(A, B, return_profiles=return_profiles)
+        return self.compute_scores_cached(list(B), return_profiles=return_profiles)
+
     def clear_cache(self) -> None:
         self._cache.clear()
+        if self._fast is not None:
+            self._fast.clear()
 
 # ============================================================================
 # MAIN
