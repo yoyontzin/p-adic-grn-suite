@@ -57,6 +57,14 @@ class _ReferenceEvaluator:
             scores = self.core.compute_scores(self.p, self.n, ordering, self.table, return_profiles=False)
         return {"mu_E": scores["mu_E"], "mu_A": scores["mu_A"], "mu_I": scores["mu_I"]}
 
+    def score_neighbor(self, ordering: list[int], neighbor: list[int]) -> dict[str, int]:
+        """Scores of neighbor, an ordering that differs from ordering in one block of
+        positions (exact; incremental on the p = 2 fast path)."""
+        if self.calculator is not None and hasattr(self.calculator, "compute_scores_neighbor"):
+            scores = self.calculator.compute_scores_neighbor(ordering, neighbor, return_profiles=False)
+            return {"mu_E": scores["mu_E"], "mu_A": scores["mu_A"], "mu_I": scores["mu_I"]}
+        return self.score(list(neighbor))
+
     def partial_mu_e(self, prefix: list[int]) -> int:
         """Cota inferior de mu_E: niveles n = 0..k fijados por el prefijo."""
         return int(self.core.partial_mu_E(prefix, self.n, self.p, self.table))
@@ -123,6 +131,52 @@ def _tournament_select(
     return list(population[best_idx])
 
 
+def _hill_climb(
+    ordering: list[int],
+    fit: int,
+    neighbor_scores,
+    objective: str,
+) -> tuple[list[int], int, dict[str, int] | None, int]:
+    """First-improvement hill climbing over transpositions and insertion moves
+    (take one gene out and put it back at another position), until no move improves
+    the fitness. Deterministic: it uses no random numbers.
+    Returns (ordering, fitness, scores or None if unchanged, evaluations)."""
+    best = list(ordering)
+    best_fit = fit
+    best_scores = None
+    evals = 0
+    n = len(best)
+    improved = True
+    while improved:
+        improved = False
+        for i in range(n - 1):
+            for j in range(i + 1, n):
+                cand = list(best)
+                cand[i], cand[j] = cand[j], cand[i]
+                scores = neighbor_scores(best, cand)
+                evals += 1
+                f = _fitness(scores, objective)
+                if f < best_fit:
+                    best, best_fit, best_scores, improved = cand, f, scores, True
+        if improved:
+            continue
+        for i in range(n):
+            for j in range(n):
+                if abs(i - j) < 2:
+                    continue  # |i - j| = 1 is a transposition, already tried
+                cand = list(best)
+                cand.insert(j, cand.pop(i))
+                scores = neighbor_scores(best, cand)
+                evals += 1
+                f = _fitness(scores, objective)
+                if f < best_fit:
+                    best, best_fit, best_scores, improved = cand, f, scores, True
+                    break
+            if improved:
+                break
+    return best, best_fit, best_scores, evals
+
+
 def random_ga_search(
     transitions_csv: str,
     n: int,
@@ -131,7 +185,16 @@ def random_ga_search(
     generations: int = 50,
     population: int = 30,
     seed: int | None = None,
+    local_search: bool = False,
 ) -> dict[str, Any]:
+    """Genetic algorithm (tournament k = 3, PMX, swap mutation, elitism).
+
+    local_search=False (default) is the published algorithm. local_search=True is
+    an optional memetic mode: every new best ordering of a generation is improved
+    by first-improvement hill climbing over transpositions and insertion moves and
+    put back in the population. It uses no random numbers, but it changes the
+    population, so its trajectory differs from the default one for the same seed.
+    """
     rng = random.Random(seed)
     evaluator = _ReferenceEvaluator(transitions_csv, n, p)
 
@@ -156,6 +219,10 @@ def random_ga_search(
     best_scores = None
     best_fit = None
     history: list[int] = []
+    ls_evals = 0
+
+    def neighbor_scores(ordering: list[int], neighbor: list[int]) -> dict[str, int]:
+        return evaluator.score_neighbor(ordering, neighbor)
 
     for _ in range(generations):
         fitnesses = [fit for _, fit in evaluated]
@@ -165,6 +232,13 @@ def random_ga_search(
         fitnesses = [fit for _, fit in evaluated]
 
         if best_fit is None or fitnesses[0] < best_fit:
+            if local_search:
+                hc_order, hc_fit, hc_scores, k = _hill_climb(pop[0], fitnesses[0], neighbor_scores, objective)
+                ls_evals += k
+                if hc_scores is not None:
+                    pop[0] = hc_order
+                    evaluated[0] = (hc_scores, hc_fit)
+                    fitnesses[0] = hc_fit
             best_fit = fitnesses[0]
             best_order = list(pop[0])
             best_scores = dict(evaluated[0][0])
@@ -194,9 +268,9 @@ def random_ga_search(
             best_scores = dict(scores)
 
     return {
-        "method": "ga_pmx_tournament_elite",
+        "method": "ga_pmx_tournament_elite" + ("_memetic" if local_search else ""),
         "objective": objective,
-        "evaluations": evals,
+        "evaluations": evals + ls_evals,
         "best_ordering": best_order,
         "best_fitness": best_fit,
         "best_scores": best_scores,

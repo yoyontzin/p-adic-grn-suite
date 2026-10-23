@@ -27,6 +27,11 @@ def main_ga() -> None:
     parser.add_argument("--generations", type=int, default=50)
     parser.add_argument("--population", type=int, default=30)
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument(
+        "--local-search",
+        action="store_true",
+        help="Optional memetic mode: hill climbing (transpositions and insertion moves) on every new best. Off by default.",
+    )
     parser.add_argument("--output-json", default="search_ga_result.json")
     args = parser.parse_args()
     try:
@@ -38,6 +43,7 @@ def main_ga() -> None:
             generations=args.generations,
             population=args.population,
             seed=args.seed,
+            local_search=args.local_search,
         )
         out = _write_json(args.output_json, result)
         print(f"OK: resultado GA guardado en {out}")
