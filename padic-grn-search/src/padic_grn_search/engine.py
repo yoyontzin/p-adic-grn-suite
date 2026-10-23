@@ -185,6 +185,14 @@ def random_ga_search(
         evaluated = [eval_order(ind) for ind in pop]
         evals = len(score_cache)
 
+    # The children of the last generation are evaluated above; keep their best too
+    # (before this check the loop discarded them).
+    for ind, (scores, fit) in zip(pop, evaluated):
+        if best_fit is None or fit < best_fit:
+            best_fit = fit
+            best_order = list(ind)
+            best_scores = dict(scores)
+
     return {
         "method": "ga_pmx_tournament_elite",
         "objective": objective,
